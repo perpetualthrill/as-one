@@ -19,14 +19,19 @@ void draw() {
     value = mySerial.readStringUntil('\n');
     if ( value != null ) {
       int millis = millis();
-      String info = millis + " -- "+ value ;
-      output.print(info);
       try {
         valueInt = Integer.parseInt(value.trim());
       } 
       catch (NumberFormatException e) {
         valueInt = 8888;
       }
+      
+      float inByte = float(valueInt);
+      inByte = (inByte / 660) * 1023;
+      String info = millis + " -- "+ inByte ;
+      output.println(info);
+      valueInt = int(inByte);
+
       lastThree[2] = lastThree[1];
       lastThree[1] = lastThree[0];
       lastThree[0] = valueInt;
@@ -50,9 +55,9 @@ void draw() {
 boolean detect(int millis) {
   println("DETECT: "+lastThree[0]+" "+lastThree[1]+" "+lastThree[2]+" -> "+ //(millis - lastBeatMillis));
         millis);
-  if ((lastThree[0] <= 700) &&
-    (lastThree[1] <= 700) &&
-    (lastThree[2] <= 700) &&
+  if ((lastThree[0] <= 1000) &&
+    (lastThree[1] <= 1000) &&
+    (lastThree[2] <= 1000) &&
     ((millis - lastBeatMillis) > 300)) {
     return true;
   }
