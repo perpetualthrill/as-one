@@ -41,14 +41,14 @@ void setup () {
   // List all the available serial ports
   println(Serial.list());
   // Open whatever port is the one you're using.
-  myPort = new Serial(this, Serial.list()[32], 9600);
+  myPort = new Serial(this, Serial.list()[32], 38400);
   // don't generate a serialEvent() unless you get a newline character:
   myPort.bufferUntil('\n');
   // set inital background:
   //background(0xff);
   background(0);
 
-  strokeWeight(4);
+  strokeWeight(2);
 }
 
 
@@ -68,7 +68,7 @@ void draw () {
       stroke(128);
       inByte = float(inString);
       inByte = (inByte / 660) * 1023;
-      println("ok: "+inString+" => "+inByte);
+    //  println("ok: "+inString+" => "+inByte);
     }
 
     // at the edge of the screen, go back to the beginning:
@@ -84,7 +84,7 @@ void draw () {
     inByte = map(inByte, 0, 1023, 0, height);
     height_new = height - inByte; 
     line(xPos - 1, height_old, xPos, height_new);
-    println("heights: "+height_old+", "+height_new+" at "+xPos);
+ //   println("heights: "+height_old+", "+height_new+" at "+xPos);
     height_old = height_new;
 
     inString = null;
