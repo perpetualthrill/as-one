@@ -7,7 +7,8 @@ PrintWriter writer;
 
 void setup() {
   // 32 == /dev/ttyUSB0
-  mySerial = new Serial( this, Serial.list()[32], 38400 );
+  // 0 = COM1
+  mySerial = new Serial( this, Serial.list()[0], 38400 );
   
   writer = createWriter("/home/jack/foo.csv");
   delay(10);
@@ -23,7 +24,7 @@ void serialEvent (Serial myPort) {
     if (!inString.equals(previous)) {
       int millis = millis();
       print("got one at "+millis+" -- "+inString);
-      writer.println(inString);
+      writer.print(inString);
     }
     previous = new String(inString);
     inString = null;
