@@ -26,9 +26,11 @@ void midiMessage(MidiMessage message, long timestamp, String bus_name) {
   }
   
   int note = (int)(message.getMessage()[1] & 0xFF) ;
+  //int note = (int)message.getMessage()[1];
   int vel = (int)(message.getMessage()[2] & 0xFF);
 
   println("Bus " + bus_name + ": Note "+ note + ", vel " + vel+", status "+status);
+  println("aka "+(note+vel));
   if (vel > 0 ) {
    currentColor = vel*2;
   }
