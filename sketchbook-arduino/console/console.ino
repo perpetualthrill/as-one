@@ -20,11 +20,18 @@ const int DIFFERENCE_THRESHOLD = 8;
 // known-bad identifier
 const int SENTINEL = 9999;
 
+// data
+struct BeatInterval {
+  int startTime;
+  int endTime;
+};
+
 // globals
 int latest[] = { SENTINEL, SENTINEL };
 int fifo[FIFO_SIZE];
 int lastBeatMs = 0;
 float bpm;
+BeatInterval intervalBuffer[3];
 
 void setup() {
   // Open serial communications and wait for port to open:
@@ -35,6 +42,14 @@ void setup() {
 
   // set the data rate for the olimex uart
   HWSERIAL.begin(115200);
+
+  // fill interval buffer with placeholders
+  struct BeatInterval placeholder;
+  placeholder.startTime = SENTINEL;
+  placeholder.endTime = SENTINEL;
+  intervalBuffer[0] = placeholder;
+  intervalBuffer[1] = placeholder;
+  intervalBuffer[2] = placeholder;
 
   // debounce
   delay(1);
@@ -66,48 +81,45 @@ int bufferAverage(int buff[], int buffSize) {
 bool detectBeat() {
   int fifoAvg = bufferAverage(fifo, FIFO_SIZE);
   int latestAvg = bufferAverage(latest, LATEST_SIZE);
-
-  /*
-  Serial.print("check: ");
-  Serial.print(latestAvg);
-  Serial.print(" higher than ");
-  Serial.println(fifoAvg);
-  */
-  
-  if (fifoAvg == -1 || latestAvg == -1) {
-    lastBeatMs = millis();
-    return false;
-  }
-
-  int currentTime = millis();
-  if ((latestAvg - fifoAvg) > DIFFERENCE_THRESHOLD 
-      && (currentTime - lastBeatMs) > MIN_WINDOW_MS 
-      && (currentTime - lastBeatMs) < MAX_WINDOW_MS) {
-    bpm = 60000.0 / (currentTime - lastBeatMs);
-    lastBeatMs = currentTime;
+  if ((latestAvg - fifoAvg) > DIFFERENCE_THRESHOLD) {
     return true;
   }
   return false;
 }
 
+// returns true if we are getting good data off the board
+bool bufferAndAverage(int val) {
+  enqueue(val, latest, LATEST_SIZE);
+  enqueue(val, fifo, FIFO_SIZE);
+  for (int i = 0; i < FIFO_SIZE; i++) {
+    if (fifo[i] == SENTINEL) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void loop() {
+  // Get value from mod-ekg
   if (HWSERIAL.available()) {
     int bytecount = 0;
     int val = -1;
-    while(HWSERIAL.available()) {
+    while (HWSERIAL.available()) {
       val = HWSERIAL.read();
       bytecount++;
     }
     HWSERIAL.clear();
-    //Serial.println(val);
-    enqueue(val, latest, LATEST_SIZE);
-    enqueue(val, fifo, FIFO_SIZE);
-    if (detectBeat()) {
-      Serial.print("bytes: ");
-      Serial.print(bytecount);
-      Serial.print(" bpm: ");
-      Serial.println(bpm);
+
+    // check for a detected beat
+    int currentTime = millis();
+    if (bufferAndAverage(val) && detectBeat()) {
+      int interval = currentTime - lastBeatMs;
+      lastBeatMs = currentTime;
+      if (interval > MIN_WINDOW_MS && interval < MAX_WINDOW_MS) {
+
+      }
     }
+
   }
   delay(SAMPLE_DELAY_MS);
 }
