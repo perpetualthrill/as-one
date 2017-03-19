@@ -113,10 +113,11 @@ void loop() {
     // check for a detected beat
     int currentTime = millis();
     if (bufferAndAverage(val) && detectBeat()) {
+      Serial.println(999);
       int interval = currentTime - lastBeatMs;
       lastBeatMs = currentTime;
       if (interval > MIN_WINDOW_MS && interval < MAX_WINDOW_MS) {
-
+        Serial.println(111);
       }
     }
 

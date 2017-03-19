@@ -5,6 +5,8 @@ volatile String found = null;
 
 PrintWriter writer;
 
+volatile ArrayList<String> allFound = new ArrayList<String>();
+
 void setup() {
   // 32 = /dev/ttyUSB0
   // 0 = COM1
@@ -17,19 +19,28 @@ void setup() {
 
 void draw() {
   // log input
-  String foundCopy = found;
-  if (null != foundCopy) {
+  ArrayList<String> listCopy;
+  synchronized (allFound) {
+    listCopy = new ArrayList<String>(allFound);
+  }
+  if (!listCopy.isEmpty()) {
     int millis = millis();
-    writer.print(millis+","+foundCopy);
-    System.out.print(millis+","+foundCopy);
-    found = null;
+    for (String found : listCopy) {
+      writer.print(millis+","+found);
+      System.out.print(millis+","+found);
+    }
+    synchronized (allFound) {
+      allFound.clear();
+    }
   }
 }
 
 void serialEvent (Serial myPort) {
   String inString = myPort.readStringUntil('\n');
   if (null != inString) {
-    found = new String(inString);
+    synchronized (allFound) {
+      allFound.add(new String(inString));
+    }
     inString = null;
   }
 }
