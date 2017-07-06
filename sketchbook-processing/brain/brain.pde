@@ -1,11 +1,11 @@
 import processing.serial.*;
 Serial mySerial;
 
-volatile String found = null;
-
 PrintWriter writer;
 
-volatile ArrayList<String> allFound = new ArrayList<String>();
+ArrayList<String> allFound = new ArrayList<String>();
+
+int lastMillis = 0;
 
 void setup() {
   // 32 = /dev/ttyUSB0
@@ -22,15 +22,23 @@ void draw() {
   ArrayList<String> listCopy;
   synchronized (allFound) {
     listCopy = new ArrayList<String>(allFound);
+    allFound.clear();
   }
   if (!listCopy.isEmpty()) {
     int millis = millis();
     for (String found : listCopy) {
-      writer.print(millis+","+found);
-      System.out.print(millis+","+found);
-    }
-    synchronized (allFound) {
-      allFound.clear();
+      int resultCode = Integer.parseInt(found.trim());
+      String line;
+      if (resultCode == 111) {
+        int diff = millis - lastMillis;
+        int bpm = 60000 / diff;
+        lastMillis = millis;
+        line = millis+","+Integer.parseInt(found.trim())+","+bpm;
+      } else {
+        line = millis+","+Integer.parseInt(found.trim())+",0";
+      }
+      writer.println(line);
+      System.out.println(line);
     }
   }
 }
@@ -41,7 +49,6 @@ void serialEvent (Serial myPort) {
     synchronized (allFound) {
       allFound.add(new String(inString));
     }
-    inString = null;
   }
 }
 
