@@ -3,18 +3,18 @@
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-//IPAddress mqttServer(192, 168, 1, 69);
 
-void setup()
-{
+String testUpper = String("asOne/testUpper");
+String testLower = String("asOne/testLower");
+
+void setup() {
   Serial.begin(115200);
   Serial.println();
 
   WiFi.begin("AsOne", "fuckthapolice");
 
   Serial.print("Connecting");
-  while (WiFi.status() != WL_CONNECTED)
-  {
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
@@ -23,10 +23,8 @@ void setup()
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-  //client.setServer(mqttServer, 1883);
   client.setServer("asone-console", 1883);
   client.setCallback(callback);
-
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -37,6 +35,19 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
+
+  String checkTopic = String(topic);
+  char* p = (char*)malloc(length);
+  memcpy(p, payload, length);
+  String checkPayload = String(p);
+  
+  if (checkTopic.equals(testUpper)) {
+    Serial.print("do upper: ");
+    Serial.println(checkPayload.toInt());
+  } else if (checkTopic.equals(testLower)) {
+    Serial.print("do lower: ");
+    Serial.println(checkPayload.toInt());
+  }
 }
 
 
@@ -50,7 +61,10 @@ void reconnect() {
       // Once connected, publish an announcement...
       //client.publish("outTopic", "hello world");
       // ... and resubscribe
-      client.subscribe("topikk");
+      client.subscribe("asOne/hello");
+      client.subscribe(testUpper.c_str());
+      client.subscribe(testLower.c_str());
+      client.subscribe("asOne/doPulse");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -60,6 +74,7 @@ void reconnect() {
     }
   }
 }
+
 
 void loop() {
     if (!client.connected()) {
