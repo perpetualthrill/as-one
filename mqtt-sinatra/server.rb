@@ -14,6 +14,25 @@ get '/testLower/:duration' do
   doPoof("Lower", params[:duration])
 end
 
+get '/testBoth/:duration' do
+  doPoof("Lower", params[:duration])
+  doPoof("Upper", params[:duration])
+  "poofing both: #{params[:duration]}"
+end
+
+get '/testBeat' do
+  for i in 0 .. 3 do
+    duration = 350
+    halfDuration = 190
+    doPoof("Upper", halfDuration.to_s)
+    sleep(0.18)
+    doPoof("Lower", duration.to_s)
+    "test heartbeat"
+    sleep(0.95)
+  end
+end
+
+
 def doPoof(output, durationStr)
   duration = durationStr.to_i
   if (duration < 100)
