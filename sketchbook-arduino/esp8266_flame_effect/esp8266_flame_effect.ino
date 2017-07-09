@@ -7,7 +7,17 @@ PubSubClient client(espClient);
 String testUpper = String("asOne/testUpper");
 String testLower = String("asOne/testLower");
 
+int upperPin = 12;
+int lowerPin = 13;
+
 void setup() {
+  pinMode(upperPin, OUTPUT);
+  digitalWrite(upperPin, LOW);
+  pinMode(lowerPin, OUTPUT);
+  digitalWrite(lowerPin, LOW);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+  
   Serial.begin(115200);
   Serial.println();
 
@@ -44,12 +54,21 @@ void callback(char* topic, byte* payload, unsigned int length) {
   if (checkTopic.equals(testUpper)) {
     Serial.print("do upper: ");
     Serial.println(checkPayload.toInt());
+    doPoof(upperPin, checkPayload.toInt());
   } else if (checkTopic.equals(testLower)) {
     Serial.print("do lower: ");
     Serial.println(checkPayload.toInt());
+    doPoof(lowerPin, checkPayload.toInt());
   }
 }
 
+void doPoof(int pin, int duration) {
+  digitalWrite(pin, HIGH);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(duration);
+  digitalWrite(pin, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
+}
 
 void reconnect() {
   // Loop until we're reconnected
