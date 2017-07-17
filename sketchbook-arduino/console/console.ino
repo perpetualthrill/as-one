@@ -6,6 +6,8 @@ const int SAMPLE_RATE_HZ = 60; // match 60fps on processing loop
 const int SAMPLE_DELAY_MS = 1000 / SAMPLE_RATE_HZ;
 const int FIFO_SIZE = SAMPLE_RATE_HZ / 2; // half second buffer
 const int LATEST_SIZE = 2;
+const int GOOD_BEAT_QUEUE_SIZE = 3;
+const float MAX_BPM_DIFFERENCE_PERCENT = .10;
 
 // Timing related constants
 const int MS_PER_SECOND = 60000;
@@ -21,18 +23,11 @@ const int DIFFERENCE_THRESHOLD = 8;
 // known-bad identifier
 const int SENTINEL = 9999;
 
-// data
-struct BeatInterval {
-  int startTime;
-  int endTime;
-};
-
 // globals
 int latest[] = { SENTINEL, SENTINEL };
 int fifo[FIFO_SIZE];
 int lastBeatMs = 0;
-float bpm;
-BeatInterval intervalBuffer[3];
+int goodBeatTimes[GOOD_BEAT_QUEUE_SIZE];
 
 void setup() {
   // Open serial communications and wait for port to open:
@@ -44,20 +39,17 @@ void setup() {
   // set the data rate for the olimex uart
   HWSERIAL.begin(115200);
 
-  // fill interval buffer with placeholders
-  struct BeatInterval placeholder;
-  placeholder.startTime = SENTINEL;
-  placeholder.endTime = SENTINEL;
-  intervalBuffer[0] = placeholder;
-  intervalBuffer[1] = placeholder;
-  intervalBuffer[2] = placeholder;
+  // zero out found beats
+  for (int i = 0; i < GOOD_BEAT_QUEUE_SIZE; i++) {
+    goodBeatTimes[i] = 0;
+  }
 
   // debounce
   delay(10);
 }
 
 void checkAndEnqueue(int value, int buff[], int buffSize) {
-  for (int i = 1; i < buffSize; i++) {
+  for (int i = buffSize - 1; i > 0; i--) {
     buff[i] = buff[i - 1];
   }
   if ((value > 250) || (value < 5)) {
@@ -102,6 +94,35 @@ bool checkFifoForSentinel() {
   return false;
 }
 
+void enqueueGoodBeat(int time) {
+  for (int i = GOOD_BEAT_QUEUE_SIZE - 1; i > 0; i--) {
+    goodBeatTimes[i] = goodBeatTimes[i - 1];
+  }
+  goodBeatTimes[0] = time;
+}
+
+bool giveFeedbackForBeat() {
+  int bpms[GOOD_BEAT_QUEUE_SIZE-1];
+  for (int i = 0; i < GOOD_BEAT_QUEUE_SIZE - 1; i++) {
+    bpms[i] = MS_PER_SECOND / (goodBeatTimes[i] - goodBeatTimes[i+1]);
+  }
+  for (int i = 0; i < GOOD_BEAT_QUEUE_SIZE - 1; i++) {
+    // Serial.println(bpms[i]);
+    if (bpms[i] > MAX_HEARTRATE_BPM || bpms[i] < MIN_HEARTRATE_BPM) {
+      return false;
+    }
+  }
+  for (int i = 0; i < GOOD_BEAT_QUEUE_SIZE - 2; i++) {
+    float higher = (float) max(bpms[i], bpms[i+1]);
+    float lower = (float) min(bpms[i], bpms[i+1]);
+    // Serial.println((higher / lower)-1);
+    if (((higher / lower) - 1) > MAX_BPM_DIFFERENCE_PERCENT) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void loop() {
   // Get value from mod-ekg
   if (HWSERIAL.available()) {
@@ -126,6 +147,10 @@ void loop() {
       if (interval > MIN_WINDOW_MS && interval < MAX_WINDOW_MS) {
         Serial.print("BEAT: ");
         Serial.println(MS_PER_SECOND / interval);
+        enqueueGoodBeat(currentTime);
+        if (giveFeedbackForBeat()) {
+          Serial.println("FEEDBACK");
+        }
       }
     }
   }
