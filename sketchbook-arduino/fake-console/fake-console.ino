@@ -7,17 +7,12 @@ PubSubClient client(espClient);
 String testUpper = String("asOne/testUpper");
 String testLower = String("asOne/testLower");
 
-int upperPin = 12;
-int lowerPin = 13;
+const int buttonPinUpper = 14;     // the number of the pushbutton pin
+int buttonStateUpper = 0;
+const int buttonPinLower = 16;     // the number of the pushbutton pin
+int buttonStateLower = 0;
 
 void setup() {
-  pinMode(upperPin, OUTPUT);
-  digitalWrite(upperPin, LOW);
-  pinMode(lowerPin, OUTPUT);
-  digitalWrite(lowerPin, LOW);
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
-  
   Serial.begin(115200);
   Serial.println();
 
@@ -45,29 +40,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
-
-  String checkTopic = String(topic);
-  char* p = (char*)malloc(length);
-  memcpy(p, payload, length);
-  String checkPayload = String(p);
-  
-  if (checkTopic.equals(testUpper)) {
-    Serial.print("do upper: ");
-    Serial.println(checkPayload.toInt());
-    doPoof(upperPin, checkPayload.toInt());
-  } else if (checkTopic.equals(testLower)) {
-    Serial.print("do lower: ");
-    Serial.println(checkPayload.toInt());
-    doPoof(lowerPin, checkPayload.toInt());
-  }
-}
-
-void doPoof(int pin, int duration) {
-  digitalWrite(pin, HIGH);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(duration);
-  digitalWrite(pin, LOW);
-  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void reconnect() {
@@ -80,10 +52,10 @@ void reconnect() {
       // Once connected, publish an announcement...
       //client.publish("outTopic", "hello world");
       // ... and resubscribe
-      client.subscribe("asOne/hello");
+      //client.subscribe("asOne/hello");
       client.subscribe(testUpper.c_str());
       client.subscribe(testLower.c_str());
-      client.subscribe("asOne/doPulse");
+      //client.subscribe("asOne/doPulse");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -94,11 +66,21 @@ void reconnect() {
   }
 }
 
-
 void loop() {
   if (!client.connected()) {
     reconnect();
   }
+  buttonStateLower = digitalRead(buttonPinLower);
+  buttonStateUpper = digitalRead(buttonPinUpper);
+  if (buttonStateLower == HIGH) {
+    client.publish(testLower.c_str(), "250");
+  } else {
+    
+  }
+  if (buttonStateUpper == HIGH) {
+    client.publish(testUpper.c_str(), "250");
+  } else {
+    
+  }
   client.loop();
 }
-
