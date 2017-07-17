@@ -2,10 +2,10 @@
 #define HWSERIAL Serial1
 
 // Sampling related constants
-const int SAMPLE_RATE_HZ = 60; // match 60fps on processing loop
+const int SAMPLE_RATE_HZ = 90;
 const int SAMPLE_DELAY_MS = 1000 / SAMPLE_RATE_HZ;
 const int FIFO_SIZE = SAMPLE_RATE_HZ / 2; // half second buffer
-const int LATEST_SIZE = 2;
+const int LATEST_SIZE = 3;
 const int GOOD_BEAT_QUEUE_SIZE = 3;
 const float MAX_BPM_DIFFERENCE_PERCENT = .10;
 
@@ -18,7 +18,7 @@ const int MAX_WINDOW_MS = MS_PER_SECOND / MIN_HEARTRATE_BPM;
 
 // Magic number: a large enough difference from average to trigger
 // beat detection. Empirically gathered.
-const int DIFFERENCE_THRESHOLD = 8;
+const int DIFFERENCE_THRESHOLD = 12;
 
 // known-bad identifier
 const int SENTINEL = 9999;
@@ -145,11 +145,13 @@ void loop() {
       int interval = currentTime - lastBeatMs;
       lastBeatMs = currentTime;
       if (interval > MIN_WINDOW_MS && interval < MAX_WINDOW_MS) {
-        Serial.print("BEAT: ");
-        Serial.println(MS_PER_SECOND / interval);
         enqueueGoodBeat(currentTime);
         if (giveFeedbackForBeat()) {
+          Serial.print("BEAT: ");
+          Serial.println(MS_PER_SECOND / interval);
           Serial.println("FEEDBACK");
+        } else {
+          Serial.println("NOBEAT");
         }
       }
     }
