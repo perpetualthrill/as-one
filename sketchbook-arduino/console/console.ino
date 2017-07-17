@@ -8,10 +8,11 @@ const int FIFO_SIZE = SAMPLE_RATE_HZ / 2; // half second buffer
 const int LATEST_SIZE = 2;
 
 // Timing related constants
-const int MAX_HEARTRATE_BPM = 150;
-const int MIN_WINDOW_MS = 60000 / MAX_HEARTRATE_BPM;
-const int MIN_HEARTRATE_BPM = 40;
-const int MAX_WINDOW_MS = 60000 / MIN_HEARTRATE_BPM;
+const int MS_PER_SECOND = 60000;
+const int MAX_HEARTRATE_BPM = 130;
+const int MIN_WINDOW_MS = MS_PER_SECOND / MAX_HEARTRATE_BPM;
+const int MIN_HEARTRATE_BPM = 50;
+const int MAX_WINDOW_MS = MS_PER_SECOND / MIN_HEARTRATE_BPM;
 
 // Magic number: a large enough difference from average to trigger
 // beat detection. Empirically gathered.
@@ -52,10 +53,10 @@ void setup() {
   intervalBuffer[2] = placeholder;
 
   // debounce
-  delay(1);
+  delay(10);
 }
 
-void enqueue(int value, int buff[], int buffSize) {
+void checkAndEnqueue(int value, int buff[], int buffSize) {
   for (int i = 1; i < buffSize; i++) {
     buff[i] = buff[i - 1];
   }
@@ -87,16 +88,18 @@ bool detectBeat() {
   return false;
 }
 
-// returns true if we are getting good data off the board
-bool bufferAndAverage(int val) {
-  enqueue(val, latest, LATEST_SIZE);
-  enqueue(val, fifo, FIFO_SIZE);
+void bufferValue(int val) {
+  checkAndEnqueue(val, latest, LATEST_SIZE);
+  checkAndEnqueue(val, fifo, FIFO_SIZE);
+}
+
+bool checkFifoForSentinel() {
   for (int i = 0; i < FIFO_SIZE; i++) {
     if (fifo[i] == SENTINEL) {
-      return false;
+      return true;
     }
   }
-  return true;
+  return false;
 }
 
 void loop() {
@@ -110,17 +113,21 @@ void loop() {
     }
     HWSERIAL.clear();
 
+    // output reading to USB
+    // Serial.print("LEVEL: ");
+    // Serial.println(val);
+
     // check for a detected beat
     int currentTime = millis();
-    if (bufferAndAverage(val) && detectBeat()) {
-      Serial.println(999);
+    bufferValue(val);
+    if (!checkFifoForSentinel() && detectBeat()) {
       int interval = currentTime - lastBeatMs;
       lastBeatMs = currentTime;
       if (interval > MIN_WINDOW_MS && interval < MAX_WINDOW_MS) {
-        Serial.println(111);
+        Serial.print("BEAT: ");
+        Serial.println(MS_PER_SECOND / interval);
       }
     }
-
   }
   delay(SAMPLE_DELAY_MS);
 }
