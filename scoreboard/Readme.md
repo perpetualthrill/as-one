@@ -1,7 +1,5 @@
 # Scoreboard
 
-![Scoreboard Diagram](diagram.png)
-
 ## MQTT Messages
 
 The Scoreboard connects to the MQTT broker, and will reconnect every 500 ms if disconnected.
@@ -34,3 +32,42 @@ The Scoreboard processes the following topics.
   * "asOne/score/leftBPM/direct": bytestream castable to CRGB[47]
 * "asOne/score/rightBPM": [0-199] current heartrate to display on right score
   * "asOne/score/rightBPM/direct": bytestream castable to CRGB[47]
+  
+## Physical Layout
+
+### Scoreboard Diagram 
+
+![Scoreboard Diagram](diagram.png)
+
+### Direct Addressing
+
+The "asOne/score/*/direct" topics are CGRB arrays encoded as bytestreams.  
+
+#### Logo
+
+> const byte nLogoLED = 22;
+> CRGB pixels[nLogoLED];
+> fill_rainbow(pixels, nLogoLED, 0);
+> mqtt.publish("asOne/score/logo/direct", (uint8_t *)pixels, sizeof(CRGB)*nLogoLED);
+
+#### Timer
+
+> const byte nTimerLED = 26;
+> CRGB pixels[nTimerLED];
+> fill_rainbow(pixels, nTimerLED, 0);
+> mqtt.publish("asOne/score/timer/direct", (uint8_t *)pixels, sizeof(CRGB)*nTimerLED);
+
+#### leftBPM
+
+> const byte nBPMLED = 47;
+> CRGB pixels[nBPMLED];
+> fill_rainbow(pixels, nBPMLED, 0);
+> mqtt.publish("asOne/score/leftBPM/direct", (uint8_t *)pixels, sizeof(CRGB)*nBPMLED);
+
+#### rightBPM
+
+> const byte nBPMLED = 47;
+> CRGB pixels[nBPMLED];
+> fill_rainbow(pixels, nBPMLED, 0);
+> mqtt.publish("asOne/score/rightBPM/direct", (uint8_t *)pixels, sizeof(CRGB)*nBPMLED);
+
