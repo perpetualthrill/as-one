@@ -337,6 +337,8 @@ void heartbeatMQTT() {
   }
 }
 
+// Layout: https://docs.google.com/spreadsheets/d/1Li9DfwNnN8ccxYK40BgAzFoFvAQTD7QX6ummpo726QA/edit#gid=0
+
 void testDigitL(byte val) {
   val = constrain(val, 0, 9);
 
