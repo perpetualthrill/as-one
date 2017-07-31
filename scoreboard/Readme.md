@@ -58,7 +58,6 @@ At a primative level, needing no access to `FastLED`:
     
     mqtt.publish("asOne/score/logo", (uint8_t *)logo, sizeof(logo));
 
-
 #### Direct Methods
 
 With direct methods, the Scoreboard processes CRGB arrays encoded to bytestream, allowing complete control of the LEDs directly.  See below for ordering.

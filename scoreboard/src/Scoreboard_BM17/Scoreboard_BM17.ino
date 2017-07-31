@@ -35,20 +35,21 @@ PubSubClient mqtt;
 byte state = 0;
 
 // track the logo
-const byte nLogoLED = 22;
+const byte nLogoLED = 15;
 const byte startLogo = 47;
 const byte stopLogo = startLogo + nLogoLED - 1;
 
 // track the timer
 const byte nTimerLED = 26;
-const byte startTimer = 71;
+const byte startTimer = 62;
 const byte stopTimer = startTimer + nTimerLED - 1;
 
 // track the left BPM
 byte leftBPM;
 const byte nLeftLED = 47;
-const byte startLeft = 98;
+const byte startLeft = 88;
 const byte stopLeft = startLeft + nLeftLED - 1;
+
 // track the right BPM
 byte rightBPM;
 const byte nRightLED = nLeftLED;
@@ -56,9 +57,7 @@ const byte startRight = 0;
 const byte stopRight = startRight + nRightLED - 1;
 
 // overall LED array
-const byte nWastedLED = 2;
-const byte wastedPosition[] = {70,97};
-CRGBArray < nWastedLED + nLogoLED + nTimerLED + nLeftLED + nRightLED > leds;
+CRGBArray < nLogoLED + nTimerLED + nLeftLED + nRightLED > leds;
 
 // track the need to do a FastLED.show();
 boolean haveUpdate = false;
@@ -228,16 +227,40 @@ void callback(char* topic, byte* payload, unsigned int length) {
     leftBPM = payload[0];
     Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
 
-    setLargeDigit(leftBPM%10, startLeft, CRGB::White, CRGB::Black);
-    setLargeDigit((leftBPM/10)%10, startTimer+nlDigit, CRGB::White, CRGB::Black);
+    // use Blue for both scores as the base color.
+    CRGB onColor = CRGB::Blue;
+    if( leftBPM > rightBPM) {
+      // HR too fast.  slow it down, and suggest that by blending in Red
+      byte redLevel = map(leftBPM-rightBPM, 0, 50, 32, 255);
+      onColor += CRGB(redLevel, 0, 0);
+    } else {
+      // HR too slow.  speed it up, and suggest that by blending in Green
+      byte greenLevel = map(rightBPM-leftBPM, 0, 50, 32, 255);
+      onColor += CRGB(0, greenLevel, 0);
+    }
+
+    setLargeDigit(leftBPM%10, startLeft, onColor, CRGB::Black);
+    setLargeDigit((leftBPM/10)%10, startTimer+nlDigit, onColor, CRGB::Black);
     // special case for hundreds digit
-    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds) = leftBPM/100 ? CRGB::White : CRGB::Black;
+    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds) = leftBPM/100 ? onColor : CRGB::Black;
     
   } else if (t.equals(msgLeftDirect)) {
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
   } else if (t.equals(msgRight)) {
     rightBPM = payload[0];
     Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
+ 
+    // use Blue for both scores as the base color.
+    CRGB onColor = CRGB::Blue;
+    if( rightBPM > leftBPM) {
+      // HR too fast.  slow it down, and suggest that by blending in Red
+      byte redLevel = map(rightBPM-leftBPM, 0, 50, 32, 255);
+      onColor += CRGB(redLevel, 0, 0);
+    } else {
+      // HR too slow.  speed it up, and suggest that by blending in Green
+      byte greenLevel = map(rightBPM-leftBPM, 0, 50, 32, 255);
+      onColor += CRGB(0, greenLevel, 0);
+    }
 
     setLargeDigit(rightBPM%10, startRight, CRGB::White, CRGB::Black);
     setLargeDigit((rightBPM/10)%10, startRight+nlDigit, CRGB::White, CRGB::Black);
