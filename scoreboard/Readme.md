@@ -33,6 +33,31 @@ With indirect methods, the Scoreboard will process high-level messages and trans
 * "asOne/score/leftBPM": [0-199] current heartrate to display on left score
 * "asOne/score/rightBPM": [0-199] current heartrate to display on right score
 
+`CRGB` is defined in the [FastLED library](https://github.com/FastLED/FastLED/wiki/Pixel-reference):
+
+    CRGB led;
+	led.red = 50; // byte value for red
+	led.green = 128; // byte value for green
+	led.blue = 255; // byte value for blue
+	
+So, to set the `logo` object to be a light green:
+
+    CRGB logo;
+	led.red = 0; // byte value for red
+	led.green = 255; // byte value for green
+	led.blue = 127; // byte value for blue
+    
+    mqtt.publish("asOne/score/logo", (uint8_t *)logo, sizeof(logo));
+
+At a primative level, needing no access to `FastLED`:
+
+    byte logo[3];
+	led[0] = 0; // byte value for red
+	led[1] = 255; // byte value for green
+	led[2] = 127; // byte value for blue
+    
+    mqtt.publish("asOne/score/logo", (uint8_t *)logo, sizeof(logo));
+
 
 #### Direct Methods
 
@@ -60,6 +85,16 @@ The "asOne/score/*/direct" topics are CGRB arrays encoded as bytestreams.
     fill_rainbow(pixels, nLogoLED, 0);
     mqtt.publish("asOne/score/logo/direct", (uint8_t *)pixels, sizeof(CRGB)*nLogoLED);
 
+As before, access to the `FastLED` library is not required:
+
+    const byte nLogoLED = 22;
+    byte pixels[nLogoLED][3];
+	led[0][0] = 0; // byte value for red
+	led[0][1] = 255; // byte value for green
+	led[0][2] = 127; // byte value for blue
+    
+    mqtt.publish("asOne/score/logo/direct", (uint8_t *)pixels, sizeof(pixels));
+	
 #### Timer
 
     const byte nTimerLED = 26;
@@ -80,4 +115,5 @@ The "asOne/score/*/direct" topics are CGRB arrays encoded as bytestreams.
     CRGB pixels[nBPMLED];
     fill_rainbow(pixels, nBPMLED, 0);
     mqtt.publish("asOne/score/rightBPM/direct", (uint8_t *)pixels, sizeof(CRGB)*nBPMLED);
+
 
