@@ -45,16 +45,19 @@ const byte startTimer = 71;
 const byte stopTimer = startTimer + nTimerLED - 1;
 
 // track the left BPM
+byte leftBPM;
 const byte nLeftLED = 47;
 const byte startLeft = 98;
 const byte stopLeft = startLeft + nLeftLED - 1;
 // track the right BPM
+byte rightBPM;
 const byte nRightLED = nLeftLED;
 const byte startRight = 0;
 const byte stopRight = startRight + nRightLED - 1;
 
 // overall LED array
 const byte nWastedLED = 2;
+const byte wastedPosition[] = {70,97};
 CRGBArray < nWastedLED + nLogoLED + nTimerLED + nLeftLED + nRightLED > leds;
 
 // track the need to do a FastLED.show();
@@ -68,6 +71,59 @@ boolean haveUpdate = false;
 
 // publish a heartbeat on this interval
 #define HEARTBEAT_INTERVAL 2000UL // ms
+
+// large segment displays
+const boolean T = true;
+const boolean F = false;
+const byte nlDigit = 20;
+const byte nlHundreds = 7;
+const boolean lDigit[10][nlDigit] = {
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, F, F, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T }, // 0
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, F, F, F, F, F, F, F, F, T, T, T, T, T, T, F, F, F, F, F }, // 1
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, T, T, T, T, T, T, F, F, T, T, T, T, T, T, F, F }, // 2
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, F, F, T, T, T, T, T, T, T, T, T, T, T, T, F, F }, // 3
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, F, F, F, F, F, T, T, T, T, T, T, F, F, T, T, T }, // 4
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, F, F, T, T, T, T, T, T, F, F, T, T, T, T, T, T }, // 5
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, T, T, T, T, T, T, T, T, F, F, T, T, T, T, T, T }, // 6
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, F, F, F, F, F, F, F, F, T, T, T, T, T, T, T, T, T, F, F }, // 7
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T }, // 8
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, F, F, F, F, F, T, T, T, T, T, T, T, T, T, T, T } // 9
+};
+// small segment displays
+const byte nsDigit = 13;
+const boolean sDigit[10][nsDigit] = {
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, F, T, T, T, T, T, T, T, T, T, T, T }, // 0
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, F, F, F, F, F, T, T, T, T, F, F, F }, // 1
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, T, T, T, T, F, T, T, T, T, F }, // 2
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, F, T, T, T, T, T, T, T, T, F }, // 3
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, F, F, F, T, T, T, T, F, T, T }, // 4
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, F, T, T, T, T, F, T, T, T, T }, // 5
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, T, T, T, T, T, F, T, T, T, T }, // 6
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, F, F, F, F, F, T, T, T, T, T, T, F }, // 7
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, T, T, T, T, T, T, T, T, T, T }, // 8
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, F, F, F, T, T, T, T, T, T, T } // 9
+};
+
 
 void setup() {
   Serial.begin(115200);
@@ -86,6 +142,9 @@ void setup() {
   Serial << F("packet size is=") << MQTT_MAX_PACKET_SIZE << endl;
 
   Serial << F("Scoreboard.  Startup complete.") << endl;
+
+  FastLED.setBrightness(255);
+  FastLED.clear(true);
 }
 
 void loop() {
@@ -108,7 +167,7 @@ void loop() {
   }
 }
 
-
+// the real meat of the work is done here, where we process messages.
 void callback(char* topic, byte* payload, unsigned int length) {
   // toggle the blue LED when we get a new message
   static boolean ledState = false;
@@ -144,27 +203,48 @@ void callback(char* topic, byte* payload, unsigned int length) {
   } else if (t.equals(msgLogo)) {
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, 1 );
 
-    Serial << F(" =");
-    Serial << F(" R:") << leds[startLogo].red;
-    Serial << F(" G:") << leds[startLogo].green;
-    Serial << F(" B:") << leds[startLogo].blue;
+//    Serial << F(" =");
+//    Serial << F(" R:") << leds[startLogo].red;
+//    Serial << F(" G:") << leds[startLogo].green;
+//    Serial << F(" B:") << leds[startLogo].blue;
 
   } else if (t.equals(msgLogoDirect)) {
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, nLogoLED );
 
-//    Serial << F(" =");
-//    Serial << F(" R:") << leds[startLogo + 4].red;
-//    Serial << F(" G:") << leds[startLogo + 4].green;
-//    Serial << F(" B:") << leds[startLogo + 4].blue;
+    //    Serial << F(" =");
+    //    Serial << F(" R:") << leds[startLogo + 4].red;
+    //    Serial << F(" G:") << leds[startLogo + 4].green;
+    //    Serial << F(" B:") << leds[startLogo + 4].blue;
 
   } else if (t.equals(msgTimer)) {
+    byte timer = payload[0];
+    Serial << F(" = ") << timer/10 << F(",") << timer %10;
+
+    setSmallDigit(timer%10, startTimer, CRGB::White, CRGB::Black);
+    setSmallDigit(timer/10, startTimer+nsDigit, CRGB::White, CRGB::Black);
   } else if (t.equals(msgTimerDirect)) {
     leds(startTimer, stopTimer) = CRGBSet( (CRGB*)payload, nTimerLED );
   } else if (t.equals(msgLeft)) {
+    leftBPM = payload[0];
+    Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
+
+    setLargeDigit(leftBPM%10, startLeft, CRGB::White, CRGB::Black);
+    setLargeDigit((leftBPM/10)%10, startTimer+nlDigit, CRGB::White, CRGB::Black);
+    // special case for hundreds digit
+    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds) = leftBPM/100 ? CRGB::White : CRGB::Black;
+    
   } else if (t.equals(msgLeftDirect)) {
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
   } else if (t.equals(msgRight)) {
-  } else if (t.equals(msgRightDirect)) {
+    rightBPM = payload[0];
+    Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
+
+    setLargeDigit(rightBPM%10, startRight, CRGB::White, CRGB::Black);
+    setLargeDigit((rightBPM/10)%10, startRight+nlDigit, CRGB::White, CRGB::Black);
+    // special case for hundreds digit
+    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds) = rightBPM/100 ? CRGB::White : CRGB::Black;
+    
+   } else if (t.equals(msgRightDirect)) {
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
   } else {
     haveUpdate = false;
@@ -174,8 +254,23 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial << endl;
 }
 
+void setSmallDigit(byte val, byte startPos, CRGB on, CRGB off) { 
+  val = constrain(val, 0, 9);
+  for( byte i=0; i<nsDigit; i++ ) {
+    leds[startPos+i] = sDigit[val][i] ? on : off;
+  }
+}
+
+void setLargeDigit(byte val, byte startPos, CRGB on, CRGB off) { 
+  val = constrain(val, 0, 9);
+  for( byte i=0; i<nlDigit; i++ ) {
+    leds[startPos+i] = lDigit[val][i] ? on : off;
+  }
+}
+
 void showScoreboard() {
   haveUpdate = false;
+  FastLED.show();
 }
 
 void connectWiFi() {
@@ -241,4 +336,29 @@ void heartbeatMQTT() {
     heartbeatInterval.reset();
   }
 }
+
+void testDigitL(byte val) {
+  val = constrain(val, 0, 9);
+
+  Serial << lDigit[val][17]<< lDigit[val][16] << lDigit[val][15] << lDigit[val][14] << endl;
+  Serial << lDigit[val][18]<<       '0'       <<       '0'       << lDigit[val][13] << endl;
+  Serial << lDigit[val][19]<<       '0'       <<       '0'       << lDigit[val][12] << endl;
+  Serial << lDigit[val][ 3]<< lDigit[val][ 2] << lDigit[val][ 1] << lDigit[val][ 0] << endl;
+  Serial << lDigit[val][ 4]<<       '0'       <<       '0'       << lDigit[val][11] << endl;
+  Serial << lDigit[val][ 5]<<       '0'       <<       '0'       << lDigit[val][10] << endl;
+  Serial << lDigit[val][ 6]<< lDigit[val][ 7] << lDigit[val][ 8] << lDigit[val][ 9] << endl;
+  Serial << endl;
+}
+
+void testDigitS(byte val) {
+  val = constrain(val, 0, 9);
+
+  Serial << sDigit[val][11]<< sDigit[val][10] << sDigit[val][ 9] << endl;
+  Serial << sDigit[val][12]<<       '0'       << sDigit[val][ 8] << endl;
+  Serial << sDigit[val][ 2]<< sDigit[val][ 1] << sDigit[val][ 0] << endl;
+  Serial << sDigit[val][ 3]<<       '0'       << sDigit[val][ 7] << endl;
+  Serial << sDigit[val][ 4]<< sDigit[val][ 5] << sDigit[val][ 6] << endl;
+  Serial << endl;
+}
+ 
 

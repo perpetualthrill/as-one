@@ -66,7 +66,7 @@ char msg[MQTT_MAX_PACKET_SIZE];
 #define RED_OFF HIGH
 
 // publish a heartbeat on this interval
-#define SEND_INTERVAL 1000UL // ms
+#define SEND_INTERVAL 500UL // ms
 
 void setup() {
   Serial.begin(115200);
@@ -98,21 +98,70 @@ void loop() {
       //      if( state > 2 ) state=0;
       //      sendState();
 
-      // testing msgLogo
-      //      static byte hue = 0;
-      //      hue = hue + 10;
-      //     CRGB pixel = CHSV(hue, 255, 255);
-      //      sendLogo(pixel);
+      static byte sendWhat = 99;
+      sendWhat += 1;
+      if(sendWhat > 3) sendWhat=0;
 
+      if(sendWhat==0) {
+
+        // testing msgLogo
+        static byte hue = 0;
+        hue = hue + 10;
+        CRGB pixel = CHSV(hue, 255, 255);
+        sendLogo(pixel);
+      }
+      
       // testing msgLogoDirect
-      static byte hue;
-      hue++;
-      CRGB pixels[nLogoLED];
-      fill_rainbow(pixels, nLogoLED, hue);
-      sendLogoDirect(pixels);
+      //      static byte hue;
+      //      hue++;
+      //      CRGB pixels[nLogoLED];
+      //      fill_rainbow(pixels, nLogoLED, hue);
+      //      sendLogoDirect(pixels);
 
-    }
+      if(sendWhat==1) {
+        // testing msgTimer
+        static byte timer = 99;
+        timer--;
+        if (timer > 99) timer = 99;
+        sendTimer(&timer);
+      }
+
+      if(sendWhat==2) {
+        // testing msgLeft
+        static byte leftBPM = 199;
+        leftBPM-=13;
+        if (leftBPM > 199) leftBPM = 199;
+        sendLeft(&leftBPM);
+      }
+
+      if(sendWhat==3) {
+        // testing msgRight
+        static byte rightBPM = 199;
+        rightBPM+=11;
+        if (rightBPM > 199) rightBPM = 0;
+        sendRight(&rightBPM);
+      }
+}
   }
+}
+
+
+void sendLeft(byte *bpm) {
+  const char* pub = "asOne/score/leftBPM";
+
+  mqtt.publish(pub, (uint8_t *)bpm, 1);
+}
+
+void sendRight(byte *bpm) {
+  const char* pub = "asOne/score/rightBPM";
+
+  mqtt.publish(pub, (uint8_t *)bpm, 1);
+}
+
+void sendTimer(byte *timer) {
+  const char* pub = "asOne/score/timer";
+
+  mqtt.publish(pub, (uint8_t *)timer, 1);
 }
 
 
@@ -166,6 +215,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
   const String msgLogo = "asOne/score/logo";
   const String msgLogoDirect = "asOne/score/logo/direct";
+  const String msgTimer = "asOne/score/timer";
 
   if (t.equals(msgLogo)) {
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, 1 );
@@ -179,13 +229,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, nLogoLED );
 
     Serial << F(" =");
-    Serial << F(" R:") << leds[startLogo+4].red;
-    Serial << F(" G:") << leds[startLogo+4].green;
-    Serial << F(" B:") << leds[startLogo+4].blue;
+    Serial << F(" R:") << leds[startLogo + 4].red;
+    Serial << F(" G:") << leds[startLogo + 4].green;
+    Serial << F(" B:") << leds[startLogo + 4].blue;
 
+  } else if (t.equals(msgTimer)) {
+    byte timer = payload[0];
+    Serial << F(" = ") << timer;
   }
-
-  Serial << endl << endl;
+  Serial << endl;
 }
 
 void connectWiFi() {
