@@ -26,6 +26,8 @@
 #include <PubSubClient.h>
 #include <Metro.h>
 #include <Streaming.h>
+// required prior to #include
+#define FASTLED_INTERRUPT_RETRY_COUNT 1
 #include <FastLED.h>
 
 WiFiClient espClient;
@@ -57,10 +59,18 @@ const byte startRight = 0;
 const byte stopRight = startRight + nRightLED - 1;
 
 // overall LED array
-CRGBArray < nLogoLED + nTimerLED + nLeftLED + nRightLED > leds;
+const byte nTotalLED = nLogoLED + nTimerLED + nLeftLED + nRightLED;
+CRGBArray <nTotalLED> leds;
+#define LEDS_PIN 3   // RDX0/GPIO3, labeled "RX"
 
 // track the need to do a FastLED.show();
 boolean haveUpdate = false;
+
+// small segment displays
+const byte nsDigit = 13;
+// large segment displays
+const byte nlDigit = 20;
+const byte nlHundreds = 7;
 
 // led pinouts and high/low definition for red one.
 #define BLUE_LED 2
@@ -71,65 +81,18 @@ boolean haveUpdate = false;
 // publish a heartbeat on this interval
 #define HEARTBEAT_INTERVAL 2000UL // ms
 
-// large segment displays
-const boolean T = true;
-const boolean F = false;
-const byte nlDigit = 20;
-const byte nlHundreds = 7;
-const boolean lDigit[10][nlDigit] = {
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, F, F, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T }, // 0
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, F, F, F, F, F, F, F, F, T, T, T, T, T, T, F, F, F, F, F }, // 1
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, T, T, T, T, T, T, T, T, T, F, F, T, T, T, T, T, T, F, F }, // 2
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, T, T, T, F, F, T, T, T, T, T, T, T, T, T, T, T, T, F, F }, // 3
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, T, T, T, F, F, F, F, F, T, T, T, T, T, T, F, F, T, T, T }, // 4
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, T, T, T, F, F, T, T, T, T, T, T, F, F, T, T, T, T, T, T }, // 5
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, T, T, T, T, T, T, T, T, T, T, T, F, F, T, T, T, T, T, T }, // 6
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, F, F, F, F, F, F, F, F, T, T, T, T, T, T, T, T, T, F, F }, // 7
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T }, // 8
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
-  { T, T, T, T, F, F, F, F, F, T, T, T, T, T, T, T, T, T, T, T } // 9
-};
-// small segment displays
-const byte nsDigit = 13;
-const boolean sDigit[10][nsDigit] = {
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, F, T, T, T, T, T, T, T, T, T, T, T }, // 0
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, F, F, F, F, F, T, T, T, T, F, F, F }, // 1
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, T, T, T, T, T, T, F, T, T, T, T, F }, // 2
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, T, T, F, T, T, T, T, T, T, T, T, F }, // 3
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, T, T, F, F, F, T, T, T, T, F, T, T }, // 4
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, T, T, F, T, T, T, T, F, T, T, T, T }, // 5
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, T, T, T, T, T, T, T, F, T, T, T, T }, // 6
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, F, F, F, F, F, T, T, T, T, T, T, F }, // 7
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, T, T, T, T, T, T, T, T, T, T, T, T }, // 8
-//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
-  { T, T, T, F, F, F, T, T, T, T, T, T, T } // 9
-};
-
+// set target FPS
+const unsigned long targetFPS = 30; // frames per second
 
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl << F("Scoreboard. Startup.") << endl;
 
   pinMode(BLUE_LED, OUTPUT);     // Initialize the blue LED pin as an output
-  pinMode(RED_LED, OUTPUT);     // Initialize the  red LED pin as an output
+  pinMode(RED_LED, OUTPUT);     // Initialize the red LED pin as an output
+
+  // don't allow the WiFi module to sleep.  this interacts with the FastLED library, so key.
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   mqtt.setClient(espClient);
 //  const char* mqtt_server = "broker.mqtt-dashboard.com";
@@ -138,13 +101,19 @@ void setup() {
   mqtt.setCallback(callback);
 
   CRGB foo[nLeftLED];
-  Serial << F("packet size must be >=") << sizeof(foo) << endl;
-  Serial << F("packet size is=") << MQTT_MAX_PACKET_SIZE << endl;
+  if( sizeof(foo) > MQTT_MAX_PACKET_SIZE ) {
+    Serial << F("packet size must be >=") << sizeof(foo) << endl;
+    Serial << F("packet size is=") << MQTT_MAX_PACKET_SIZE << endl;
+    Serial << F("HALTING.") << endl;
+    while(1);
+  }
 
-  Serial << F("Scoreboard.  Startup complete.") << endl;
-
+  FastLED.addLeds<WS2811, LEDS_PIN, RGB>(leds, nTotalLED).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(255);
   FastLED.clear(true);
+  
+  Serial << F("Scoreboard.  Startup complete.") << endl;
+
 }
 
 void loop() {
@@ -160,10 +129,8 @@ void loop() {
 
     // if we have an update, show it
     if ( haveUpdate ) showScoreboard();
-
     // send a heartbeat on an interval heartbeat interval
-    heartbeatMQTT();
-
+    else heartbeatMQTT();
   }
 }
 
@@ -228,45 +195,27 @@ void callback(char* topic, byte* payload, unsigned int length) {
     leftBPM = payload[0];
     Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
 
-    // use Blue for both scores as the base color.
-    CRGB onColor = CRGB::Blue;
-    if( leftBPM > rightBPM) {
-      // HR too fast.  slow it down, and suggest that by blending in Red
-      byte redLevel = map(leftBPM-rightBPM, 0, 50, 32, 255);
-      onColor += CRGB(redLevel, 0, 0);
-    } else {
-      // HR too slow.  speed it up, and suggest that by blending in Green
-      byte greenLevel = map(rightBPM-leftBPM, 0, 50, 32, 255);
-      onColor += CRGB(0, greenLevel, 0);
-    }
+    // on color based on BPM delta
+    CRGB onColor = setBPMColor(leftBPM, rightBPM);
 
     setLargeDigit(leftBPM%10, startLeft, onColor, CRGB::Black);
-    setLargeDigit((leftBPM/10)%10, startTimer+nlDigit, onColor, CRGB::Black);
+    setLargeDigit((leftBPM/10)%10, startLeft+nlDigit, onColor, CRGB::Black);
     // special case for hundreds digit
-    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds) = leftBPM/100 ? onColor : CRGB::Black;
+    leds(startRight+2*nlDigit, startLeft+2*nlDigit+nlHundreds) = leftBPM/100 ? onColor : CRGB::Black;
     
   } else if (t.equals(msgLeftDirect)) {
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
   } else if (t.equals(msgRight)) {
     rightBPM = payload[0];
     Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
- 
-    // use Blue for both scores as the base color.
-    CRGB onColor = CRGB::Blue;
-    if( rightBPM > leftBPM) {
-      // HR too fast.  slow it down, and suggest that by blending in Red
-      byte redLevel = map(rightBPM-leftBPM, 0, 50, 32, 255);
-      onColor += CRGB(redLevel, 0, 0);
-    } else {
-      // HR too slow.  speed it up, and suggest that by blending in Green
-      byte greenLevel = map(rightBPM-leftBPM, 0, 50, 32, 255);
-      onColor += CRGB(0, greenLevel, 0);
-    }
 
-    setLargeDigit(rightBPM%10, startRight, CRGB::White, CRGB::Black);
-    setLargeDigit((rightBPM/10)%10, startRight+nlDigit, CRGB::White, CRGB::Black);
+    // on color based on BPM delta
+    CRGB onColor = setBPMColor(rightBPM, leftBPM);
+
+    setLargeDigit(rightBPM%10, startRight, onColor, CRGB::Black);
+    setLargeDigit((rightBPM/10)%10, startRight+nlDigit, onColor, CRGB::Black);
     // special case for hundreds digit
-    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds) = rightBPM/100 ? CRGB::White : CRGB::Black;
+    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds) = rightBPM/100 ? onColor : CRGB::Black;
     
    } else if (t.equals(msgRightDirect)) {
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
@@ -278,21 +227,32 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial << endl;
 }
 
-void setSmallDigit(byte val, byte startPos, CRGB on, CRGB off) { 
-  val = constrain(val, 0, 9);
-  for( byte i=0; i<nsDigit; i++ ) {
-    leds[startPos+i] = sDigit[val][i] ? on : off;
+CRGB setBPMColor(byte b1, byte b2) {
+  // use Blue as the base
+  CRGB onColor = CRGB::Blue;
+  if( b1 > b2) {
+    // HR too fast.  slow it down, and suggest that by blending in Red
+    byte redLevel = map(constrain(b1-b2, 0, 50), 0, 50, 32, 255);
+    onColor += CRGB(redLevel, 0, 0);
+  } else {
+    // HR too slow.  speed it up, and suggest that by blending in Green
+    byte greenLevel = map(constrain(b2-b1, 0, 50), 0, 50, 32, 255);
+    onColor += CRGB(0, greenLevel, 0);
   }
-}
-
-void setLargeDigit(byte val, byte startPos, CRGB on, CRGB off) { 
-  val = constrain(val, 0, 9);
-  for( byte i=0; i<nlDigit; i++ ) {
-    leds[startPos+i] = lDigit[val][i] ? on : off;
-  }
+  return( onColor );
 }
 
 void showScoreboard() {
+  // could be getting a ton of update calls over the WiFi
+  // so, we let those aggregate before we do a show();
+  static Metro updateInterval(1000UL/targetFPS);
+
+  // no update?  bail out.
+  if( !haveUpdate ) return;
+  // not time for an update?  bail out.
+  if( !updateInterval.check() ) return;
+
+  updateInterval.reset();
   haveUpdate = false;
   FastLED.show();
 }
@@ -363,7 +323,57 @@ void heartbeatMQTT() {
   }
 }
 
-// Layout: https://docs.google.com/spreadsheets/d/1Li9DfwNnN8ccxYK40BgAzFoFvAQTD7QX6ummpo726QA/edit#gid=0
+// Segment layout: 
+// https://docs.google.com/spreadsheets/d/1Li9DfwNnN8ccxYK40BgAzFoFvAQTD7QX6ummpo726QA/edit#gid=0
+
+// large segment displays
+const boolean T = true;
+const boolean F = false;
+const boolean lDigit[10][nlDigit] = {
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, F, F, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T }, // 0
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, F, F, F, F, F, F, F, F, T, T, T, T, T, T, F, F, F, F, F }, // 1
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, T, T, T, T, T, T, F, F, T, T, T, T, T, T, F, F }, // 2
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, F, F, T, T, T, T, T, T, T, T, T, T, T, T, F, F }, // 3
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, F, F, F, F, F, T, T, T, T, T, T, F, F, T, T, T }, // 4
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, F, F, T, T, T, T, T, T, F, F, T, T, T, T, T, T }, // 5
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, T, T, T, T, T, T, T, T, F, F, T, T, T, T, T, T }, // 6
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, F, F, F, F, F, F, F, F, T, T, T, T, T, T, T, T, T, F, F }, // 7
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T }, // 8
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19
+  { T, T, T, T, F, F, F, F, F, T, T, T, T, T, T, T, T, T, T, T } // 9
+};
+// small segment displays
+const boolean sDigit[10][nsDigit] = {
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, F, T, T, T, T, T, T, T, T, T, T, T }, // 0
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, F, F, F, F, F, T, T, T, T, F, F, F }, // 1
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, T, T, T, T, F, T, T, T, T, F }, // 2
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, F, T, T, T, T, T, T, T, T, F }, // 3
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, F, F, F, T, T, T, T, F, T, T }, // 4
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, F, T, T, T, T, F, T, T, T, T }, // 5
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, T, T, T, T, T, F, T, T, T, T }, // 6
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, F, F, F, F, F, T, T, T, T, T, T, F }, // 7
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, T, T, T, T, T, T, T, T, T, T }, // 8
+//  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
+  { T, T, T, F, F, F, T, T, T, T, T, T, T } // 9
+};
 
 void testDigitL(byte val) {
   val = constrain(val, 0, 9);
@@ -389,4 +399,19 @@ void testDigitS(byte val) {
   Serial << endl;
 }
  
+
+void setSmallDigit(byte val, byte startPos, CRGB on, CRGB off) { 
+  val = constrain(val, 0, 9);
+  for( byte i=0; i<nsDigit; i++ ) {
+    leds[startPos+i] = sDigit[val][i] ? on : off;
+  }
+}
+
+void setLargeDigit(byte val, byte startPos, CRGB on, CRGB off) { 
+  val = constrain(val, 0, 9);
+  for( byte i=0; i<nlDigit; i++ ) {
+    leds[startPos+i] = lDigit[val][i] ? on : off;
+  }
+}
+
 
