@@ -61,7 +61,7 @@ const byte stopRight = startRight + nRightLED - 1;
 // overall LED array
 const byte nTotalLED = nLogoLED + nTimerLED + nLeftLED + nRightLED;
 CRGBArray <nTotalLED> leds;
-#define LEDS_PIN 3   // RDX0/GPIO3, labeled "RX"
+#define LEDS_PIN 3   // labeled "RX". Also totally fucks the ability to use the serial port.  not awesome.
 
 // track the need to do a FastLED.show();
 boolean haveUpdate = false;
@@ -110,8 +110,17 @@ void setup() {
 
   FastLED.addLeds<WS2811, LEDS_PIN, RGB>(leds, nTotalLED).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(255);
-  FastLED.clear(true);
+  leds.fill_solid(CRGB::Red);
+  FastLED.show();
+  delay(1000);
+  leds.fill_solid(CRGB::Green);
+  FastLED.show();
+  delay(1000);
+  leds.fill_solid(CRGB::Blue);
+  FastLED.show();
+  delay(1000);
   
+  FastLED.clear(true);
   Serial << F("Scoreboard.  Startup complete.") << endl;
 
 }
