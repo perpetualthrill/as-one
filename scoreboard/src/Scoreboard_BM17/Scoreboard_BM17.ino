@@ -27,6 +27,7 @@
 #include <Metro.h>
 #include <Streaming.h>
 // required prior to #include
+#define FASTLED_ESP8266_RAW_PIN_ORDER
 #define FASTLED_INTERRUPT_RETRY_COUNT 1
 #include <FastLED.h>
 
@@ -65,7 +66,8 @@ CRGBArray <nTotalLED> leds;
 // pin definitions
 #define PIN_LED_DMA_METHOD 3
 #define PIN_LED_UART_METHOD 2
-#define PIN_UNASSIGNED 15
+#define PIN_LED_GPIO_METHOD 15
+// select which; set the JUMPER!
 #define PIN_LED PIN_LED_UART_METHOD
 
 // track the need to do a FastLED.show();
@@ -78,7 +80,7 @@ const byte nlDigit = 20;
 const byte nlHundreds = 7;
 
 // led pinouts and high/low definition for red one.
-#define BLUE_LED 2
+#define BLUE_LED 2 // DO NOT USE 
 #define RED_LED 0
 #define RED_ON LOW
 #define RED_OFF HIGH
@@ -93,7 +95,6 @@ void setup() {
   Serial.begin(115200);
   Serial << endl << endl << F("Scoreboard. Startup.") << endl;
 
-  pinMode(BLUE_LED, OUTPUT);     // Initialize the blue LED pin as an output
   pinMode(RED_LED, OUTPUT);     // Initialize the red LED pin as an output
 
   // don't allow the WiFi module to sleep.  this interacts with the FastLED library, so key.
@@ -117,12 +118,15 @@ void setup() {
   FastLED.setBrightness(255);
   leds.fill_solid(CRGB::Red);
   FastLED.show();
+  Serial << F("Red.") << endl;
   delay(1000);
   leds.fill_solid(CRGB::Green);
   FastLED.show();
+  Serial << F("Green.") << endl;
   delay(1000);
   leds.fill_solid(CRGB::Blue);
   FastLED.show();
+  Serial << F("Blue.") << endl;
   delay(1000);
   
   FastLED.clear(true);
@@ -153,7 +157,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   // toggle the blue LED when we get a new message
   static boolean ledState = false;
   ledState = !ledState;
-  digitalWrite(BLUE_LED, ledState);
+  digitalWrite(RED_LED, ledState);
 
   // String class is much easier to work with
   String t = topic;

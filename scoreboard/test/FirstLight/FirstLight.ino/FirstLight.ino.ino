@@ -3,6 +3,8 @@
 // Use if you want to force non-accelerated pin access (hint: you really don't, it breaks lots of things)
 // #define FASTLED_FORCE_SOFTWARE_SPI
 // #define FASTLED_FORCE_SOFTWARE_PINS
+#define FASTLED_ESP8266_RAW_PIN_ORDER
+
 #include "FastLED.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +14,7 @@
 // 
 
 // How many leds are in the strip?
-#define NUM_LEDS 50
+#define NUM_LEDS 15
 
 // Data pin that led data will be written out over
 #define DATA_PIN 3
