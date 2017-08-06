@@ -2,7 +2,7 @@
 
 ## Wiring/PinOut
 
-![ESP8266 Breakout](datasheets/Adafruit ESP8266 Breakout.jpg)
+![ESP8266 Breakout](datasheets/Adafruit_ESP8266_Breakout.jpg)
 
 Two pins from the ESP8266 are connected for output to the WS2811 LED strings. 
 
