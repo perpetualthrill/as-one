@@ -1,5 +1,20 @@
 # Scoreboard
 
+## Wiring/PinOut
+
+![ESP8266 Breakout](datasheets/Adafruit ESP8266 Breakout.jpg)
+
+Two pins from the ESP8266 are connected for output to the WS2811 LED strings. 
+
+* RX/GPIO3/RXD0.  On the NodeMCU and Adafruit boards, this pin is labeled "RX".
+* D4/GPIO2/TXD1.  On the NodeMCU board, this pin is labeled "D4".  On the Adadruit board, this pin is labeled "#2".
+
+An additional pin from the ESP8266 is connected for future extension.
+
+* 15/GPIO15/TXD2.  On the Adafruit board, this pin is labeled "15".
+
+A 75HCT245 transceiver accepts "RX" on A1/2, "D4" on A2/3, "15" on A3/4.  Outputs from A1 and A2 are jumper-selectable and connect to the DATA line of the WS2811 LED strips via a 220 Ohm resistor.
+
 ## MQTT Messages
 
 The Scoreboard connects to the MQTT broker, and will reconnect every 500 ms if disconnected.
