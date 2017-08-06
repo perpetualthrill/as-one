@@ -61,7 +61,12 @@ const byte stopRight = startRight + nRightLED - 1;
 // overall LED array
 const byte nTotalLED = nLogoLED + nTimerLED + nLeftLED + nRightLED;
 CRGBArray <nTotalLED> leds;
-#define LEDS_PIN 3   // labeled "RX". Also totally fucks the ability to use the serial port.  not awesome.
+
+// pin definitions
+#define PIN_LED_DMA_METHOD 3
+#define PIN_LED_UART_METHOD 2
+#define PIN_UNASSIGNED 15
+#define PIN_LED PIN_LED_UART_METHOD
 
 // track the need to do a FastLED.show();
 boolean haveUpdate = false;
@@ -108,7 +113,7 @@ void setup() {
     while(1);
   }
 
-  FastLED.addLeds<WS2811, LEDS_PIN, RGB>(leds, nTotalLED).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<WS2811, PIN_LED, RGB>(leds, nTotalLED).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(255);
   leds.fill_solid(CRGB::Red);
   FastLED.show();
