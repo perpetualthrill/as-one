@@ -35,42 +35,51 @@ PubSubClient mqtt;
 byte state = 0;
 
 // track the logo
-const byte nLogoLED = 22;
+const byte nLogoLED = 15; // 15
 const byte startLogo = 47;
 const byte stopLogo = startLogo + nLogoLED - 1;
 
+// small segment displays
+const byte nsDigit = 13;
 // track the timer
-const byte nTimerLED = 26;
-const byte startTimer = 71;
+const byte nTimerLED = nsDigit + nsDigit; // 26
+const byte startTimer = 62;
 const byte stopTimer = startTimer + nTimerLED - 1;
 
+// large segment displays
+const byte nlDigit = 20;
+const byte nlHundreds = 7;
+
 // track the left BPM
-const byte nBPMLED = 47;
-const byte startLeft = 98;
-const byte stopLeft = startLeft + nBPMLED - 1;
+byte leftBPM;
+const byte nLeftLED = nlHundreds + nlDigit + nlDigit; // 47
+const byte startLeft = 88;
+const byte stopLeft = startLeft + nLeftLED - 1;
+
 // track the right BPM
+byte rightBPM;
+const byte nRightLED = nLeftLED; // 47
 const byte startRight = 0;
-const byte stopRight = startRight + nBPMLED - 1;
+const byte stopRight = startRight + nRightLED - 1;
 
 // overall LED array
-const byte nWastedLED = 2;
-CRGBArray < nWastedLED + nLogoLED + nTimerLED + nBPMLED + nBPMLED > leds;
+const byte nTotalLED = nLogoLED + nTimerLED + nLeftLED + nRightLED; // 135
+CRGBArray <nTotalLED> leds; // 3*135 = 405 bytes
 
 // send buffer
 char msg[MQTT_MAX_PACKET_SIZE];
 
 // led pinouts and high/low definition for red one.
-#define BLUE_LED 2
 #define RED_LED 0
 #define RED_ON LOW
 #define RED_OFF HIGH
 
-// publish a heartbeat on this interval
-#define SEND_INTERVAL 33UL // ms
+// publish on this interval
+#define TARGET_FPS 1UL // fps
+#define SEND_INTERVAL 1000UL/TARGET_FPS/4UL // ms
 
 void setup() {
   Serial.begin(115200);
-  pinMode(BLUE_LED, OUTPUT);     // Initialize the blue LED pin as an output
   pinMode(RED_LED, OUTPUT);     // Initialize the  red LED pin as an output
 
   mqtt.setClient(espClient);
@@ -130,15 +139,15 @@ void loop() {
       if(sendWhat==2) {
         // testing msgLeft
         static byte leftBPM = 199;
-        leftBPM-=13;
+        leftBPM-=1;
         if (leftBPM > 199) leftBPM = 199;
         sendLeft(&leftBPM);
       }
 
       if(sendWhat==3) {
         // testing msgRight
-        static byte rightBPM = 199;
-        rightBPM+=11;
+        static byte rightBPM = 0;
+        rightBPM+=1;
         if (rightBPM > 199) rightBPM = 0;
         sendRight(&rightBPM);
       }
@@ -203,7 +212,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   // toggle the blue LED when we get a new message
   static boolean ledState = false;
   ledState = !ledState;
-  digitalWrite(BLUE_LED, ledState);
+  digitalWrite(RED_LED, ledState);
 
   // String class is much easier to work with
   String t = topic;

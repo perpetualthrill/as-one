@@ -12,7 +12,7 @@
         - 1: active/playing.  scoreboard will process the following subscriptions
         - 2: won/flames.  scoreboard will do some (garish) fanfare while the flames are shooting
       - "asOne/score/logo": bytestream castable to CRGB, applied to all LEDs in logo
-        - "asOne/score/logo/direct": bytestream castable to CRGB[22]
+        - "asOne/score/logo/direct": bytestream castable to CRGB[15]
       - "asOne/score/timer": [0-99] current timer to display on the countdown
         - "asOne/score/timer/direct: bytestream castable to CRGB[26]
       - "asOne/score/leftBPM": [0-199] current heartrate to display on left score
@@ -42,20 +42,26 @@ const byte nLogoLED = 15;
 const byte startLogo = 47;
 const byte stopLogo = startLogo + nLogoLED - 1;
 
+// small segment displays
+const byte nsDigit = 13;
 // track the timer
-const byte nTimerLED = 26;
+const byte nTimerLED = nsDigit + nsDigit; // 26
 const byte startTimer = 62;
 const byte stopTimer = startTimer + nTimerLED - 1;
 
+// large segment displays
+const byte nlDigit = 20;
+const byte nlHundreds = 7;
+
 // track the left BPM
 byte leftBPM;
-const byte nLeftLED = 47;
+const byte nLeftLED = nlHundreds + nlDigit + nlDigit; // 47
 const byte startLeft = 88;
 const byte stopLeft = startLeft + nLeftLED - 1;
 
 // track the right BPM
 byte rightBPM;
-const byte nRightLED = nLeftLED;
+const byte nRightLED = nLeftLED; // 47
 const byte startRight = 0;
 const byte stopRight = startRight + nRightLED - 1;
 
@@ -72,12 +78,6 @@ CRGBArray <nTotalLED> leds;
 
 // track the need to do a FastLED.show();
 boolean haveUpdate = false;
-
-// small segment displays
-const byte nsDigit = 13;
-// large segment displays
-const byte nlDigit = 20;
-const byte nlHundreds = 7;
 
 // led pinouts and high/low definition for red one.
 #define BLUE_LED 2 // DO NOT USE 
@@ -145,6 +145,23 @@ void loop() {
     // look for a message
     mqtt.loop();
 
+    switch(state) {
+      case 0: // idle
+        static byte idleHue = 0;
+        idleHue++;
+        leds.fill_rainbow(idleHue);
+        haveUpdate = true;
+        break;
+      case 1: // active/playing
+        // wait for messages to process
+        break;
+      case 2: // won/flames
+        // increment up to White
+        leds.addToRGB(16);
+        haveUpdate = true;
+        break;
+    }
+
     // if we have an update, show it
     if ( haveUpdate ) showScoreboard();
     // send a heartbeat on an interval heartbeat interval
@@ -183,7 +200,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
   const String msgRightDirect = "asOne/score/rightBPM/direct";
 
   if ( t.equals(msgState) ) {
-    state = String((char*)payload).toInt();
+    state = payload[0];
+    FastLED.clear(); // clear the LEDs
     Serial << F(" = ") << state;
   } else if (t.equals(msgLogo)) {
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, 1 );
