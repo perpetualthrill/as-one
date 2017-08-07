@@ -83,7 +83,7 @@ void setup() {
   pinMode(RED_LED, OUTPUT);     // Initialize the  red LED pin as an output
 
   mqtt.setClient(espClient);
-//  const char* mqtt_server = "broker.mqtt-dashboard.com";
+  //  const char* mqtt_server = "broker.mqtt-dashboard.com";
   const char* mqtt_server = "asone-console";
   mqtt.setServer(mqtt_server, 1883);
   mqtt.setCallback(callback);
@@ -107,20 +107,20 @@ void loop() {
       //      state += 1;
       //      if( state > 2 ) state=0;
       //      sendState();
-
+      updateInterval.reset();
+      
       static byte sendWhat = 99;
       sendWhat += 1;
-      if(sendWhat > 3) sendWhat=0;
+      if (sendWhat > 3) sendWhat = 0;
 
-      if(sendWhat==0) {
-
+      if (sendWhat == 0) {
         // testing msgLogo
         static byte hue = 0;
-        hue = hue + 10;
+        hue = hue + 1;
         CRGB pixel = CHSV(hue, 255, 255);
         sendLogo(pixel);
       }
-      
+
       // testing msgLogoDirect
       //      static byte hue;
       //      hue++;
@@ -128,7 +128,7 @@ void loop() {
       //      fill_rainbow(pixels, nLogoLED, hue);
       //      sendLogoDirect(pixels);
 
-      if(sendWhat==1) {
+      if (sendWhat == 1) {
         // testing msgTimer
         static byte timer = 99;
         timer--;
@@ -136,22 +136,22 @@ void loop() {
         sendTimer(&timer);
       }
 
-      if(sendWhat==2) {
+      if (sendWhat == 2) {
         // testing msgLeft
         static byte leftBPM = 199;
-        leftBPM-=1;
+        leftBPM -= 1;
         if (leftBPM > 199) leftBPM = 199;
         sendLeft(&leftBPM);
       }
 
-      if(sendWhat==3) {
+      if (sendWhat == 3) {
         // testing msgRight
         static byte rightBPM = 0;
-        rightBPM+=1;
+        rightBPM += 1;
         if (rightBPM > 199) rightBPM = 0;
         sendRight(&rightBPM);
       }
-}
+    }
   }
 }
 
@@ -255,8 +255,8 @@ void connectWiFi() {
   delay(10);
 
   // Update these.
-//  const char* ssid = "Looney_Ext";
-//  const char* password = "TinyandTooney";
+  //  const char* ssid = "Looney_Ext";
+  //  const char* password = "TinyandTooney";
   const char* ssid = "AsOne";
   const char* password = "fuckthapolice";
 

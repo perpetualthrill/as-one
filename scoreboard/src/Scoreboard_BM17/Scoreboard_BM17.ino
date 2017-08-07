@@ -35,7 +35,7 @@ WiFiClient espClient;
 PubSubClient mqtt;
 
 // track the state
-byte state = 0;
+byte state = 1;
 
 // track the logo
 const byte nLogoLED = 15;
@@ -54,13 +54,13 @@ const byte nlDigit = 20;
 const byte nlHundreds = 7;
 
 // track the left BPM
-byte leftBPM;
+byte leftBPM=100;
 const byte nLeftLED = nlHundreds + nlDigit + nlDigit; // 47
 const byte startLeft = 88;
 const byte stopLeft = startLeft + nLeftLED - 1;
 
 // track the right BPM
-byte rightBPM;
+byte rightBPM=100;
 const byte nRightLED = nLeftLED; // 47
 const byte startRight = 0;
 const byte stopRight = startRight + nRightLED - 1;
@@ -128,6 +128,10 @@ void setup() {
   FastLED.show();
   Serial << F("Blue.") << endl;
   delay(1000);
+  leds.fill_solid(CRGB::White);
+  FastLED.show();
+  Serial << F("Blue.") << endl;
+  delay(5000);
   
   FastLED.clear(true);
   Serial << F("Scoreboard.  Startup complete.") << endl;
@@ -204,12 +208,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     FastLED.clear(); // clear the LEDs
     Serial << F(" = ") << state;
   } else if (t.equals(msgLogo)) {
-    leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, 1 );
+    CRGB color = CRGB(payload[0], payload[1], payload[2]);
+    leds(startLogo, stopLogo).fill_solid(color);
 
-//    Serial << F(" =");
-//    Serial << F(" R:") << leds[startLogo].red;
-//    Serial << F(" G:") << leds[startLogo].green;
-//    Serial << F(" B:") << leds[startLogo].blue;
+    Serial << F(" =");
+    Serial << F(" R:") << leds[startLogo].red;
+    Serial << F(" G:") << leds[startLogo].green;
+    Serial << F(" B:") << leds[startLogo].blue;
 
   } else if (t.equals(msgLogoDirect)) {
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, nLogoLED );
@@ -233,11 +238,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
     // on color based on BPM delta
     CRGB onColor = setBPMColor(leftBPM, rightBPM);
-
+//    onColor = CRGB::Blue;
+    
     setLargeDigit(leftBPM%10, startLeft, onColor, CRGB::Black);
     setLargeDigit((leftBPM/10)%10, startLeft+nlDigit, onColor, CRGB::Black);
     // special case for hundreds digit
-    leds(startRight+2*nlDigit, startLeft+2*nlDigit+nlHundreds) = leftBPM/100 ? onColor : CRGB::Black;
+    leds(startLeft+2*nlDigit, startLeft+2*nlDigit+nlHundreds-1) = leftBPM/100 ? onColor : CRGB::Black;
     
   } else if (t.equals(msgLeftDirect)) {
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
@@ -251,7 +257,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     setLargeDigit(rightBPM%10, startRight, onColor, CRGB::Black);
     setLargeDigit((rightBPM/10)%10, startRight+nlDigit, onColor, CRGB::Black);
     // special case for hundreds digit
-    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds) = rightBPM/100 ? onColor : CRGB::Black;
+    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds-1) = rightBPM/100 ? onColor : CRGB::Black;
     
    } else if (t.equals(msgRightDirect)) {
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
