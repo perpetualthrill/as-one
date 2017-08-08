@@ -1,5 +1,6 @@
-// Teensy 3.0 -- Pin 0 = RX, Pin 1 = TX
-#define HWSERIAL Serial1
+// Teensy 3.2 
+// Serial1: Pin 0 = RX, Pin 1 = TX
+// Serial2: RX on 9, TX on 10
 
 // Sampling related constants
 const int SAMPLE_RATE_HZ = 90;
@@ -36,8 +37,10 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
+  Serial.println("HELLO ON SERIAL");
+
   // set the data rate for the olimex uart
-  HWSERIAL.begin(115200);
+  Serial1.begin(115200);
 
   // zero out found beats
   for (int i = 0; i < GOOD_BEAT_QUEUE_SIZE; i++) {
@@ -125,18 +128,18 @@ bool giveFeedbackForBeat() {
 
 void loop() {
   // Get value from mod-ekg
-  if (HWSERIAL.available()) {
+  if (Serial1.available()) {
     int bytecount = 0;
     int val = -1;
-    while (HWSERIAL.available()) {
-      val = HWSERIAL.read();
+    while (Serial1.available()) {
+      val = Serial1.read();
       bytecount++;
     }
-    HWSERIAL.clear();
+    Serial1.clear();
 
     // output reading to USB
-    // Serial.print("LEVEL: ");
-    // Serial.println(val);
+    Serial.print("RIGHT: ");
+    Serial.println(val);
 
     // check for a detected beat
     int currentTime = millis();
