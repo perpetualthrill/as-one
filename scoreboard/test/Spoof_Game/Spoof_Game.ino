@@ -12,7 +12,7 @@
         - 1: active/playing.  scoreboard will process the following subscriptions
         - 2: won/flames.  scoreboard will do some (garish) fanfare while the flames are shooting
       - "asOne/score/logo": bytestream castable to CRGB, applied to all LEDs in logo
-        - "asOne/score/logo/direct": bytestream castable to CRGB[22]
+        - "asOne/score/logo/direct": bytestream castao CRGB[22]
       - "asOne/score/timer": [0-99] current timer to display on the countdown
         - "asOne/score/timer/direct: bytestream castable to CRGB[26]
       - "asOne/score/leftBPM": [0-199] current heartrate to display on left score
@@ -75,7 +75,7 @@ char msg[MQTT_MAX_PACKET_SIZE];
 #define RED_OFF HIGH
 
 // publish on this interval
-#define TARGET_FPS 1UL // fps
+#define TARGET_FPS 2UL // fps
 #define SEND_INTERVAL 1000UL/TARGET_FPS/4UL // ms
 
 void setup() {

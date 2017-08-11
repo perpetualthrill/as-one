@@ -270,8 +270,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 CRGB setBPMColor(byte b1, byte b2) {
+/*
   // use Blue as the base
   CRGB onColor = CRGB::Blue;
+  onColor -= 128;
   if( b1 > b2) {
     // HR too fast.  slow it down, and suggest that by blending in Red
     byte redLevel = map(constrain(b1-b2, 0, 50), 0, 50, 32, 255);
@@ -282,6 +284,12 @@ CRGB setBPMColor(byte b1, byte b2) {
     onColor += CRGB(0, greenLevel, 0);
   }
   return( onColor );
+*/
+  int deltaBPM = b1 - b2; // positive if b1 > b2
+  int hue = HUE_GREEN - deltaBPM; // Green if they're equal.
+  hue = constrain(hue, HUE_RED, HUE_BLUE); // Red: slow down; Blue: speed up
+  CRGB color = CHSV(hue, 255, 255);
+  return(color);
 }
 
 void showScoreboard() {
