@@ -121,7 +121,19 @@ boolean haveUpdate = false;
 // set target FPS
 const unsigned long targetFPS = 30; // frames per second
 
+// for temporal dithering
+CRGBArray <nTotalLED> previousLeds;
+CRGBArray <nTotalLED> errorLeds;
 
+struct ditherTiming {
+  unsigned long lastUpdateMillis;
+  unsigned long avgUpdateMillis;
+};
+
+struct ditherTiming logoDitherTiming;
+struct ditherTiming timerDitherTiming;
+struct ditherTiming leftDitherTiming;
+struct ditherTiming rightDitherTiming;
 
 void setup() {
   Serial.begin(115200);
@@ -249,6 +261,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
       Serial << "ignored";
     } else {
       CRGB color = CRGB(payload[0], payload[1], payload[2]);
+
+      updateDithering(startLogo, stopLogo, &logoDitherTiming);
       leds(startLogo, stopLogo).fill_solid(color);
 
       Serial << F(" =");
@@ -258,6 +272,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     }
 
   } else if (t.equals(msgLogoDirect)) {
+    updateDithering(startLogo, stopLogo, &logoDitherTiming);
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, nLogoLED );
 
     //    Serial << F(" =");
@@ -272,10 +287,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
       byte timer = payload[0];
       Serial << F(" = ") << timer/10 << F(",") << timer %10;
 
+      updateDithering(startTimer, stopTimer, &timerDitherTiming);
       setSmallDigit(timer%10, startTimer, CRGB::White, CRGB::Black);
       setSmallDigit(timer/10, startTimer+nsDigit, CRGB::White, CRGB::Black);
     }
   } else if (t.equals(msgTimerDirect)) {
+    updateDithering(startTimer, stopTimer, &timerDitherTiming);
     leds(startTimer, stopTimer) = CRGBSet( (CRGB*)payload, nTimerLED );
   } else if (t.equals(msgLeft)) {
     if(directOnly){
@@ -283,6 +300,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
     } else {
       leftBPM = payload[0];
       Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
+
+      updateDithering(startLeft, stopLeft, &leftDitherTiming);
 
       // on color based on BPM delta
       CRGB onColor = setBPMColor(leftBPM, rightBPM);
@@ -294,6 +313,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       leds(startLeft+2*nlDigit, startLeft+2*nlDigit+nlHundreds-1) = leftBPM/100 ? onColor : CRGB::Black;
     }
   } else if (t.equals(msgLeftDirect)) {
+    updateDithering(startLeft, stopLeft, &leftDitherTiming);
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
   } else if (t.equals(msgRight)) {
     if(directOnly){
@@ -301,6 +321,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
     } else {
       rightBPM = payload[0];
       Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
+
+      updateDithering(startRight, stopRight, &rightDitherTiming);
 
       // on color based on BPM delta
       CRGB onColor = setBPMColor(rightBPM, leftBPM);
@@ -311,6 +333,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds-1) = rightBPM/100 ? onColor : CRGB::Black;
     }
   } else if (t.equals(msgRightDirect)) {
+    updateDithering(startRight, stopRight, &rightDitherTiming);
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
   } else if (t.equals(msgDirectOnly)) {
     directOnly = payload[0];
@@ -665,4 +688,20 @@ byte colorValue(int i, unsigned long nowMillis) {
   }
 
   return 1; // FIXME
+}
+
+void updateDithering(byte start, byte stop, struct ditherTiming *myDitherTiming) {
+  previousLeds(start, stop) = leds(start, stop);
+  updateDitherTiming(myDitherTiming);
+}
+
+void updateDitherTiming(struct ditherTiming *myDitherTiming) {
+  unsigned long now = millis();
+  unsigned long elapsed = now - myDitherTiming->lastUpdateMillis;
+  if(myDitherTiming->avgUpdateMillis == 0) {
+    myDitherTiming->avgUpdateMillis = elapsed;
+  } else {
+    myDitherTiming->avgUpdateMillis = (myDitherTiming->avgUpdateMillis + elapsed) / 2;
+  }
+  myDitherTiming->lastUpdateMillis = now;
 }
