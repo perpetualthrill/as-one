@@ -573,5 +573,26 @@ static const uint8_t uartBitPatterns[4] = {
   0b000100, // On wire: 1 110 111 0 [NeoPixel reads 11]
 };
 
+static inline uint8_t getTxLengthForUART1()
+{
+  return (U1S >> USTXC) & 0xff;
+}
+
+
 void writeUART() {
+  static bool pausing = true;
+  if (getTxLengthForUART1() == 0) {
+    if(!pausing) {
+      pausing = true;
+      uart_pause_until_micros = micros() + UartWaitBetweenUpdatesMicros;
+    } else {
+      if(uart_pause_until_micros <= micros()) {
+        pausing = false;
+        fillUART();
+      }
+    }
+  }
+}
+
+void fillUART() {
 }
