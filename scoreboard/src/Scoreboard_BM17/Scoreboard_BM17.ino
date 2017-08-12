@@ -373,7 +373,8 @@ void connectMQTT() {
   digitalWrite(RED_LED, RED_ON);
 
   const char* id = "asOneScoreboard";
-  const char* sub = "asOne/score/#";
+  const char* scoreSub = "asOne/score/#";
+  const char* configSub = "asOne/scoreboard/#";
 
   static Metro connectInterval(500UL);
   if ( connectInterval.check() ) {
@@ -383,10 +384,11 @@ void connectMQTT() {
     if (mqtt.connect(id)) {
       Serial << F("Connected.") << endl;
       // subscribe
-      Serial << F("Subscribing: ") << sub << endl;
-      mqtt.subscribe(sub);
+      Serial << F("Subscribing: ") << scoreSub << endl;
+      mqtt.subscribe(scoreSub);
+      Serial << F("Subscribing: ") << configSub << endl;
+      mqtt.subscribe(configSub);
       digitalWrite(RED_LED, RED_OFF);
-
     } else {
       Serial << F("Failed. state=") << mqtt.state() << endl;
     }
