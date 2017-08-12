@@ -228,13 +228,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
     FastLED.clear(); // clear the LEDs
     Serial << F(" = ") << state;
   } else if (t.equals(msgLogo)) {
-    CRGB color = CRGB(payload[0], payload[1], payload[2]);
-    leds(startLogo, stopLogo).fill_solid(color);
+    if(directOnly){
+      Serial << "ignored";
+    } else {
+      CRGB color = CRGB(payload[0], payload[1], payload[2]);
+      leds(startLogo, stopLogo).fill_solid(color);
 
-    Serial << F(" =");
-    Serial << F(" R:") << leds[startLogo].red;
-    Serial << F(" G:") << leds[startLogo].green;
-    Serial << F(" B:") << leds[startLogo].blue;
+      Serial << F(" =");
+      Serial << F(" R:") << leds[startLogo].red;
+      Serial << F(" G:") << leds[startLogo].green;
+      Serial << F(" B:") << leds[startLogo].blue;
+    }
 
   } else if (t.equals(msgLogoDirect)) {
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, nLogoLED );
@@ -245,40 +249,50 @@ void callback(char* topic, byte* payload, unsigned int length) {
     //    Serial << F(" B:") << leds[startLogo + 4].blue;
 
   } else if (t.equals(msgTimer)) {
-    byte timer = payload[0];
-    Serial << F(" = ") << timer/10 << F(",") << timer %10;
+    if(directOnly){
+      Serial << "ignored";
+    } else {
+      byte timer = payload[0];
+      Serial << F(" = ") << timer/10 << F(",") << timer %10;
 
-    setSmallDigit(timer%10, startTimer, CRGB::White, CRGB::Black);
-    setSmallDigit(timer/10, startTimer+nsDigit, CRGB::White, CRGB::Black);
+      setSmallDigit(timer%10, startTimer, CRGB::White, CRGB::Black);
+      setSmallDigit(timer/10, startTimer+nsDigit, CRGB::White, CRGB::Black);
+    }
   } else if (t.equals(msgTimerDirect)) {
     leds(startTimer, stopTimer) = CRGBSet( (CRGB*)payload, nTimerLED );
   } else if (t.equals(msgLeft)) {
-    leftBPM = payload[0];
-    Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
+    if(directOnly){
+      Serial << "ignored";
+    } else {
+      leftBPM = payload[0];
+      Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
 
-    // on color based on BPM delta
-    CRGB onColor = setBPMColor(leftBPM, rightBPM);
-//    onColor = CRGB::Blue;
-    
-    setLargeDigit(leftBPM%10, startLeft, onColor, CRGB::Black);
-    setLargeDigit((leftBPM/10)%10, startLeft+nlDigit, onColor, CRGB::Black);
-    // special case for hundreds digit
-    leds(startLeft+2*nlDigit, startLeft+2*nlDigit+nlHundreds-1) = leftBPM/100 ? onColor : CRGB::Black;
-    
+      // on color based on BPM delta
+      CRGB onColor = setBPMColor(leftBPM, rightBPM);
+  //    onColor = CRGB::Blue;
+      
+      setLargeDigit(leftBPM%10, startLeft, onColor, CRGB::Black);
+      setLargeDigit((leftBPM/10)%10, startLeft+nlDigit, onColor, CRGB::Black);
+      // special case for hundreds digit
+      leds(startLeft+2*nlDigit, startLeft+2*nlDigit+nlHundreds-1) = leftBPM/100 ? onColor : CRGB::Black;
+    }
   } else if (t.equals(msgLeftDirect)) {
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
   } else if (t.equals(msgRight)) {
-    rightBPM = payload[0];
-    Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
+    if(directOnly){
+      Serial << "ignored";
+    } else {
+      rightBPM = payload[0];
+      Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
 
-    // on color based on BPM delta
-    CRGB onColor = setBPMColor(rightBPM, leftBPM);
+      // on color based on BPM delta
+      CRGB onColor = setBPMColor(rightBPM, leftBPM);
 
-    setLargeDigit(rightBPM%10, startRight, onColor, CRGB::Black);
-    setLargeDigit((rightBPM/10)%10, startRight+nlDigit, onColor, CRGB::Black);
-    // special case for hundreds digit
-    leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds-1) = rightBPM/100 ? onColor : CRGB::Black;
-    
+      setLargeDigit(rightBPM%10, startRight, onColor, CRGB::Black);
+      setLargeDigit((rightBPM/10)%10, startRight+nlDigit, onColor, CRGB::Black);
+      // special case for hundreds digit
+      leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds-1) = rightBPM/100 ? onColor : CRGB::Black;
+    }
    } else if (t.equals(msgRightDirect)) {
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
   } else {
