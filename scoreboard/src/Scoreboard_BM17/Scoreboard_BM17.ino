@@ -224,6 +224,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   const String msgRightDirect = "asOne/score/rightBPM/direct";
 
   const String msgDirectOnly = "asOne/scoreboard/directOnly";
+  const String msgAcceleration = "asOne/scoreboard/acceleration";
 
   if ( t.equals(msgState) ) {
     state = payload[0];
@@ -299,6 +300,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
   } else if (t.equals(msgDirectOnly)) {
     directOnly = payload[0];
+    haveUpdate = false;
+    Serial << F(" = ") << state;
+  } else if (t.equals(msgAcceleration)) {
+    acceleration = payload[0];
     haveUpdate = false;
     Serial << F(" = ") << state;
   } else {
