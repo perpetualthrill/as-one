@@ -25,11 +25,12 @@
         - 0: local display.  scoreboard will render all messages
         - 1: direct only.  another process is responsible for translating numeric values into direct RGB values
 
-      - "asOne/scoreboard/acceleration": [0,1,2,3] LED driver mode
+      - "asOne/scoreboard/acceleration": [0,1,2,3,4] LED driver mode
         - 0: use processor-based FastLED library
         - 1: use UART to drive LEDs
         - 2: use UART with gamma correction
-        - 3: use UART with gamma correction and temporal dithering
+        - 3: use UART with gamma correction and linear temporal interpolation
+        - 4: use UART with gamma correction and temporal dithering
 
    - publishes:
       - "asOne/openPixelControl/scoreboardAddress": String. IP address the scoreboard is listening on for OPC messages
@@ -687,7 +688,55 @@ byte colorValue(int i, unsigned long nowMillis) {
     return gamma16[requestedColor] / 256;
   }
 
-  return 1; // FIXME
+  byte previousColor = previousLeds[pixelNum][colorNum];
+
+  struct ditherTiming *myDitherTiming = ditherTimingForPixel(pixelNum);
+
+  float delta = 1;
+  if(myDitherTiming->avgUpdateMillis) {
+    delta = (nowMillis - myDitherTiming->lastUpdateMillis) / (float)myDitherTiming->avgUpdateMillis;
+  }
+  if(delta < 0) delta = 0;
+  if(delta > 1) delta = 1;
+
+  // Linear interpolation between the requested color and the previous color
+  unsigned int value16 = delta * gamma16[requestedColor] + (1.0 - delta) * gamma16[previousColor];
+
+  if(acceleration == 3) {
+    return value16 / 256;
+  }
+
+  int error = 127 - errorLeds[pixelNum][colorNum];
+
+  byte value8 = (value16 >> 8) & 0xFF;
+  error = (value16 & 0xFF) + error;
+
+  // Dither the linear interpolation with the accumulated rounding errors of the previous values
+  if(error > 0 && value8 < 255) {
+    value8 += 1;
+    error -= 256;
+  }
+  errorLeds[pixelNum][colorNum] = 127 + error;
+
+  return value8;
+}
+
+struct ditherTiming *ditherTimingForPixel(byte pixelNum) {
+  if(pixelNum >= startRight && pixelNum <= stopRight) {
+    return &rightDitherTiming;
+  }
+
+  if(pixelNum >= startLeft && pixelNum <= stopLeft) {
+    return &leftDitherTiming;
+  }
+
+  if(pixelNum >= startLogo && pixelNum <= stopLogo) {
+    return &logoDitherTiming;
+  }
+
+  if(pixelNum >= startTimer && pixelNum <= stopTimer) {
+    return &timerDitherTiming;
+  }
 }
 
 void updateDithering(byte start, byte stop, struct ditherTiming *myDitherTiming) {
