@@ -198,6 +198,7 @@ void loop() {
       case 0: // idle
         static byte idleHue = 0;
         idleHue++;
+        updateDitheringForEverything();
         leds.fill_rainbow(idleHue);
         haveUpdate = true;
         break;
@@ -206,6 +207,7 @@ void loop() {
         break;
       case 2: // won/flames
         // increment up to White
+        updateDitheringForEverything();
         leds.addToRGB(16);
         haveUpdate = true;
         break;
@@ -742,6 +744,13 @@ struct ditherTiming *ditherTimingForPixel(byte pixelNum) {
 void updateDithering(byte start, byte stop, struct ditherTiming *myDitherTiming) {
   previousLeds(start, stop) = leds(start, stop);
   updateDitherTiming(myDitherTiming);
+}
+
+void updateDitheringForEverything() {
+  updateDithering(startLogo, stopLogo, &logoDitherTiming);
+  updateDithering(startTimer, stopTimer, &timerDitherTiming);
+  updateDithering(startLeft, stopLeft, &leftDitherTiming);
+  updateDithering(startRight, stopRight, &rightDitherTiming);
 }
 
 void updateDitherTiming(struct ditherTiming *myDitherTiming) {
