@@ -223,6 +223,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
   const String msgRight = "asOne/score/rightBPM";
   const String msgRightDirect = "asOne/score/rightBPM/direct";
 
+  const String msgDirectOnly = "asOne/scoreboard/directOnly";
+
   if ( t.equals(msgState) ) {
     state = payload[0];
     FastLED.clear(); // clear the LEDs
@@ -293,8 +295,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
       // special case for hundreds digit
       leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds-1) = rightBPM/100 ? onColor : CRGB::Black;
     }
-   } else if (t.equals(msgRightDirect)) {
+  } else if (t.equals(msgRightDirect)) {
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
+  } else if (t.equals(msgDirectOnly)) {
+    directOnly = payload[0];
+    haveUpdate = false;
+    Serial << F(" = ") << state;
   } else {
     haveUpdate = false;
     Serial << F(" WARNING. unknown topic. continuing.");
