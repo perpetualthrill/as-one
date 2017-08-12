@@ -6,6 +6,7 @@
       - "asOne/score/heartbeat": current millis() every two seconds
   - subscribes:
       - "asOne/score/#": multi-level wildcard
+      - "asOne/scoreboard/#": multi-level wildcard
   - processes:
       - "asOne/score/state": [0,1,2] current state of the system
         - 0: idle/not playing.  scoreboard will mess around on its own.
@@ -19,6 +20,20 @@
         - "asOne/score/leftBPM/direct": bytestream castable to CRGB[47]
       - "asOne/score/rightBPM": [0-199] current heartrate to display on right score
         - "asOne/score/rightBPM/direct": bytestream castable to CRGB[47]
+
+      - "asOne/scoreboard/directOnly": [0,1] whether to render digits locally
+        - 0: local display.  scoreboard will render all messages
+        - 1: direct only.  another process is responsible for translating numeric values into direct RGB values
+
+      - "asOne/scoreboard/acceleration": [0,1,2,3] LED driver mode
+        - 0: use processor-based FastLED library
+        - 1: use UART to drive LEDs
+        - 2: use UART with gamma correction
+        - 3: use UART with gamma correction and temporal dithering
+
+   - publishes:
+      - "asOne/openPixelControl/scoreboardAddress": String. IP address the scoreboard is listening on for OPC messages
+
 
 */
 
@@ -36,6 +51,9 @@ PubSubClient mqtt;
 
 // track the state
 byte state = 1;
+
+byte directOnly = 0;
+byte acceleration = 0;
 
 // track the logo
 const byte nLogoLED = 15;
@@ -90,6 +108,8 @@ boolean haveUpdate = false;
 
 // set target FPS
 const unsigned long targetFPS = 30; // frames per second
+
+
 
 void setup() {
   Serial.begin(115200);
@@ -463,5 +483,6 @@ void setLargeDigit(byte val, byte startPos, CRGB on, CRGB off) {
     leds[startPos+i] = lDigit[val][i] ? on : off;
   }
 }
+
 
 
