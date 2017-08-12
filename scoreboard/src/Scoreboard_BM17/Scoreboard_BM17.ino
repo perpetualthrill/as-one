@@ -46,6 +46,16 @@
 #define FASTLED_INTERRUPT_RETRY_COUNT 1
 #include <FastLED.h>
 
+extern "C" {
+#include <uart.h>
+#include <uart_register.h>
+}
+#define UartWaitBetweenUpdatesMicros 500
+#define UartBaud 3200000
+#define UART1 1
+#define UART1_INV_MASK (0x3f << 19)
+
+
 WiFiClient espClient;
 PubSubClient mqtt;
 
@@ -54,6 +64,8 @@ byte state = 1;
 
 byte directOnly = 0;
 byte acceleration = 0;
+
+byte serial1 = 0;
 
 // track the logo
 const byte nLogoLED = 15;
@@ -190,6 +202,8 @@ void loop() {
     if ( haveUpdate ) showScoreboard();
     // send a heartbeat on an interval heartbeat interval
     else heartbeatMQTT();
+
+    if ( acceleration ) writeUART();
   }
 }
 
@@ -304,6 +318,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial << F(" = ") << state;
   } else if (t.equals(msgAcceleration)) {
     acceleration = payload[0];
+    setUART();
     haveUpdate = false;
     Serial << F(" = ") << state;
   } else {
@@ -338,6 +353,8 @@ CRGB setBPMColor(byte b1, byte b2) {
 }
 
 void showScoreboard() {
+  if( acceleration ) return; // LEDs handled by UART loop
+
   // could be getting a ton of update calls over the WiFi
   // so, we let those aggregate before we do a show();
   static Metro updateInterval(1000UL/targetFPS);
@@ -511,5 +528,50 @@ void setLargeDigit(byte val, byte startPos, CRGB on, CRGB off) {
   }
 }
 
+void setUART() {
+  if(acceleration) {
+    startUART();
+  } else {
+    stopUART();
+  }
+}
 
+void startUART() {
+  if( serial1 ) return;
+  serial1 = 1;
 
+  Serial1.begin(UartBaud, SERIAL_6N1, SERIAL_TX_ONLY);
+  CLEAR_PERI_REG_MASK(UART_CONF0(UART1), UART1_INV_MASK);
+  SET_PERI_REG_MASK(UART_CONF0(UART1), (BIT(22)));
+  ETS_UART_INTR_DISABLE();
+
+  SET_PERI_REG_MASK(UART_CONF0(UART1), UART_RXFIFO_RST | UART_TXFIFO_RST);
+  CLEAR_PERI_REG_MASK(UART_CONF0(UART1), UART_RXFIFO_RST | UART_TXFIFO_RST);
+
+  // Set tx fifo trigger. 80 bytes gives us 200 microsecs to refill the FIFO
+  WRITE_PERI_REG(UART_CONF1(UART1), 80 << UART_TXFIFO_EMPTY_THRHD_S);
+
+  CLEAR_PERI_REG_MASK(UART_INT_ENA(UART1), UART_RXFIFO_FULL_INT_ENA | UART_TXFIFO_EMPTY_INT_ENA);
+
+  WRITE_PERI_REG(UART_INT_CLR(UART1), 0xffff);
+
+  ETS_UART_INTR_ENABLE();
+}
+
+void stopUART() {
+  if( !serial1 ) return;
+  serial1 = 0;
+
+  Serial1.end();
+}
+
+// From Makuna's NeoPixelBus
+static const uint8_t uartBitPatterns[4] = {
+  0b110111, // On wire: 1 000 100 0 [Neopixel reads 00]
+  0b000111, // On wire: 1 000 111 0 [Neopixel reads 01]
+  0b110100, // On wire: 1 110 100 0 [Neopixel reads 10]
+  0b000100, // On wire: 1 110 111 0 [NeoPixel reads 11]
+};
+
+void writeUART() {
+}
