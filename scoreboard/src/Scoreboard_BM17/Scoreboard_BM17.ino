@@ -581,12 +581,14 @@ static inline uint8_t getTxLengthForUART1()
 
 void writeUART() {
   static bool pausing = true;
+  static unsigned long pauseUntilMicros = 0;
+
   if (getTxLengthForUART1() == 0) {
     if(!pausing) {
       pausing = true;
-      uart_pause_until_micros = micros() + UartWaitBetweenUpdatesMicros;
+      pauseUntilMicros = micros() + UartWaitBetweenUpdatesMicros;
     } else {
-      if(uart_pause_until_micros <= micros()) {
+      if(pauseUntilMicros <= micros()) {
         pausing = false;
         fillUART();
       }
@@ -594,5 +596,26 @@ void writeUART() {
   }
 }
 
+static inline void writeByteToUART1(uint8_t byte)
+{
+  U1F = byte;
+}
+
 void fillUART() {
+  unsigned long nowMillis = millis();
+  for(int i = 0; i < nTotalLED * 3; i++) {
+    byte val = colorValue(i, nowMillis);
+    writeByteToUART1(uartBitPatterns[(val >> 6) & 0x3]);
+    writeByteToUART1(uartBitPatterns[(val >> 4) & 0x3]);
+    writeByteToUART1(uartBitPatterns[(val >> 2) & 0x3]);
+    writeByteToUART1(uartBitPatterns[ val       & 0x3]);
+  }
+}
+
+byte colorValue(int i, unsigned long nowMillis) {
+  int pixelNum = i / 3;
+  int colorNum = i % 3;
+  byte requestedColor = leds[pixelNum][colorNum];
+
+  return requestedColor;
 }
