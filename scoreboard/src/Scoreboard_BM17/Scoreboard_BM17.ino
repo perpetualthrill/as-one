@@ -130,7 +130,7 @@ void setup() {
   delay(1000);
   leds.fill_solid(CRGB::White);
   FastLED.show();
-  Serial << F("Blue.") << endl;
+  Serial << F("White.") << endl;
   delay(5000);
   
   FastLED.clear(true);
@@ -181,6 +181,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   digitalWrite(RED_LED, ledState);
 
   // String class is much easier to work with
+  char * msg = (char*)payload;
   String t = topic;
 
   // drop our own heartbeat
@@ -225,7 +226,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
     //    Serial << F(" B:") << leds[startLogo + 4].blue;
 
   } else if (t.equals(msgTimer)) {
-    byte timer = payload[0];
+    String m = (char*)payload;
+    byte timer = m.toInt();
     Serial << F(" = ") << timer/10 << F(",") << timer %10;
 
     setSmallDigit(timer%10, startTimer, CRGB::White, CRGB::Black);
@@ -233,7 +235,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
   } else if (t.equals(msgTimerDirect)) {
     leds(startTimer, stopTimer) = CRGBSet( (CRGB*)payload, nTimerLED );
   } else if (t.equals(msgLeft)) {
-    leftBPM = payload[0];
+    String m = (char*)payload;
+    byte bpm = m.toInt();
+    leftBPM = bpm;
     Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
 
     // on color based on BPM delta
@@ -248,7 +252,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
   } else if (t.equals(msgLeftDirect)) {
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
   } else if (t.equals(msgRight)) {
-    rightBPM = payload[0];
+    String m = (char*)payload;
+    rightBPM = m.toInt();
     Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
 
     // on color based on BPM delta

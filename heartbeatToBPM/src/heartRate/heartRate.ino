@@ -34,14 +34,13 @@ double samplingFrequency = 5000;
 
 // track the left BPM
 byte leftBPM = 100;
-int leftInterval = 0;
+int leftValue = 0;
+boolean leftUpdate = false;
 
 // track the right BPM
 byte rightBPM = 100;
 byte rightValue = 0;
-
-// track need for update
-boolean haveUpdate = false;
+boolean rightUpdate = false;
 
 // led pinouts and high/low definition for red one.
 #define BLUE_LED 2
@@ -82,10 +81,14 @@ void loop() {
     mqtt.loop();
 
     // if we have an update, show it
-    // if ( haveUpdate ) computeBPM_Thresh();
+//    if ( leftUpdate ) computeBPM_Thresh_Left();
+    if ( rightUpdate ) computeBPM_Thresh_Right();
+    
     //    if ( haveUpdate ) computeBPM_FFT();
-    if ( haveUpdate ) computeBPM_PanTompkins();
-    //    if ( haveUpdate ) sendBPM();
+    // if ( haveUpdate ) computeBPM_PanTompkins();
+
+    // update the scoreboard if there's a delta
+    sendBPM();
   }
 }
 
@@ -100,23 +103,71 @@ void callback(char* topic, byte* payload, unsigned int length) {
   String t = topic;
   String m = (char*)payload;
 
-  // we have an update, unless otherwise noted
-  haveUpdate = true;
-
   // list of topics that we'll process
   const String msgLeft = "asOne/brain/left";
   const String msgRight = "asOne/brain/right";
 
   if (t.equals(msgLeft)) {
-    leftInterval = m.toInt();
+    leftValue = m.toInt();
+    leftUpdate = true;
   } else if (t.equals(msgRight)) {
     rightValue = m.toInt();
-    //    Serial << rightValue << ",0,255" << endl;
+    rightUpdate = true;
   } else {
-    haveUpdate = false;
     Serial << F(" WARNING. unknown topic. continuing.") << endl;
   }
 }
+
+void computeBPM_Thresh_Right() {
+  // Magic Numbers
+  const unsigned long minInterval = 60000UL / 200UL; // 200bpm -> 300ms interval
+  const unsigned long maxInterval = 60000UL / 40UL; // 40bpm -> 1500ms interval
+  const byte countThreshold = 3;
+  const byte smoothing = 10;
+
+  static unsigned long lastTrigger = millis();
+  static byte countTrigger = 0;
+
+  unsigned long now = millis();
+
+  static unsigned long smoothedValue = rightValue;
+  float triggerLevel = (float)smoothedValue * 1.10; // fold-increase to trigger
+  // 1.10 too low
+  // 1.25 too low
+  // 1.50 too high
+  // 1.375 touch too high
+
+  static unsigned long smoothedBPM = rightBPM;
+
+  // if the minimum interval is passed and we have a high postive excursion
+  if ( (now - lastTrigger) >= minInterval && rightValue >= triggerLevel ) {
+    // require N such events to cause a trigger
+    countTrigger++;
+    if ( countTrigger >= countThreshold ) {
+      unsigned long delta = now - lastTrigger;
+      lastTrigger = now;
+      unsigned long bpm = 60000.0 / (float)delta;
+
+      // if we're inside the maxInterval, probably not noise
+      if ( delta <= maxInterval ) {
+        smoothedBPM = (smoothedBPM * (smoothing - 1) + bpm) / smoothing;
+        rightBPM = smoothedBPM;
+
+        Serial << "Trigger! val=" << rightValue << " trigger=" << triggerLevel;
+        Serial << " bpm=" << bpm << " smoothed=" << smoothedBPM << endl;
+      }
+    }
+  } else {
+    countTrigger = 0;
+    smoothedValue = (smoothedValue * (smoothing - 1) + rightValue) / smoothing;
+  }
+
+  Serial << "0,255," << rightValue << "," << smoothedValue << "," << countTrigger*100;
+  Serial << "," << triggerLevel << "," << smoothedBPM << endl;
+
+  rightUpdate = false;
+}
+
 
 // Pan-Tompkin algorihtm from: https://github.com/blakeMilner/real_time_QRS_detection/blob/master/QRS_arduino/QRS.ino
 int tmp = 0;
@@ -154,12 +205,14 @@ void computeBPM_PanTompkins() {
 
     old_foundTimeMicros = foundTimeMicros;
 
-    Serial << "Trigger! bpm=" << bpm << endl;
     rightBPM = bpm;
-
+    Serial << bpm << ",";
+    for(byte i=0;i<BPM_BUFFER_SIZE;i++) Serial << "," << bpm_buff[i];
+    Serial << endl;
   }
-  haveUpdate = false;
+  rightUpdate = false;
 }
+
 
 #define M       5
 #define N       30
@@ -325,53 +378,6 @@ boolean detect(float new_ecg_pt) {
   return false;
 
 }
-void computeBPM_Thresh() {
-  // Magic Numbers
-  const unsigned long minInterval = 60000UL / 200UL; // 200bpm -> 300ms interval
-  const unsigned long maxInterval = 60000UL / 40UL; // 40bpm -> 1500ms interval
-  const byte countThreshold = 3;
-  const byte smoothing = 10;
-
-  static unsigned long lastTrigger = millis();
-  static byte countTrigger = 0;
-
-  unsigned long now = millis();
-
-  static unsigned long smoothedValue = rightValue;
-  float triggerLevel = (float)smoothedValue * 1.25; // fold-increase to trigger
-  // 1.10 too low
-  // 1.25 too low
-  // 1.50 too high
-  // 1.375 touch too high
-
-  static unsigned long smoothedBPM = rightBPM;
-
-  // if the minimum interval is passed and we have a high postive excursion
-  if ( (now - lastTrigger) >= minInterval && rightValue >= triggerLevel ) {
-    // require N such events to cause a trigger
-    countTrigger++;
-    if ( countTrigger >= countThreshold ) {
-      unsigned long delta = now - lastTrigger;
-      lastTrigger = now;
-      byte bpm = 60000.0 / (float)delta;
-
-      // if we're inside the maxInterval, probably not noise
-      if ( delta <= maxInterval ) {
-        smoothedBPM = (smoothedBPM * (smoothing - 1) + bpm) / smoothing;
-        rightBPM = smoothedBPM;
-
-        Serial << "Trigger! val=" << rightValue << " trigger=" << triggerLevel;
-        Serial << " bpm=" << bpm << " smoothed=" << smoothedBPM << endl;
-      }
-    }
-  } else {
-    countTrigger = 0;
-    smoothedValue = (smoothedValue * (smoothing - 1) + rightValue) / smoothing;
-  }
-
-  haveUpdate = false;
-}
-
 void computeBPM_FFT() {
   static unsigned long tic = millis();
 
@@ -381,7 +387,7 @@ void computeBPM_FFT() {
   ringBuffer[ringIndex] = rightValue; // build up the data
 
   // reset
-  haveUpdate = false;
+  rightUpdate = false;
 
   // loop through to get more samples
   if (ringIndex != samples - 1) {
@@ -457,60 +463,25 @@ void PrintVector(double *vData, uint16_t bufferSize, uint8_t scaleType)
 }
 
 void sendBPM() {
-  // promote bit size on tracking information to ease smoothing calculations
-  static unsigned long lastLeftBPM = leftBPM;
-  static unsigned long lastRightBPM = leftBPM;
-
-  static unsigned long lastLeftInterval = leftInterval;
-  static unsigned long lastrightValue = rightValue;
-
-  unsigned long newLeftInterval = lastLeftInterval;
-  unsigned long newrightValue = lastrightValue;
-  unsigned long newLeftBPM = lastLeftBPM;
-  unsigned long newRightBPM = lastRightBPM;
-
-  // compute new intervals, if needed
-  // apply exponential smoothing to the interval information.
-  const byte intervalSmoothing = 5; // 1 for no smoothing.
-  if ( rightValue != lastrightValue ) {
-    newLeftInterval = (lastLeftInterval * (intervalSmoothing - 1) + rightValue) / intervalSmoothing;
-  }
-  if ( rightValue != lastrightValue ) {
-    newrightValue = (lastrightValue * (intervalSmoothing - 1) + rightValue) / intervalSmoothing;
-  }
-
-  // compute new BPM, if needed
-  // apply exponential smoothing to the interval information.
-  const byte bpmSmoothing = 5; // 1 for no smoothing.
-  if ( newrightValue != lastrightValue ) {
-    unsigned long newBPM = 60000UL / newrightValue; // ms/beat -> beat/min
-    newRightBPM = (lastRightBPM * (bpmSmoothing - 1) + newBPM) / bpmSmoothing;
-    lastrightValue = newrightValue;
-  }
-  if ( newLeftInterval != lastLeftInterval ) {
-    unsigned long newBPM = 60000UL / newLeftInterval; // ms/beat -> beat/min
-    newLeftBPM = (lastLeftBPM * (bpmSmoothing - 1) + newBPM) / bpmSmoothing;
-    lastLeftInterval = newLeftInterval;
-  }
+  // track sends so we don't spam the scoreboard
+  static byte lastLeftBPM = leftBPM;
+  static byte lastRightBPM = rightBPM;
 
   // publish new BPM, if needed.
   const char* pubRight = "asOne/score/rightBPM";
   const char* pubLeft = "asOne/score/leftBPM";
   static char msg[32];
 
-  if ( newLeftBPM != lastLeftBPM ) {
-    itoa(newLeftBPM, msg, 10);
+  if ( leftBPM != lastLeftBPM ) {
+    itoa(leftBPM, msg, 10);
     mqtt.publish(pubLeft, msg);
-    lastLeftBPM = newLeftBPM;
+    lastLeftBPM = leftBPM;
   }
-  if ( newRightBPM != lastRightBPM ) {
-    itoa(newRightBPM, msg, 10);
+  if ( rightBPM != lastRightBPM ) {
+    itoa(rightBPM, msg, 10);
     mqtt.publish(pubRight, msg);
-    lastRightBPM = lastLeftBPM;
+    lastRightBPM = rightBPM;
   }
-
-  // we processed the update
-  haveUpdate = false;
 }
 
 void connectWiFi() {

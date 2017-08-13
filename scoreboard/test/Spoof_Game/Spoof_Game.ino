@@ -133,7 +133,7 @@ void loop() {
         static byte timer = 99;
         timer--;
         if (timer > 99) timer = 99;
-        sendTimer(&timer);
+        sendTimer(timer);
       }
 
       if (sendWhat == 2) {
@@ -141,7 +141,7 @@ void loop() {
         static byte leftBPM = 199;
         leftBPM -= 1;
         if (leftBPM > 199) leftBPM = 199;
-        sendLeft(&leftBPM);
+        sendLeft(leftBPM);
       }
 
       if (sendWhat == 3) {
@@ -149,29 +149,29 @@ void loop() {
         static byte rightBPM = 0;
         rightBPM += 1;
         if (rightBPM > 199) rightBPM = 0;
-        sendRight(&rightBPM);
+        sendRight(rightBPM);
       }
     }
   }
 }
 
 
-void sendLeft(byte *bpm) {
+void sendLeft(byte bpm) {
   const char* pub = "asOne/score/leftBPM";
-
-  mqtt.publish(pub, (uint8_t *)bpm, 1);
+  itoa(bpm, msg, 10);
+  mqtt.publish(pub, msg);
 }
 
-void sendRight(byte *bpm) {
+void sendRight(byte bpm) {
   const char* pub = "asOne/score/rightBPM";
-
-  mqtt.publish(pub, (uint8_t *)bpm, 1);
+  itoa(bpm, msg, 10);
+  mqtt.publish(pub, msg);
 }
 
-void sendTimer(byte *timer) {
+void sendTimer(byte timer) {
   const char* pub = "asOne/score/timer";
-
-  mqtt.publish(pub, (uint8_t *)timer, 1);
+  itoa(timer, msg, 10);
+  mqtt.publish(pub, msg);
 }
 
 
