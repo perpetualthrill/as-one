@@ -158,20 +158,26 @@ void loop() {
 
 void sendLeft(byte bpm) {
   const char* pub = "asOne/score/leftBPM";
-  itoa(bpm, msg, 10);
-  mqtt.publish(pub, msg);
+//  itoa(bpm, msg, 10);
+//  mqtt.publish(pub, msg);
+  byte *m=&bpm;
+  mqtt.publish(pub, m, 1);
 }
 
 void sendRight(byte bpm) {
   const char* pub = "asOne/score/rightBPM";
-  itoa(bpm, msg, 10);
-  mqtt.publish(pub, msg);
+//  itoa(bpm, msg, 10);
+//  mqtt.publish(pub, msg);
+  byte *m=&bpm;
+  mqtt.publish(pub, m, 1);
 }
 
 void sendTimer(byte timer) {
   const char* pub = "asOne/score/timer";
-  itoa(timer, msg, 10);
-  mqtt.publish(pub, msg);
+//  itoa(timer, msg, 10);
+//  mqtt.publish(pub, msg);
+  byte *m=&timer;
+  mqtt.publish(pub, m, 1);
 }
 
 

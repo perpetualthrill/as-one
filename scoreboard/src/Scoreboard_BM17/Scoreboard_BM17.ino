@@ -226,8 +226,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
     //    Serial << F(" B:") << leds[startLogo + 4].blue;
 
   } else if (t.equals(msgTimer)) {
-    String m = (char*)payload;
-    byte timer = m.toInt();
+//    String m = (char*)payload;
+//    byte timer = m.toInt();
+    byte timer = payload[0];
     Serial << F(" = ") << timer/10 << F(",") << timer %10;
 
     setSmallDigit(timer%10, startTimer, CRGB::White, CRGB::Black);
@@ -235,9 +236,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
   } else if (t.equals(msgTimerDirect)) {
     leds(startTimer, stopTimer) = CRGBSet( (CRGB*)payload, nTimerLED );
   } else if (t.equals(msgLeft)) {
-    String m = (char*)payload;
-    byte bpm = m.toInt();
-    leftBPM = bpm;
+//    String m = (char*)payload;
+//    byte bpm = m.toInt();
+    leftBPM = payload[0];
     Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
 
     // on color based on BPM delta
@@ -252,9 +253,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
   } else if (t.equals(msgLeftDirect)) {
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
   } else if (t.equals(msgRight)) {
-    String m = (char*)payload;
-    byte bpm = m.toInt();
-    rightBPM = bpm;
+//    String m = (char*)payload;
+//    byte bpm = m.toInt();
+//    rightBPM = bpm;
+    rightBPM = payload[0];
     Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
 
     // on color based on BPM delta

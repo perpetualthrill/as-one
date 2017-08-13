@@ -473,13 +473,17 @@ void sendBPM() {
   static char msg[32];
 
   if ( leftBPM != lastLeftBPM ) {
-    itoa(leftBPM, msg, 10);
-    mqtt.publish(pubLeft, msg);
+//    itoa(leftBPM, msg, 10);
+//    mqtt.publish(pubLeft, msg);
+    byte *m=&leftBPM;
+    mqtt.publish(pubLeft, m, 1);
     lastLeftBPM = leftBPM;
   }
   if ( rightBPM != lastRightBPM ) {
-    itoa(rightBPM, msg, 10);
-    mqtt.publish(pubRight, msg);
+//    itoa(rightBPM, msg, 10);
+//    mqtt.publish(pubRight, msg);
+    byte *m=&rightBPM;
+    mqtt.publish(pubRight, m, 1);
     lastRightBPM = rightBPM;
   }
 }
