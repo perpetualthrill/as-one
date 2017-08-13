@@ -253,7 +253,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
   } else if (t.equals(msgRight)) {
     String m = (char*)payload;
-    rightBPM = m.toInt();
+    byte bpm = m.toInt();
+    rightBPM = bpm;
     Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
 
     // on color based on BPM delta
