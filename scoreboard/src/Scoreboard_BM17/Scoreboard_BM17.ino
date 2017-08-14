@@ -340,6 +340,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
   } else if (t.equals(msgDirectOnly)) {
     directOnly = payload[0];
+    if(!directOnly && acceleration > 1) {
+      // no reason to smooth animations if we're using the onboard patterns
+      acceleration = 1;
+    }
     haveUpdate = false;
     Serial << F(" = ") << state;
   } else if (t.equals(msgAcceleration)) {
