@@ -81,7 +81,7 @@ void loop() {
     mqtt.loop();
 
     // if we have an update, show it
-//    if ( leftUpdate ) computeBPM_Thresh_Left();
+    if ( leftUpdate ) computeBPM_Thresh_Left();
     if ( rightUpdate ) computeBPM_Thresh_Right();
     
     //    if ( haveUpdate ) computeBPM_FFT();
@@ -153,7 +153,7 @@ void computeBPM_Thresh_Right() {
         smoothedBPM = (smoothedBPM * (smoothing - 1) + bpm) / smoothing;
         rightBPM = smoothedBPM;
 
-        Serial << "Trigger! val=" << rightValue << " trigger=" << triggerLevel;
+        Serial << "Right trigger! val=" << rightValue << " trigger=" << triggerLevel;
         Serial << " bpm=" << bpm << " smoothed=" << smoothedBPM << endl;
       }
     }
@@ -166,6 +166,56 @@ void computeBPM_Thresh_Right() {
   Serial << "," << triggerLevel << "," << smoothedBPM << endl;
 
   rightUpdate = false;
+}
+
+void computeBPM_Thresh_Left() {
+  // Magic Numbers
+  const unsigned long minInterval = 60000UL / 200UL; // 200bpm -> 300ms interval
+  const unsigned long maxInterval = 60000UL / 40UL; // 40bpm -> 1500ms interval
+  const byte countThreshold = 3;
+  const byte smoothing = 10;
+
+  static unsigned long lastTrigger = millis();
+  static byte countTrigger = 0;
+
+  unsigned long now = millis();
+
+  static unsigned long smoothedValue = leftValue;
+  float triggerLevel = (float)smoothedValue * 1.10; // fold-increase to trigger
+  // 1.10 too low
+  // 1.25 too low
+  // 1.50 too high
+  // 1.375 touch too high
+
+  static unsigned long smoothedBPM = leftBPM;
+
+  // if the minimum interval is passed and we have a high postive excursion
+  if ( (now - lastTrigger) >= minInterval && leftValue >= triggerLevel ) {
+    // require N such events to cause a trigger
+    countTrigger++;
+    if ( countTrigger >= countThreshold ) {
+      unsigned long delta = now - lastTrigger;
+      lastTrigger = now;
+      unsigned long bpm = 60000.0 / (float)delta;
+
+      // if we're inside the maxInterval, probably not noise
+      if ( delta <= maxInterval ) {
+        smoothedBPM = (smoothedBPM * (smoothing - 1) + bpm) / smoothing;
+        leftBPM = smoothedBPM;
+
+        Serial << "Left trigger! val=" << leftValue << " trigger=" << triggerLevel;
+        Serial << " bpm=" << bpm << " smoothed=" << smoothedBPM << endl;
+      }
+    }
+  } else {
+    countTrigger = 0;
+    smoothedValue = (smoothedValue * (smoothing - 1) + leftValue) / smoothing;
+  }
+
+  Serial << "0,255," << leftValue << "," << smoothedValue << "," << countTrigger*100;
+  Serial << "," << triggerLevel << "," << smoothedBPM << endl;
+
+  leftUpdate = false;
 }
 
 
