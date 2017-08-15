@@ -4,11 +4,17 @@
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-String testUpper = String("asOne/testUpper");
-String testLower = String("asOne/testLower");
+#define LONG_DELAY_MS 5000
 
-int upperPin = 12;
-int lowerPin = 13;
+String testUpperTopic = String("asOne/fe/testUpper");
+String testLowerTopic = String("asOne/fe/testLower");
+String heartbeatTopic = String("asOne/fe/doHeartbeat");
+
+const int upperPin = 12;
+const int lowerPin = 13;
+
+int upperPinTargetMillis = 0;
+int lowerPinTargetMillis = 0;
 
 void setup() {
   pinMode(upperPin, OUTPUT);
@@ -51,11 +57,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
   memcpy(p, payload, length);
   String checkPayload = String(p);
   
-  if (checkTopic.equals(testUpper)) {
+  if (checkTopic.equals(testUpperTopic)) {
     Serial.print("do upper: ");
     Serial.println(checkPayload.toInt());
     doPoof(upperPin, checkPayload.toInt());
-  } else if (checkTopic.equals(testLower)) {
+  } else if (checkTopic.equals(testLowerTopic)) {
     Serial.print("do lower: ");
     Serial.println(checkPayload.toInt());
     doPoof(lowerPin, checkPayload.toInt());
@@ -65,9 +71,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void doPoof(int pin, int duration) {
   digitalWrite(pin, HIGH);
   digitalWrite(LED_BUILTIN, HIGH);
-  delay(duration);
-  digitalWrite(pin, LOW);
-  digitalWrite(LED_BUILTIN, LOW);
+  switch(pin) {
+    case upperPin:
+      break;
+    
+  }
+  
 }
 
 void reconnect() {
@@ -78,27 +87,31 @@ void reconnect() {
     if (client.connect("ESP8266Client")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      //client.publish("outTopic", "hello world");
+      client.publish("asOne/hello", "hello from flame effect");
       // ... and resubscribe
       client.subscribe("asOne/hello");
-      client.subscribe(testUpper.c_str());
-      client.subscribe(testLower.c_str());
-      client.subscribe("asOne/doPulse");
+      client.subscribe(testUpperTopic.c_str());
+      client.subscribe(testLowerTopic.c_str());
+      client.subscribe(heartbeatTopic.c_str());
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
-      delay(5000);
+      delay(LONG_DELAY_MS);
     }
   }
 }
 
+void stopPoofs() {
+  
+}
 
 void loop() {
   if (!client.connected()) {
     reconnect();
   }
+  stopPoofs();
   client.loop();
 }
 
