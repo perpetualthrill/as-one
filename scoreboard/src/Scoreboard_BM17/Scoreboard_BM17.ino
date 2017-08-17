@@ -42,6 +42,7 @@
 #include <PubSubClient.h>
 #include <Metro.h>
 #include <Streaming.h>
+#include <WiFiServer.h>
 // required prior to #include
 #define FASTLED_ESP8266_RAW_PIN_ORDER
 #define FASTLED_INTERRUPT_RETRY_COUNT 1
@@ -59,6 +60,16 @@ extern "C" {
 
 WiFiClient espClient;
 PubSubClient mqtt;
+
+#define OpcServerPort  7890
+WiFiServer opcServer(OpcServerPort);
+WiFiClient opcClient;
+
+int opcMessageState;
+int opcDataIndex;
+int opcMessageLen;
+int opcChannel;
+int opcCommand;
 
 // track the state
 byte state = 1;
@@ -180,13 +191,14 @@ void setup() {
   
   FastLED.clear(true);
   Serial << F("Scoreboard.  Startup complete.") << endl;
-
 }
 
 void loop() {
   if (WiFi.status() != WL_CONNECTED) {
     // this is a blocking routine.  read: we halt until WiFi is connected
     connectWiFi();
+    opcServer.begin();
+    opcClient = null;
   }
   if (!mqtt.connected()) {
     connectMQTT();
@@ -222,8 +234,22 @@ void loop() {
     // send a heartbeat on an interval heartbeat interval
     else heartbeatMQTT();
 
-    if ( acceleration ) writeUART();
   }
+
+  if (opcClient) {
+    while (opcClient.available()) {
+      char c = client.read();
+      opcStateMachine(c);
+    }
+    if(!opcClient.connected()) {
+      opcClient = null;
+    }
+  }
+  if (!opcClient && (opcClient = opcServer.available())) {
+    Serial.println("OPC Connected");
+  }
+
+  if ( acceleration ) writeUART();
 }
 
 // the real meat of the work is done here, where we process messages.
@@ -770,4 +796,65 @@ void updateDitherTiming(struct ditherTiming *myDitherTiming) {
     myDitherTiming->avgUpdateMillis = (myDitherTiming->avgUpdateMillis + elapsed) / 2;
   }
   myDitherTiming->lastUpdateMillis = now;
+}
+
+void opcStateMachine(char c) {
+    if(opcMessageState == 0) {
+      opcMessageState = 1;
+      opcChannel = c;
+    } else if(opcMessageState == 1) {
+      opcMessageState = 2;
+      opcCommand = c;
+    } else if(opcMessageState == 2) {
+      opcMessageState = 3;
+      opcMessageLen = c * 256;
+    } else if(opcMessageState == 3) {
+      opcMessageState = 4;
+      opcMessageLen += c;
+      opcDataIndex = 0;
+    } else if(opcMessageState == 4) {
+      opcMessageLen -= 1;
+      if(opcCommand == 0) {
+        int pixelIndex = opcDataIndex / 3;
+        int color = opcDataIndex % 3;
+        setPixelColor(opcChannel, pixelIndex, color, c);
+      }
+      opcDataIndex += 1;
+    }
+
+    if(opcmessageState == 4 && opcmessageLen <= 0) {
+      updateDitherTimingForChannel(opcChannel);
+      opcmessageState = 0;
+    }
+}
+
+void setPixelColor(byte channel, int pixelIndex, byte color, byte value) {
+  if(channel == 0) { // not really used in As One but this is OPC spec
+    setPixelColor(1, pixelIndex, color, value);
+    setPixelColor(2, pixelIndex, color, value);
+    setPixelColor(3, pixelIndex, color, value);
+    setPixelColor(4, pixelIndex, color, value);
+    return;
+  }
+
+  int pixelOffset;
+  switch(channel) {
+    case 1: pixelOffset = startRight; break;
+    case 2: pixelOffset = startLogo; break;
+    case 3: pixelOffset = startTimer; break;
+    case 4: pixelOffset = startLeft; break;
+  }
+
+  leds[pixelOffset + pixelIndex][color] = value;
+  haveUpdate = true;
+}
+
+void updateDitherTimingForChannel(byte channel) {
+  switch(channel) {
+    case 0: updateDitheringForEverything(); break;
+    case 1: updateDithering(startRight, stopRight, &rightDitherTiming); break;
+    case 2: updateDithering(startLogo, stopLogo, &logoDitherTiming); break;
+    case 3: updateDithering(startTimer, stopTimer, &timerDitherTiming); break;
+    case 4: updateDithering(startLeft, stopLeft, &leftDitherTiming); break;
+  }
 }
