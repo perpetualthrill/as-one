@@ -801,6 +801,9 @@ void opcStateMachine(char c) {
     } else if(opcMessageState == 1) {
       opcMessageState = 2;
       opcCommand = c;
+      if(opcCommand == 0) {
+        updateDitheringForChannel(opcChannel);
+      }
     } else if(opcMessageState == 2) {
       opcMessageState = 3;
       opcMessageLen = c * 256;
@@ -819,7 +822,6 @@ void opcStateMachine(char c) {
     }
 
     if(opcMessageState == 4 && opcMessageLen <= 0) {
-      updateDitherTimingForChannel(opcChannel);
       opcMessageState = 0;
     }
 }
@@ -845,7 +847,7 @@ void setPixelColor(byte channel, int pixelIndex, byte color, byte value) {
   haveUpdate = true;
 }
 
-void updateDitherTimingForChannel(byte channel) {
+void updateDitheringForChannel(byte channel) {
   switch(channel) {
     case 0: updateDitheringForEverything(); break;
     case 1: updateDithering(startRight, stopRight, &rightDitherTiming); break;
