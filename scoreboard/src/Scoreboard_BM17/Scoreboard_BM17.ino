@@ -197,19 +197,23 @@ void loop() {
     switch(state) {
       case 0: // idle
         static byte idleHue = 0;
-        idleHue++;
-        updateDitheringForEverything();
-        leds.fill_rainbow(idleHue);
-        haveUpdate = true;
+        if(!directOnly) {
+          idleHue++;
+          updateDitheringForEverything();
+          leds.fill_rainbow(idleHue);
+          haveUpdate = true;
+        }
         break;
       case 1: // active/playing
         // wait for messages to process
         break;
       case 2: // won/flames
         // increment up to White
-        updateDitheringForEverything();
-        leds.addToRGB(16);
-        haveUpdate = true;
+        if(!directOnly) {
+          updateDitheringForEverything();
+          leds.addToRGB(16);
+          haveUpdate = true;
+        }
         break;
     }
 
