@@ -198,7 +198,6 @@ void loop() {
     // this is a blocking routine.  read: we halt until WiFi is connected
     connectWiFi();
     opcServer.begin();
-    opcClient = null;
   }
   if (!mqtt.connected()) {
     connectMQTT();
@@ -238,14 +237,11 @@ void loop() {
 
   if (opcClient) {
     while (opcClient.available()) {
-      char c = client.read();
+      char c = opcClient.read();
       opcStateMachine(c);
     }
-    if(!opcClient.connected()) {
-      opcClient = null;
-    }
   }
-  if (!opcClient && (opcClient = opcServer.available())) {
+  if ((!opcClient || !opcClient.connected()) && (opcClient = opcServer.available())) {
     Serial.println("OPC Connected");
   }
 
@@ -822,9 +818,9 @@ void opcStateMachine(char c) {
       opcDataIndex += 1;
     }
 
-    if(opcmessageState == 4 && opcmessageLen <= 0) {
+    if(opcMessageState == 4 && opcMessageLen <= 0) {
       updateDitherTimingForChannel(opcChannel);
-      opcmessageState = 0;
+      opcMessageState = 0;
     }
 }
 
