@@ -33,7 +33,7 @@
         - 4: use UART with gamma correction and temporal dithering
 
    - publishes:
-      - "asOne/scoreboard/ipAddress": String. IP address the scoreboard is listening on for OPC messages
+      - "asOne/openPixelControl/scoreboard/ipAddress": String. IP address the scoreboard is listening on for OPC messages
 
 
 */
@@ -507,7 +507,7 @@ void heartbeatMQTT() {
 }
 
 void publishMyIP() {
-  const char* pub = "asOne/scoreboard/ipAddress";
+  const char* pub = "asOne/openPixelControl/scoreboard/ipAddress";
   IPAddress ip = WiFi.localIP();
   static char msg[5] = "    ";
   msg[0] = ip[0];
