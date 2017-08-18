@@ -509,13 +509,13 @@ void heartbeatMQTT() {
 void publishMyIP() {
   const char* pub = "asOne/openPixelControl/scoreboard/ipAddress";
   IPAddress ip = WiFi.localIP();
-  static char msg[5] = "    ";
+  static byte msg[4];
   msg[0] = ip[0];
   msg[1] = ip[1];
   msg[2] = ip[2];
   msg[3] = ip[3];
 
-  mqtt.publish(pub, msg);
+  mqtt.publish(pub, msg, 4); // 4 bytes, not null-terminated
 }
 
 // Segment layout: 
