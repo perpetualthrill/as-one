@@ -136,7 +136,7 @@ const unsigned long targetFPS = 30; // frames per second
 
 // for temporal dithering
 CRGBArray <nTotalLED> previousLeds;
-CRGBArray <nTotalLED> errorLeds;
+int errorVal[nTotalLED * 3];
 
 struct ditherTiming {
   unsigned long lastUpdateMillis;
@@ -170,8 +170,6 @@ void setup() {
     Serial << F("HALTING.") << endl;
     while(1);
   }
-
-  errorLeds.fill_solid(CRGB(127, 127, 127));
   
   FastLED.addLeds<WS2811, PIN_LED, RGB>(leds, nTotalLED).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(255);
@@ -762,7 +760,7 @@ byte colorValue(int i, unsigned long nowMillis) {
     return (value16 / 256);
   }
 
-  int error = 127 - errorLeds[pixelNum][colorNum];
+  int error = errorVal[pixelNum * 3 + colorNum];
 
   byte value8 = (value16 >> 8) & 0xFF;
   error = (value16 & 0xFF) + error;
@@ -772,7 +770,7 @@ byte colorValue(int i, unsigned long nowMillis) {
     value8 += 1;
     error -= 256;
   }
-  errorLeds[pixelNum][colorNum] = 127 + error;
+  errorVal[pixelNum * 3 + colorNum] = error;
 
   return value8;
 }
