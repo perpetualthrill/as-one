@@ -39,7 +39,11 @@
 */
 
 #include <ESP8266WiFi.h>
+
+// Override PubSubClient's default packet size
+#define MQTT_MAX_PACKET_SIZE 255
 #include <PubSubClient.h>
+
 #include <Metro.h>
 #include <Streaming.h>
 #include <WiFiServer.h>
