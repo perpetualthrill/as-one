@@ -39,9 +39,6 @@
 */
 
 #include <ESP8266WiFi.h>
-
-// Override PubSubClient's default packet size
-#define MQTT_MAX_PACKET_SIZE 255
 #include <PubSubClient.h>
 
 #include <Metro.h>
@@ -383,12 +380,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
       acceleration = 1;
     }
     haveUpdate = false;
-    Serial << F(" = ") << state;
+    Serial << F(" = ") << directOnly;
   } else if (t.equals(msgAcceleration)) {
     acceleration = payload[0];
     setUART();
     haveUpdate = false;
-    Serial << F(" = ") << state;
+    Serial << F(" = ") << acceleration;
   } else {
     haveUpdate = false;
     Serial << F(" WARNING. unknown topic. continuing.");
@@ -624,19 +621,6 @@ void startUART() {
   Serial1.begin(UartBaud, SERIAL_6N1, SERIAL_TX_ONLY);
   CLEAR_PERI_REG_MASK(UART_CONF0(UART1), UART1_INV_MASK);
   SET_PERI_REG_MASK(UART_CONF0(UART1), (BIT(22)));
-  ETS_UART_INTR_DISABLE();
-
-  SET_PERI_REG_MASK(UART_CONF0(UART1), UART_RXFIFO_RST | UART_TXFIFO_RST);
-  CLEAR_PERI_REG_MASK(UART_CONF0(UART1), UART_RXFIFO_RST | UART_TXFIFO_RST);
-
-  // Set tx fifo trigger. 80 bytes gives us 200 microsecs to refill the FIFO
-  WRITE_PERI_REG(UART_CONF1(UART1), 80 << UART_TXFIFO_EMPTY_THRHD_S);
-
-  CLEAR_PERI_REG_MASK(UART_INT_ENA(UART1), UART_RXFIFO_FULL_INT_ENA | UART_TXFIFO_EMPTY_INT_ENA);
-
-  WRITE_PERI_REG(UART_INT_CLR(UART1), 0xffff);
-
-  ETS_UART_INTR_ENABLE();
 }
 
 void stopUART() {
@@ -697,9 +681,8 @@ static inline uint8_t getTxLengthForUART1()
   return (U1S >> USTXC) & 0xff;
 }
 
-
 void writeUART() {
-  static bool pausing = true;
+  static bool pausing = false;
   static unsigned long pauseUntilMicros = 0;
 
   if (getTxLengthForUART1() == 0) {
@@ -723,6 +706,11 @@ static inline void writeByteToUART1(uint8_t byte)
 void fillUART() {
   unsigned long nowMillis = millis();
   for(int i = 0; i < nTotalLED * 3; i++) {
+    uint8_t availableFifoSpace = 0;
+    while(availableFifoSpace < 4) {
+      availableFifoSpace = (UART_TX_FIFO_SIZE - getTxLengthForUART1());
+    }
+
     byte val = colorValue(i, nowMillis);
     writeByteToUART1(uartBitPatterns[(val >> 6) & 0x3]);
     writeByteToUART1(uartBitPatterns[(val >> 4) & 0x3]);
@@ -734,6 +722,7 @@ void fillUART() {
 byte colorValue(int i, unsigned long nowMillis) {
   int pixelNum = i / 3;
   int colorNum = i % 3;
+
   byte requestedColor = leds[pixelNum][colorNum];
 
   if(acceleration < 2) {
