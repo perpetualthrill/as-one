@@ -171,6 +171,8 @@ void setup() {
     while(1);
   }
 
+  errorLeds.fill_solid(CRGB(127, 127, 127));
+  
   FastLED.addLeds<WS2811, PIN_LED, RGB>(leds, nTotalLED).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(255);
   leds.fill_solid(CRGB::Red);
@@ -192,13 +194,14 @@ void setup() {
   
   FastLED.clear(true);
   Serial << F("Scoreboard.  Startup complete.") << endl;
+
+  opcServer.begin();
 }
 
 void loop() {
   if (WiFi.status() != WL_CONNECTED) {
     // this is a blocking routine.  read: we halt until WiFi is connected
     connectWiFi();
-    opcServer.begin();
   }
   if (!mqtt.connected()) {
     connectMQTT();
@@ -232,14 +235,18 @@ void loop() {
     // if we have an update, show it
     if ( haveUpdate ) showScoreboard();
     // send a heartbeat on an interval heartbeat interval
-    else heartbeatMQTT();
+    heartbeatMQTT();
 
   }
 
   if (opcClient) {
     while (opcClient.available()) {
-      char c = opcClient.read();
-      opcStateMachine(c);
+      int c = opcClient.read();
+      if(c >= 0) {
+        opcStateMachine(c);
+      } else {
+        break;
+      }
     }
   }
   if ((!opcClient || !opcClient.connected()) && (opcClient = opcServer.available())) {
@@ -738,18 +745,21 @@ byte colorValue(int i, unsigned long nowMillis) {
 
   struct ditherTiming *myDitherTiming = ditherTimingForPixel(pixelNum);
 
-  float delta = 1;
+  int deltaMax = 256;
+  int delta = 0;
   if(myDitherTiming->avgUpdateMillis) {
-    delta = (nowMillis - myDitherTiming->lastUpdateMillis) / (float)myDitherTiming->avgUpdateMillis;
+    delta = (deltaMax * (nowMillis - myDitherTiming->lastUpdateMillis)) / myDitherTiming->avgUpdateMillis;
   }
   if(delta < 0) delta = 0;
-  if(delta > 1) delta = 1;
+  if(delta > deltaMax) delta = deltaMax;
 
   // Linear interpolation between the requested color and the previous color
-  unsigned int value16 = delta * gamma16[requestedColor] + (1.0 - delta) * gamma16[previousColor];
+  long requestedGamma = delta * gamma16[requestedColor];
+  long previousGamma = (deltaMax - delta) * gamma16[previousColor];
+  long value16 = (requestedGamma + previousGamma) / deltaMax;
 
   if(acceleration == 3) {
-    return value16 / 256;
+    return (value16 / 256);
   }
 
   int error = 127 - errorLeds[pixelNum][colorNum];
@@ -758,7 +768,7 @@ byte colorValue(int i, unsigned long nowMillis) {
   error = (value16 & 0xFF) + error;
 
   // Dither the linear interpolation with the accumulated rounding errors of the previous values
-  if(error > 0 && value8 < 255) {
+  if(error > 0 && value8 < 255 && value8 > 0) {
     value8 += 1;
     error -= 256;
   }
