@@ -84,9 +84,6 @@ void loop() {
     if ( leftUpdate ) computeBPM_Thresh_Left();
     if ( rightUpdate ) computeBPM_Thresh_Right();
     
-    //    if ( haveUpdate ) computeBPM_FFT();
-    // if ( haveUpdate ) computeBPM_PanTompkins();
-
     // update the scoreboard if there's a delta
     sendBPM();
   }
@@ -218,57 +215,10 @@ void computeBPM_Thresh_Left() {
   leftUpdate = false;
 }
 
-
-// Pan-Tompkin algorihtm from: https://github.com/blakeMilner/real_time_QRS_detection/blob/master/QRS_arduino/QRS.ino
-int tmp = 0;
-void computeBPM_PanTompkins() {
-  // timing variables
-  static unsigned long previousMicros  = 0;        // will store last time LED was updated
-  static unsigned long foundTimeMicros = 0;        // time at which last QRS was found
-  static unsigned long old_foundTimeMicros = 0;        // time at which QRS before last was found
-  static unsigned long currentMicros   = 0;        // current time
-  static float bpm = 0;
-  const byte BPM_BUFFER_SIZE = 5;
-
-  static unsigned long bpm_buff[BPM_BUFFER_SIZE] = {0};
-  static int bpm_buff_WR_idx = 0;
-  static int bpm_buff_RD_idx = 0;
-
-  boolean QRS_detected = detect(rightValue);
-
-  if (QRS_detected == true) {
-    foundTimeMicros = micros();
-
-    bpm_buff[bpm_buff_WR_idx] = (60.0 / (((float) (foundTimeMicros - old_foundTimeMicros)) / 1000000.0));
-    bpm_buff_WR_idx++;
-    bpm_buff_WR_idx %= BPM_BUFFER_SIZE;
-
-    bpm += bpm_buff[bpm_buff_RD_idx];
-
-    tmp = bpm_buff_RD_idx - BPM_BUFFER_SIZE + 1;
-    if (tmp < 0) tmp += BPM_BUFFER_SIZE;
-
-    bpm -= bpm_buff[tmp];
-
-    bpm_buff_RD_idx++;
-    bpm_buff_RD_idx %= BPM_BUFFER_SIZE;
-
-    old_foundTimeMicros = foundTimeMicros;
-
-    rightBPM = bpm;
-    Serial << bpm << ",";
-    for(byte i=0;i<BPM_BUFFER_SIZE;i++) Serial << "," << bpm_buff[i];
-    Serial << endl;
-  }
-  rightUpdate = false;
-}
-
-
 #define M       5
 #define N       30
 #define winSize     250
 #define HP_CONSTANT   ((float) 1 / (float) M)
-#define MAX_BPM     200
 
 // circular buffer for input ecg signal
 // we need to keep a history of M + 1 samples for HP filter
@@ -428,89 +378,6 @@ boolean detect(float new_ecg_pt) {
   return false;
 
 }
-void computeBPM_FFT() {
-  static unsigned long tic = millis();
-
-  /* Build raw data */
-  static byte ringIndex = 0;
-  static byte ringBuffer[samples];
-  ringBuffer[ringIndex] = rightValue; // build up the data
-
-  // reset
-  rightUpdate = false;
-
-  // loop through to get more samples
-  if (ringIndex != samples - 1) {
-    ringIndex++;
-    return;
-  }
-  // reset the ring buffer.
-  ringIndex = 0;
-  unsigned long toc = millis();
-
-  //  samplingFrequency = (float)samples*1000UL/(float)(toc-tic);
-  samplingFrequency = 1000.0 / 16.0;
-  Serial << "freq: " << samplingFrequency << " delta: " << toc - tic << endl;
-  tic = toc;
-
-  arduinoFFT FFT = arduinoFFT(); /* Create FFT object */
-
-  /*
-    These are the input and output vectors
-    Input vectors receive computed results from FFT
-  */
-  double vReal[samples];
-  double vImag[samples];
-
-  // load the data
-  for ( byte i = 0; i < samples; i++ ) vReal[i] = ringBuffer[i];
-
-  /* Print the results of the simulated sampling according to time */
-  //  Serial.println("Data:");
-  //  PrintVector(vReal, samples, SCL_TIME);
-  //  FFT.Windowing(vReal, samples, FFT_WIN_TYP_HAMMING, FFT_FORWARD);  /* Weigh data */
-  //  Serial.println("Weighed data:");
-  //  PrintVector(vReal, samples, SCL_TIME);
-  FFT.Compute(vReal, vImag, samples, FFT_FORWARD); /* Compute FFT */
-  //  Serial.println("Computed Real values:");
-  //  PrintVector(vReal, samples, SCL_INDEX);
-  //  Serial.println("Computed Imaginary values:");
-  //  PrintVector(vImag, samples, SCL_INDEX);
-  FFT.ComplexToMagnitude(vReal, vImag, samples); /* Compute magnitudes */
-  //  Serial.println("Computed magnitudes:");
-  //  PrintVector(vReal, (samples >> 1), SCL_FREQUENCY);
-  double x = FFT.MajorPeak(vReal, samples, samplingFrequency);
-  Serial.println(x, 6);
-
-}
-
-
-void PrintVector(double *vData, uint16_t bufferSize, uint8_t scaleType)
-{
-
-  for (uint16_t i = 0; i < bufferSize; i++)
-  {
-    double abscissa;
-    /* Print abscissa value */
-    switch (scaleType)
-    {
-      case SCL_INDEX:
-        abscissa = (i * 1.0);
-        break;
-      case SCL_TIME:
-        abscissa = ((i * 1.0) / samplingFrequency);
-        break;
-      case SCL_FREQUENCY:
-        abscissa = ((i * 1.0 * samplingFrequency) / samples);
-        break;
-    }
-    Serial.print(abscissa, 6);
-    Serial.print(" ");
-    Serial.print(vData[i], 4);
-    Serial.println();
-  }
-  Serial.println();
-}
 
 void sendBPM() {
   // track sends so we don't spam the scoreboard
@@ -564,7 +431,6 @@ void connectWiFi() {
   Serial << F("IP address: ") << WiFi.localIP() << endl;;
   digitalWrite(RED_LED, RED_OFF);
 }
-
 
 void connectMQTT() {
   digitalWrite(RED_LED, RED_ON);
