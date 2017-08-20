@@ -164,13 +164,7 @@ void setup() {
   mqtt.setCallback(callback);
 
   CRGB foo[nLeftLED];
-  if( sizeof(foo) > MQTT_MAX_PACKET_SIZE ) {
-    Serial << F("packet size must be >=") << sizeof(foo) << endl;
-    Serial << F("packet size is=") << MQTT_MAX_PACKET_SIZE << endl;
-    Serial << F("HALTING.") << endl;
-    while(1);
-  }
-  
+
   FastLED.addLeds<WS2811, PIN_LED, RGB>(leds, nTotalLED).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(255);
   leds.fill_solid(CRGB::Red);
