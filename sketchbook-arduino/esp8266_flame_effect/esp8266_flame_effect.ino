@@ -75,12 +75,9 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("ESP8266Client")) {
+    if (client.connect("ESP8266Client_flame_effect")) {
       Serial.println("connected");
-      // Once connected, publish an announcement...
-      //client.publish("outTopic", "hello world");
-      // ... and resubscribe
-      client.subscribe("asOne/hello");
+      client.publish("asOne/hello", "hello from flame effect");
       client.subscribe(testUpper.c_str());
       client.subscribe(testLower.c_str());
       client.subscribe("asOne/doPulse");
