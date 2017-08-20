@@ -31,6 +31,9 @@ get '/testBeat' do
   end
 end
 
+get '/testBPM/:bpm' do
+  doBPM params[:bpm]
+end
 
 def doPoof(output, durationStr)
   duration = durationStr.to_i
@@ -41,6 +44,11 @@ def doPoof(output, durationStr)
   end
   publish("asOne/fe/test#{output}", duration)
   "poofing #{output}: #{duration}"
+end
+
+def doBPM(bpm)
+  publish "asOne/fe/doHeartbeat", bpm
+  "sending bpm: #{bpm}"
 end
 
 def publish(topic, message)
