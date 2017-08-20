@@ -2,7 +2,6 @@ require 'sinatra'
 require 'mqtt'
 
 get '/' do
-  publish("asOne/hello","hello from server!")
   "Hello World"
 end
 
@@ -27,11 +26,14 @@ get '/testBeat' do
     doPoof("Upper", halfDuration.to_s)
     sleep(0.18)
     doPoof("Lower", duration.to_s)
-    "test heartbeat"
     sleep(0.95)
+    "test heartbeat"
   end
 end
 
+get '/testBPM/:bpm' do
+  doBPM params[:bpm]
+end
 
 def doPoof(output, durationStr)
   duration = durationStr.to_i
@@ -40,8 +42,13 @@ def doPoof(output, durationStr)
   elsif (duration > 999)
     duration = 999
   end
-  publish("asOne/test#{output}", duration)
+  publish("asOne/fe/test#{output}", duration)
   "poofing #{output}: #{duration}"
+end
+
+def doBPM(bpm)
+  publish "asOne/fe/doHeartbeat", bpm
+  "sending bpm: #{bpm}"
 end
 
 def publish(topic, message)
@@ -49,4 +56,6 @@ def publish(topic, message)
     c.publish(topic, message)
   end
 end
+
+publish("asOne/hello","hello from web server")
 

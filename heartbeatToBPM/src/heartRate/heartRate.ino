@@ -578,6 +578,8 @@ void connectMQTT() {
     Serial << F("Attempting MQTT connection...") << endl;
     // Attempt to connect
     if (mqtt.connect(id)) {
+      mqtt.publish("asOne/hello", "hello from heartrate monitor"
+
       Serial << F("Connected.") << endl;
       // subscribe
       Serial << F("Subscribing: ") << sub << endl;

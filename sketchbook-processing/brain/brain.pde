@@ -1,10 +1,12 @@
 import processing.serial.*;
+import mqtt.*;
+
 Serial mySerial;
 
 PrintWriter writer;
+MQTTClient mqtt;
 
 ArrayList<String> allFound = new ArrayList<String>();
-
 int lastMillis = 0;
 
 void setup() {
@@ -14,7 +16,20 @@ void setup() {
 
   writer = createWriter("/home/jack/foo.csv");
 
+  mqtt = new MQTTClient(this);
+  mqtt.connect("mqtt://asone-console", "brain");
+
+  // waiting for lots of stuff, really. serial, mqtt, and so forth
   delay(10);
+
+  mqtt.publish("/asOne/hello", "hello from brain");
+}
+
+/**
+ * does nothing for now. needed to make the library not complain tho
+ */
+void messageReceived(String topic, byte[] payload) {
+  println("new message: " + topic + " - " + new String(payload));
 }
 
 void draw() {
@@ -27,18 +42,22 @@ void draw() {
   if (!listCopy.isEmpty()) {
     int millis = millis();
     for (String found : listCopy) {
-      int resultCode = Integer.parseInt(found.trim());
-      String line;
-      if (resultCode == 111) {
-        int diff = millis - lastMillis;
-        int bpm = 60000 / diff;
-        lastMillis = millis;
-        line = millis+","+Integer.parseInt(found.trim())+","+bpm;
+      String topic;
+      String byteString;
+      if (found.startsWith("RIGHT: ")) {
+        topic = "/asOne/brain/right";
+        byteString = found.substring(7).trim();
+      } else if(found.startsWith("LEFT: ")) {
+        topic = "/asOne/brain/left";
+        byteString = found.substring(7).trim();
       } else {
-        line = millis+","+Integer.parseInt(found.trim())+",0";
+        continue;
       }
-      writer.println(line);
-      System.out.println(line);
+      int resultCode = Integer.parseInt(byteString);
+      //String line = topic +" "+resultCode;
+      //writer.println(line);
+      //System.out.println(line);
+      mqtt.publish(topic, ""+resultCode);
     }
   }
 }
@@ -55,5 +74,6 @@ void serialEvent (Serial myPort) {
 void keyPressed() {
   writer.flush();  // Writes the remaining data to the file
   writer.close();  // Finishes the file
+  mySerial.stop();
   exit();  // Stops the program
 }
