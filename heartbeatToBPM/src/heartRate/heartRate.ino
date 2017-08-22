@@ -25,11 +25,23 @@ PubSubClient mqtt;
 byte leftBPM = 100;
 int leftValue = 0;
 boolean leftUpdate = false;
+unsigned long leftLastTrigger = millis();
+byte leftCountTrigger = 0;
 
 // track the right BPM
 byte rightBPM = 100;
 byte rightValue = 0;
 boolean rightUpdate = false;
+unsigned long rightLastTrigger = millis();
+byte rightCountTrigger = 0;
+
+// Constants
+const unsigned long MIN_INTERVAL = 60000UL / 200UL; // 200bpm -> 300ms interval
+const unsigned long MAX_INTERVAL = 60000UL / 40UL; // 40bpm -> 1500ms interval
+const byte COUNT_THRESHOLD = 3;
+const byte SMOOTHING = 10;
+const char* RIGHT_TOPIC = "asOne/score/rightBPM";
+const char* LEFT_TOPIC = "asOne/score/leftBPM";
 
 // led pinouts and high/low definition for red one.
 #define BLUE_LED 2
@@ -105,15 +117,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void computeBPM_Thresh_Right() {
-  // Magic Numbers
-  const unsigned long minInterval = 60000UL / 200UL; // 200bpm -> 300ms interval
-  const unsigned long maxInterval = 60000UL / 40UL; // 40bpm -> 1500ms interval
-  const byte countThreshold = 3;
-  const byte smoothing = 10;
-
-  static unsigned long lastTrigger = millis();
-  static byte countTrigger = 0;
-
   unsigned long now = millis();
 
   static unsigned long smoothedValue = rightValue;
@@ -126,17 +129,17 @@ void computeBPM_Thresh_Right() {
   static unsigned long smoothedBPM = rightBPM;
 
   // if the minimum interval is passed and we have a high postive excursion
-  if ( (now - lastTrigger) >= minInterval && rightValue >= triggerLevel ) {
+  if ( (now - rightLastTrigger) >= MIN_INTERVAL && rightValue >= triggerLevel ) {
     // require N such events to cause a trigger
-    countTrigger++;
-    if ( countTrigger >= countThreshold ) {
-      unsigned long delta = now - lastTrigger;
-      lastTrigger = now;
+    rightCountTrigger++;
+    if ( rightCountTrigger >= COUNT_THRESHOLD ) {
+      unsigned long delta = now - rightLastTrigger;
+      rightLastTrigger = now;
       unsigned long bpm = 60000.0 / (float)delta;
 
-      // if we're inside the maxInterval, probably not noise
-      if ( delta <= maxInterval ) {
-        smoothedBPM = (smoothedBPM * (smoothing - 1) + bpm) / smoothing;
+      // if we're inside the MAX_INTERVAL, probably not noise
+      if ( delta <= MAX_INTERVAL ) {
+        smoothedBPM = (smoothedBPM * (SMOOTHING - 1) + bpm) / SMOOTHING;
         rightBPM = smoothedBPM;
 
         Serial << "Right trigger! val=" << rightValue << " trigger=" << triggerLevel;
@@ -144,25 +147,17 @@ void computeBPM_Thresh_Right() {
       }
     }
   } else {
-    countTrigger = 0;
-    smoothedValue = (smoothedValue * (smoothing - 1) + rightValue) / smoothing;
+    rightCountTrigger = 0;
+    smoothedValue = (smoothedValue * (SMOOTHING - 1) + rightValue) / SMOOTHING;
   }
 
-  Serial << "0,255," << rightValue << "," << smoothedValue << "," << countTrigger*100;
+  Serial << "0,255," << rightValue << "," << smoothedValue << "," << rightCountTrigger*100;
   Serial << "," << triggerLevel << "," << smoothedBPM << endl;
 
   rightUpdate = false;
 }
 
 void computeBPM_Thresh_Left() {
-  // Magic Numbers
-  const unsigned long minInterval = 60000UL / 200UL; // 200bpm -> 300ms interval
-  const unsigned long maxInterval = 60000UL / 40UL; // 40bpm -> 1500ms interval
-  const byte countThreshold = 3;
-  const byte smoothing = 10;
-
-  static unsigned long lastTrigger = millis();
-  static byte countTrigger = 0;
 
   unsigned long now = millis();
 
@@ -176,17 +171,17 @@ void computeBPM_Thresh_Left() {
   static unsigned long smoothedBPM = leftBPM;
 
   // if the minimum interval is passed and we have a high postive excursion
-  if ( (now - lastTrigger) >= minInterval && leftValue >= triggerLevel ) {
+  if ( (now - leftLastTrigger) >= MIN_INTERVAL && leftValue >= triggerLevel ) {
     // require N such events to cause a trigger
-    countTrigger++;
-    if ( countTrigger >= countThreshold ) {
-      unsigned long delta = now - lastTrigger;
-      lastTrigger = now;
+    leftCountTrigger++;
+    if ( leftCountTrigger >= COUNT_THRESHOLD ) {
+      unsigned long delta = now - leftLastTrigger;
+      leftLastTrigger = now;
       unsigned long bpm = 60000.0 / (float)delta;
 
-      // if we're inside the maxInterval, probably not noise
-      if ( delta <= maxInterval ) {
-        smoothedBPM = (smoothedBPM * (smoothing - 1) + bpm) / smoothing;
+      // if we're inside the MAX_INTERVAL, probably not noise
+      if ( delta <= MAX_INTERVAL ) {
+        smoothedBPM = (smoothedBPM * (SMOOTHING - 1) + bpm) / SMOOTHING;
         leftBPM = smoothedBPM;
 
         Serial << "Left trigger! val=" << leftValue << " trigger=" << triggerLevel;
@@ -194,11 +189,11 @@ void computeBPM_Thresh_Left() {
       }
     }
   } else {
-    countTrigger = 0;
-    smoothedValue = (smoothedValue * (smoothing - 1) + leftValue) / smoothing;
+    leftCountTrigger = 0;
+    smoothedValue = (smoothedValue * (SMOOTHING - 1) + leftValue) / SMOOTHING;
   }
 
-  Serial << "0,255," << leftValue << "," << smoothedValue << "," << countTrigger*100;
+  Serial << "0,255," << leftValue << "," << smoothedValue << "," << leftCountTrigger*100;
   Serial << "," << triggerLevel << "," << smoothedBPM << endl;
 
   leftUpdate = false;
@@ -210,18 +205,15 @@ void sendBPM() {
   static byte lastRightBPM = rightBPM;
 
   // publish new BPM, if needed.
-  const char* pubRight = "asOne/score/rightBPM";
-  const char* pubLeft = "asOne/score/leftBPM";
-  static char msg[32];
 
   if ( leftBPM != lastLeftBPM ) {
     byte *m=&leftBPM;
-    mqtt.publish(pubLeft, m, 1);
+    mqtt.publish(LEFT_TOPIC, m, 1);
     lastLeftBPM = leftBPM;
   }
   if ( rightBPM != lastRightBPM ) {
     byte *m=&rightBPM;
-    mqtt.publish(pubRight, m, 1);
+    mqtt.publish(RIGHT_TOPIC, m, 1);
     lastRightBPM = rightBPM;
   }
 }
