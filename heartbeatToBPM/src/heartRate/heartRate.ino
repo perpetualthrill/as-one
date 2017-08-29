@@ -126,8 +126,39 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
-void computeBPM_Thresh() {
-  
+void computeBPM_Thresh(unsigned long smoothedValue, unsigned long lastTrigger, byte value, byte countTrigger,
+                       byte bpm, unsigned long smoothedBPM) {
+  unsigned long now = millis();
+  float triggerLevel = (float)smoothedValue * SMOOTHING_FLOAT;
+
+  // if the minimum interval is passed and we have a high postive excursion
+  if ( (now - lastTrigger) >= MIN_INTERVAL && value >= triggerLevel ) {
+    // require N such events to cause a trigger
+    countTrigger++;
+    if ( countTrigger >= COUNT_THRESHOLD ) {
+      unsigned long delta = now - lastTrigger;
+      lastTrigger = now;
+      unsigned long foundBpm = 60000.0 / (float)delta;
+
+      // if we're inside the MAX_INTERVAL, probably not noise
+      if ( delta <= MAX_INTERVAL ) {
+        smoothedBPM = (smoothedBPM * (SMOOTHING_INT - 1) + foundBpm) / SMOOTHING_INT;
+        bpm = smoothedBPM;
+
+        Serial << "Right trigger! val=" << rightValue << " trigger=" << triggerLevel;
+        Serial << " bpm=" << foundBpm << " smoothed=" << smoothedBPM << endl;
+      }
+    }
+  } else {
+    rightCountTrigger = 0;
+    rightSmoothedValue = (rightSmoothedValue * (SMOOTHING_INT - 1) + rightValue) / SMOOTHING_INT;
+  }
+
+  Serial << "0,255," << rightValue << "," << rightSmoothedValue << "," << rightCountTrigger*100;
+  Serial << "," << triggerLevel << "," << smoothedBPM << endl;
+
+  rightUpdate = false;
+
 }
 
 void computeBPM_Thresh_Right() {
