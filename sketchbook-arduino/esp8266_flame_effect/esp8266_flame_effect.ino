@@ -18,6 +18,8 @@ int upperPinStartMillis = 0;
 int lowerPinStartMillis = 0;
 int upperPinTargetMillis = 0;
 int lowerPinTargetMillis = 0;
+bool upperPinOn = false;
+bool lowerPinOn = false;
 int pauseTargetMillis = 0;
 int beatCountdown = 0;
 int beatLength = 0;
@@ -57,7 +59,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
 
   String checkTopic = String(topic);
-  char* p = (char*)malloc(length);
+  char *p = (char*) malloc(length);
   memcpy(p, payload, length);
   String checkPayload = String(p);
   
@@ -84,9 +86,18 @@ void enqueueNextBeat() {
   int now = millis();
   upperPinStartMillis = now;
   upperPinTargetMillis = now + (beatLength * .22);
-  lowerPinStartMillis = now + (beatLength * .30);
+  lowerPinStartMillis = now + (beatLength * .25);
   lowerPinTargetMillis = now + (beatLength * .60);
   pauseTargetMillis = now + beatLength;
+  Serial.print("up start ");
+  Serial.print(upperPinStartMillis);
+  Serial.print(" up end ");
+  Serial.print(upperPinTargetMillis);
+  Serial.print(" low start ");
+  Serial.print(lowerPinStartMillis);
+  Serial.print(" low end ");
+  Serial.print(lowerPinTargetMillis);
+  Serial.println(" \\m/");
 }
 
 void doPoof(int pin, int durationMs) {
@@ -126,13 +137,35 @@ void reconnect() {
 }
 
 void internalDigitalWrite(int pin, int val) {
-  /*
-  Serial.print("setting pin ");
-  Serial.print(pin);
-  Serial.print(" to value ");
-  Serial.println(val);
-  */
-  digitalWrite(pin, val);
+  if (pin == upperPin) {
+    if (val == HIGH) {
+      if (!upperPinOn) {
+        Serial.println("UPPER HIGH");
+        digitalWrite(pin, val);
+        upperPinOn = true;
+      }
+    } else if (val == LOW) {
+      if (upperPinOn) {
+        Serial.println("UPPER LOW");
+        digitalWrite(pin, val);
+        upperPinOn = false;
+      }
+    }
+  } else if (pin == lowerPin) {
+    if (val == HIGH) {
+      if (!lowerPinOn) {
+        Serial.println("LOWER HIGH");
+        digitalWrite(pin, val);
+        lowerPinOn = true;
+      }
+    } else if (val == LOW) {
+      if (lowerPinOn) {
+        Serial.println("LOWER LOW");
+        digitalWrite(pin, val);
+        lowerPinOn = false;
+      }
+    }
+  }
 }
 
 void loop() {
@@ -141,25 +174,29 @@ void loop() {
   }
   
   int now = millis();
-  
+
   if (upperPinTargetMillis > 0) {
-    if (now >= upperPinStartMillis && now < upperPinTargetMillis) {
-      internalDigitalWrite(upperPin, HIGH);  
-    } else {
-      internalDigitalWrite(upperPin, LOW);
-      upperPinTargetMillis = 0;
+    if (now >= upperPinStartMillis) {
+      if (now < upperPinTargetMillis) {
+         internalDigitalWrite(upperPin, HIGH);  
+      } else {
+         internalDigitalWrite(upperPin, LOW);
+         upperPinTargetMillis = 0;
+      }
     }
   }
 
   if (lowerPinTargetMillis > 0) {
-    if (now >= lowerPinStartMillis && now < lowerPinTargetMillis) {
-      internalDigitalWrite(lowerPin, HIGH);  
-    } else {
-      internalDigitalWrite(lowerPin, LOW);
-      lowerPinTargetMillis = 0;
+    if (now >= lowerPinStartMillis) {
+      if (now < lowerPinTargetMillis) {
+         internalDigitalWrite(lowerPin, HIGH);  
+      } else {
+         internalDigitalWrite(lowerPin, LOW);
+         lowerPinTargetMillis = 0;
+      }
     }
   }
-  
+
   if (beatCountdown > 0 && now > pauseTargetMillis) {
     enqueueNextBeat();
   }
