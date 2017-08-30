@@ -12,9 +12,15 @@ int lastMillis = 0;
 void setup() {
   // 32 = /dev/ttyUSB0
   // 0 = COM1
-  mySerial = new Serial( this, Serial.list()[0], 38400 );
+  //println(Serial.list());
+  for (String foo : Serial.list()) {
+    println(foo);
+  }
+  //mySerial = new Serial( this, Serial.list()[3], 38400 );
+  // -- /dev/tty.usbmodem3227731
+  mySerial = new Serial(this, "/dev/tty.usbmodem3227731", 38400 );
 
-  writer = createWriter("/home/jack/foo.csv");
+  //writer = createWriter("/home/jack/foo.csv");
 
   mqtt = new MQTTClient(this);
   mqtt.connect("mqtt://asone-console", "brain");
@@ -22,8 +28,9 @@ void setup() {
   // waiting for lots of stuff, really. serial, mqtt, and so forth
   delay(10);
 
-  mqtt.publish("/asOne/hello", "hello from brain");
+  mqtt.publish("asOne/hello", "hello from brain");
 }
+
 
 /**
  * does nothing for now. needed to make the library not complain tho
@@ -45,10 +52,10 @@ void draw() {
       String topic;
       String byteString;
       if (found.startsWith("RIGHT: ")) {
-        topic = "/asOne/brain/right";
+        topic = "asOne/brain/right";
         byteString = found.substring(7).trim();
       } else if(found.startsWith("LEFT: ")) {
-        topic = "/asOne/brain/left";
+        topic = "asOne/brain/left";
         byteString = found.substring(7).trim();
       } else {
         continue;
@@ -72,8 +79,8 @@ void serialEvent (Serial myPort) {
 }
 
 void keyPressed() {
-  writer.flush();  // Writes the remaining data to the file
-  writer.close();  // Finishes the file
-  mySerial.stop();
-  exit();  // Stops the program
+//  writer.flush();  // Writes the remaining data to the file
+//  writer.close();  // Finishes the file
+//  mySerial.stop();
+//  exit();  // Stops the program
 }

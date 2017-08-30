@@ -51,7 +51,7 @@ boolean rightUpdate = false;
 #define RED_OFF HIGH
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(38400);
   Serial << endl << endl << F("Heart Rate. Startup.") << endl;
 
   pinMode(RED_LED, OUTPUT);     // Initialize the red LED pin as an output
@@ -162,8 +162,8 @@ void computeBPM_Thresh_Right() {
     smoothedValue = (smoothedValue * (smoothing - 1) + rightValue) / smoothing;
   }
 
-  Serial << "0,255," << rightValue << "," << smoothedValue << "," << countTrigger*100;
-  Serial << "," << triggerLevel << "," << smoothedBPM << endl;
+ // Serial << "0,255," << rightValue << "," << smoothedValue << "," << countTrigger*100;
+ // Serial << "," << triggerLevel << "," << smoothedBPM << endl;
 
   rightUpdate = false;
 }
