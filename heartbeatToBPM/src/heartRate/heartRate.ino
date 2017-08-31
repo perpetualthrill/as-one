@@ -5,11 +5,13 @@
   - publishes:
       - "asOne/score/rightBPM": [0-199] current heartrate to display on right score
       - "asOne/score/leftBPM": [0-199] current heartrate to display on left score
+      - "asOne/fe/doHeartbeat": [integer] do flame effect at right BPM 
   - subscribes:
       - "asOne/brain/#": multi-level wildcard
   - processes:
       - "asOne/brain/left": [integer] current left pulse interval
       - "asOne/brain/right": [integer] current right pulse interval
+      - "asOne/brain/button": [String] button state
 
 */
 
@@ -45,6 +47,7 @@ const unsigned long MAX_INTERVAL = 60000UL / 40UL; // 40bpm -> 1500ms interval
 const byte COUNT_THRESHOLD = 3;
 const char* RIGHT_TOPIC = "asOne/score/rightBPM";
 const char* LEFT_TOPIC = "asOne/score/leftBPM";
+const char* FE_TOPIC = "asOne/fe/doHeartbeat";
 
 const byte SMOOTHING_INT = 10;
 const float SMOOTHING_FLOAT = 1.10; // fold-increase to trigger
@@ -109,11 +112,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
   // String class is much easier to work with
   String t = topic;
-  String m = (char*)payload;
+  String m = String((char *)payload);
 
   // list of topics that we'll process
   const String msgLeft = "asOne/brain/left";
   const String msgRight = "asOne/brain/right";
+  const String msgButton = "asOne/brain/button";
 
   if (t.equals(msgLeft)) {
     leftValue = m.toInt();
@@ -121,8 +125,20 @@ void callback(char* topic, byte* payload, unsigned int length) {
   } else if (t.equals(msgRight)) {
     rightValue = m.toInt();
     rightUpdate = true;
+  } else if (t.equals(msgButton)) {
+    processButtonMessage(m);
   } else {
     Serial << F(" WARNING. unknown topic. continuing.") << endl;
+  }
+}
+
+void processButtonMessage(String payload) {
+  Serial << "process button: " << payload << endl;
+  if(payload.startsWith("ON")) {
+    String fred = "";
+    fred += rightBPM;
+    mqtt.publish(FE_TOPIC, fred.c_str());
+    Serial << "Triggering flame effect at " << fred << endl;
   }
 }
 
@@ -188,8 +204,8 @@ void computeBPM_Thresh_Right() {
     rightSmoothedValue = (rightSmoothedValue * (SMOOTHING_INT - 1) + rightValue) / SMOOTHING_INT;
   }
 
-  Serial << "0,255," << rightValue << "," << rightSmoothedValue << "," << rightCountTrigger*100;
-  Serial << "," << triggerLevel << "," << rightSmoothedBPM << endl;
+//  Serial << "0,255," << rightValue << "," << rightSmoothedValue << "," << rightCountTrigger*100;
+//  Serial << "," << triggerLevel << "," << rightSmoothedBPM << endl;
 
   rightUpdate = false;
 }
@@ -221,8 +237,8 @@ void computeBPM_Thresh_Left() {
     leftSmoothedValue = (leftSmoothedValue * (SMOOTHING_INT - 1) + leftValue) / SMOOTHING_INT;
   }
 
-  Serial << "0,255," << leftValue << "," << leftSmoothedValue << "," << leftCountTrigger*100;
-  Serial << "," << triggerLevel << "," << leftSmoothedBPM << endl;
+//  Serial << "0,255," << leftValue << "," << leftSmoothedValue << "," << leftCountTrigger*100;
+//  Serial << "," << triggerLevel << "," << leftSmoothedBPM << endl;
 
   leftUpdate = false;
 }
@@ -233,7 +249,6 @@ void sendBPM() {
   static byte lastRightBPM = rightBPM;
 
   // publish new BPM, if needed.
-
   if ( leftBPM != lastLeftBPM ) {
     byte *m=&leftBPM;
     mqtt.publish(LEFT_TOPIC, m, 1);
