@@ -57,16 +57,23 @@ void draw() {
       } else if(found.startsWith("LEFT: ")) {
         topic = "asOne/brain/left";
         byteString = found.substring(7).trim();
+      } else if(found.startsWith("BUTTON HIGH")) {
+        publishButton("OFF");
+        continue;
+      } else if(found.startsWith("BUTTON LOW")) {
+        publishButton("ON");
+        continue;
       } else {
         continue;
       }
       int resultCode = Integer.parseInt(byteString);
-      //String line = topic +" "+resultCode;
-      //writer.println(line);
-      //System.out.println(line);
       mqtt.publish(topic, ""+resultCode);
     }
   }
+}
+
+void publishButton(String state) {
+  mqtt.publish("asOne/brain/button", state);
 }
 
 void serialEvent (Serial myPort) {

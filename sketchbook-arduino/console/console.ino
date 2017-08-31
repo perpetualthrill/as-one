@@ -16,6 +16,7 @@ const int MAX_HEARTRATE_BPM = 130;
 const int MIN_WINDOW_MS = MS_PER_SECOND / MAX_HEARTRATE_BPM;
 const int MIN_HEARTRATE_BPM = 50;
 const int MAX_WINDOW_MS = MS_PER_SECOND / MIN_HEARTRATE_BPM;
+const int DEBOUNCE_DELAY_MS = 50;
 
 // Magic number: a large enough difference from average to trigger
 // beat detection. Empirically gathered.
@@ -24,11 +25,18 @@ const int DIFFERENCE_THRESHOLD = 12;
 // known-bad identifier
 const int SENTINEL = 9999;
 
+// add a button. pin 12 is right near the edge
+const int BUTTON_PIN = 12;
+
 // globals
 int latest[] = { SENTINEL, SENTINEL };
 int fifo[FIFO_SIZE];
 int lastBeatMs = 0;
 int goodBeatTimes[GOOD_BEAT_QUEUE_SIZE];
+
+int buttonState = LOW;
+int lastButtonState = LOW;
+bool buttonLastStateChange = 0;
 
 void setup() {
   // Open serial communications and wait for port to open:
@@ -46,6 +54,8 @@ void setup() {
   for (int i = 0; i < GOOD_BEAT_QUEUE_SIZE; i++) {
     goodBeatTimes[i] = 0;
   }
+
+  pinMode(BUTTON_PIN, INPUT);
 
   // debounce
   delay(10);
@@ -159,5 +169,23 @@ void loop() {
       }
     }
   }
+
+  // update button state
+  int state = digitalRead(BUTTON_PIN);
+  if (state != lastButtonState) {
+    buttonLastStateChange = millis();
+  }
+  if ((millis() - buttonLastStateChange) > DEBOUNCE_DELAY_MS) {
+    if (buttonState != state) {
+      if (state == HIGH) {
+        Serial.println("BUTTON HIGH");
+      } else {
+        Serial.println("BUTTON LOW");
+      }
+    }
+    buttonState = state;
+  }
+  lastButtonState = state;
+  
   delay(SAMPLE_DELAY_MS);
 }
