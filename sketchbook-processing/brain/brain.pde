@@ -8,6 +8,10 @@ MQTTClient mqtt;
 
 ArrayList<String> allFound = new ArrayList<String>();
 int lastMillis = 0;
+byte[] two = { 2 };
+byte[] one = { 1 };
+byte[] zero = { 0 };
+
 
 void setup() {
   // 32 = /dev/ttyUSB0
@@ -29,6 +33,8 @@ void setup() {
   delay(10);
 
   mqtt.publish("asOne/hello", "hello from brain");
+  mqtt.publish("asOne/score/state", one);
+  mqtt.publish("asOne/scoreboard/directOnly", one);
 }
 
 
@@ -40,14 +46,13 @@ void messageReceived(String topic, byte[] payload) {
 }
 
 void draw() {
-  // log input
   ArrayList<String> listCopy;
   synchronized (allFound) {
     listCopy = new ArrayList<String>(allFound);
     allFound.clear();
   }
   if (!listCopy.isEmpty()) {
-    int millis = millis();
+    //int millis = millis();
     for (String found : listCopy) {
       String topic;
       String byteString;
@@ -59,9 +64,14 @@ void draw() {
         byteString = found.substring(7).trim();
       } else if(found.startsWith("BUTTON HIGH")) {
         publishButton("OFF");
+       // mqtt.publish("asOne/score/state", one);
+       // mqtt.publish("asOne/score/state", one);
+        
+       // mqtt.publish("asOne/score/state", one);
         continue;
       } else if(found.startsWith("BUTTON LOW")) {
         publishButton("ON");
+       // mqtt.publish("asOne/score/state", two);
         continue;
       } else {
         continue;
@@ -74,6 +84,7 @@ void draw() {
 
 void publishButton(String state) {
   mqtt.publish("asOne/brain/button", state);
+  println("asOne/brain/button: "+state);
 }
 
 void serialEvent (Serial myPort) {
