@@ -73,6 +73,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
     doPoof(lowerPin, checkPayload.toInt());
   } else if (checkTopic.equals(heartbeatTopic)) {
     int bpm = checkPayload.toInt();
+    if ((bpm < 50) || (bpm > 180)) {
+      return;
+    }
     Serial.print("do heartbeat at bpm = ");
     Serial.println(checkPayload.toInt());
     beatLength = MS_PER_SECOND / bpm;
