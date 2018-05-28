@@ -43,7 +43,7 @@ void setup() {
   }
   //mySerial = new Serial( this, Serial.list()[3], 38400 );
   // -- /dev/tty.usbmodem3227731
-  mySerial = new Serial(this, "/dev/tty.usbmodem3227731", 38400 );
+//  mySerial = new Serial(this, "/dev/tty.usbmodem3227731", 38400 );
 
   //writer = createWriter("/home/jack/foo.csv");
 
