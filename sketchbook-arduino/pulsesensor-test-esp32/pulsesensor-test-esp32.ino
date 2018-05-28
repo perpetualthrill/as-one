@@ -50,7 +50,14 @@
    Set this to SERIAL_PLOTTER if you're going to run
     the Arduino IDE's Serial Plotter.
 */
-const int OUTPUT_TYPE = SERIAL_PLOTTER;
+const int OUTPUT_TYPE = PROCESSING_VISUALIZER;
+//const int OUTPUT_TYPE = SERIAL_PLOTTER;
+
+/*
+   Number of PulseSensor devices we're reading from.
+*/
+const int PULSE_SENSOR_COUNT = 2;
+
 
 /*
    Pinout:
@@ -64,7 +71,8 @@ const int OUTPUT_TYPE = SERIAL_PLOTTER;
        If USE_INTERRUPTS is true, Do not use pin 9 or 10 for PIN_FADE,
        because those pins' PWM interferes with the sample timer.
 */
-const int PIN_INPUT = A0;
+const int PIN_INPUT_1 = A0;
+const int PIN_INPUT_2 = A3;
 const int PIN_BLINK = LED_BUILTIN;    // Pin 13 is the on-board LED
 //const int PIN_FADE = 5;
 const int THRESHOLD = 550;   // Adjust this number to avoid noise when idle
@@ -83,7 +91,7 @@ const byte SAMPLES_PER_SERIAL_SAMPLE = 10;
 /*
    All the PulseSensor Playground functions.
 */
-PulseSensorPlayground pulseSensor;
+PulseSensorPlayground pulseSensor(PULSE_SENSOR_COUNT);
 
 void setup() {
   /*
@@ -112,9 +120,14 @@ void setup() {
    
    */
 
+   // Set up LED now that blinkOnPulse is not doing it
+   pinMode(PIN_BLINK, OUTPUT);
+
   // Configure the PulseSensor manager.
-  pulseSensor.analogInput(PIN_INPUT);
-  pulseSensor.blinkOnPulse(PIN_BLINK);
+  pulseSensor.analogInput(PIN_INPUT_1, 0);
+  pulseSensor.analogInput(PIN_INPUT_2, 1);
+
+  //pulseSensor.blinkOnPulse(PIN_BLINK);
  // pulseSensor.fadeOnPulse(PIN_FADE);
 
   pulseSensor.setSerial(Serial);
@@ -165,21 +178,40 @@ void loop() {
     if (--samplesUntilReport == (byte) 0) {
       samplesUntilReport = SAMPLES_PER_SERIAL_SAMPLE;
 
-      pulseSensor.outputSample();
+      //pulseSensor.outputSample();
+
+      for (int i = 0; i < PULSE_SENSOR_COUNT; ++i) {
+        if (i != 0) {
+          Serial.print(F(","));
+        }
+        Serial.print(pulseSensor.getBeatsPerMinute(i));
+      }
+      Serial.println();
+
 
       /*
          At about the beginning of every heartbeat,
          report the heart rate and inter-beat-interval.
       */
+      /*
       if (pulseSensor.sawStartOfBeat()) {
         pulseSensor.outputBeat();
       }
+      */
     }
 
     /*******
       Here is a good place to add code that could take up
       to a millisecond or so to run.
     *******/
+
+    // This kinda works, but is awfully twitchy. I blame the underlying
+    // isInsideBeat implementation
+    bool inPulse = false;
+    for (int i = 0; i < PULSE_SENSOR_COUNT; i++) {
+      inPulse = inPulse || pulseSensor.isInsideBeat(i);
+    }
+    digitalWrite(PIN_BLINK, inPulse);
   }
 
   /******
@@ -187,3 +219,4 @@ void loop() {
      from the PulseSensor.
   ******/
 }
+
