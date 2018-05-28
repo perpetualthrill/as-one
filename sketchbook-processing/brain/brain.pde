@@ -48,7 +48,7 @@ void setup() {
   //writer = createWriter("/home/jack/foo.csv");
 
   mqtt = new MQTTClient(this);
-  mqtt.connect("mqtt://asone-console", "brain");
+  mqtt.connect("mqtt://asone-router", "brain");
 
   // waiting for lots of stuff, really. serial, mqtt, and so forth
   delay(10);

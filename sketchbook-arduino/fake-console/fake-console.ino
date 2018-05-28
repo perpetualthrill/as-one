@@ -28,7 +28,7 @@ void setup() {
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-  client.setServer("asone-console", 1883);
+  client.setServer("asone-router", 1883);
   client.setCallback(callback);
 }
 

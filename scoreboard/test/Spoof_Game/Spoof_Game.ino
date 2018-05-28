@@ -84,7 +84,7 @@ void setup() {
 
   mqtt.setClient(espClient);
   //  const char* mqtt_server = "broker.mqtt-dashboard.com";
-  const char* mqtt_server = "asone-console";
+  const char* mqtt_server = "asone-router";
   mqtt.setServer(mqtt_server, 1883);
   mqtt.setCallback(callback);
 }

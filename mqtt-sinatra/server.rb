@@ -52,7 +52,7 @@ def doBPM(bpm)
 end
 
 def publish(topic, message)
-  MQTT::Client.connect('asone-console') do |c|
+  MQTT::Client.connect('asone-router') do |c|
     c.publish(topic, message)
   end
 end
