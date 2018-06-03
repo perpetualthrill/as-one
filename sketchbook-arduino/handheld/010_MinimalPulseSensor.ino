@@ -2,6 +2,13 @@
 
 static const int MS_PER_READ = 2;
 
+static const int DEFAULT_THRESHOLD = 550;
+static const int MEDIAN_INPUT = 1024 / 2; // range is 1024
+
+static const int MAX_BPM = 130;
+static const int MIN_INTERVAL_MS = 60000 / MAX_BPM;
+static const int MIN_BPM = 60;
+
 class MinimalPulseSensor {
 
   // Configuration
@@ -23,8 +30,8 @@ class MinimalPulseSensor {
   unsigned long sampleIntervalMs;  // expected time between calls to readSensor(), in milliseconds.
   int rate[10];                    // array to hold last ten IBI values (ms)
   unsigned long sampleCounter;     // used to determine pulse timing. Milliseconds since we started.
-  int P;                           // used to find peak in pulse wave, seeded (sample value)
-  int T;                           // used to find trough in pulse wave, seeded (sample value)
+  int peak;                           // used to find peak in pulse wave, seeded (sample value)
+  int trough;                           // used to find trough in pulse wave, seeded (sample value)
   int thresh;                      // used to find instant moment of heart beat, seeded (sample value)
   boolean firstBeat;               // used to seed rate array so we startup with reasonable BPM
   boolean secondBeat;              // used to seed rate array so we startup with reasonable BPM
@@ -50,9 +57,9 @@ class MinimalPulseSensor {
     Pulse = false;
     sampleCounter = 0;
     lastBeatTime = 0;
-    P = 512;                    // peak at 1/2 the input range of 0..1023
-    T = 512;                    // trough at 1/2 the input range.
-    threshSetting = 550;        // used to seed and reset the thresh variable
+    peak = MEDIAN_INPUT;                    // peak at 1/2 the input range of 0..1023
+    trough = MEDIAN_INPUT;                    // trough at 1/2 the input range.
+    threshSetting = DEFAULT_THRESHOLD;        // used to seed and reset the thresh variable
     thresh = 550;               // threshold a little above the trough
     amp = 100;                  // beat amplitude 1/10 of input range.
     firstBeat = true;           // looking for the first beat
@@ -69,6 +76,9 @@ class MinimalPulseSensor {
   }
   
   int getBeatsPerMinute() {
+    if (BPM > MAX_BPM || BPM < MIN_BPM) {
+      return 0;
+    }
     return BPM;
   }
   
@@ -106,18 +116,18 @@ class MinimalPulseSensor {
   
     //  find the peak and trough of the pulse wave
     if (Signal < thresh && N > (IBI / 5) * 3) { // avoid dichrotic noise by waiting 3/5 of last IBI
-      if (Signal < T) {                        // T is the trough
-        T = Signal;                            // keep track of lowest point in pulse wave
+      if (Signal < trough) {                        // T is the trough
+        trough = Signal;                            // keep track of lowest point in pulse wave
       }
     }
   
-    if (Signal > thresh && Signal > P) {       // thresh condition helps avoid noise
-      P = Signal;                              // P is the peak
+    if (Signal > thresh && Signal > peak) {       // thresh condition helps avoid noise
+      peak = Signal;                              // P is the peak
     }                                          // keep track of highest point in pulse wave
   
     //  NOW IT'S TIME TO LOOK FOR THE HEART BEAT
     // signal surges up in value every time there is a pulse
-    if (N > 250) {                             // avoid high frequency noise
+    if (N > MIN_INTERVAL_MS) {                 // avoid high frequency noise
       if ( (Signal > thresh) && (Pulse == false) && (N > (IBI / 5) * 3) ) {
         Pulse = true;                          // set the Pulse flag when we think there is a pulse
         IBI = sampleCounter - lastBeatTime;    // measure time between beats in mS
@@ -156,19 +166,20 @@ class MinimalPulseSensor {
   
     if (Signal < thresh && Pulse == true) {  // when the values are going down, the beat is over
       Pulse = false;                         // reset the Pulse flag so we can do it again
-      amp = P - T;                           // get amplitude of the pulse wave
-      thresh = amp / 2 + T;                  // set thresh at 50% of the amplitude
-      P = thresh;                            // reset these for next time
-      T = thresh;
+      amp = peak - trough;                   // get amplitude of the pulse wave
+      thresh = amp / 2 + trough;             // set thresh at 50% of the amplitude
+      peak = thresh;                         // reset these for next time
+      trough = thresh;
     }
   
-    if (N > 2500) {                          // if 2.5 seconds go by without a beat
+    if (N > 2000) {                          // reset if time since last beat is very long
       thresh = threshSetting;                // set thresh default
-      P = 512;                               // set P default
-      T = 512;                               // set T default
+      peak = MEDIAN_INPUT;                   // set P default
+      trough = MEDIAN_INPUT;                 // set T default
       lastBeatTime = sampleCounter;          // bring the lastBeatTime up to date
       firstBeat = true;                      // set these to avoid noise
       secondBeat = false;                    // when we get the heartbeat back
+      BPM = 0;                               // make sure we don't report this sensor as valid
     }
   }
 };

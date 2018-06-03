@@ -187,6 +187,8 @@ void loop() {
           Serial.print(F(","));
         }
         Serial.print(pulseSensor.getBeatsPerMinute(i));
+        Serial.print(F(","));
+        Serial.print(pulseSensor.getLatestSample(i));
       }
       Serial.println();
 

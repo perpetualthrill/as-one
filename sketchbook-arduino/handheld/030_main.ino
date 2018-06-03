@@ -1,14 +1,12 @@
 // Sensors
 const int SENSOR_COUNT = 3;
-//MinimalPulseSensor *sensors[SENSOR_COUNT];
-//MinimalPulseSensor *sensors;
 MinimalPulseSensor sensors[SENSOR_COUNT];
 
 // track time until reading next sample
 volatile unsigned long nextSampleMicros;
 
 // track time until reporting next sample
-const int MS_PER_REPORT = 100;
+const int MS_PER_REPORT = 40;
 volatile unsigned long nextReportMicros;
 
 void setup() {
@@ -54,6 +52,8 @@ void loop() {
           Serial.print(F(","));
         }
         Serial.print(sensors[i].getBeatsPerMinute());
+        Serial.print(F(","));
+        Serial.print(sensors[i].getLatestSample());
       }
       Serial.println();
     }
