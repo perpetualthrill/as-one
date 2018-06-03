@@ -33,26 +33,8 @@ class MinimalPulseSensor {
 
   // Legit constructor for using this object
   MinimalPulseSensor(int inputPin) {
-  
-    // Initialize the default configuration
     pin = inputPin;
-
-    // Initialize (seed) the pulse detector
-    for (int i = 0; i < 10; ++i) {
-      rate[i] = 0;
-    }
-    qs = false;
-    bpm = 0;
-    ibi = 600;                  // 600ms per beat = 100 Beats Per Minute (bpm)
-    pulse = false;
-    sampleCounter = 0;
-    lastBeatTime = 0;
-    peak = MEDIAN_INPUT;                    // peak at 1/2 the input range of 0..1023
-    trough = MEDIAN_INPUT;                    // trough at 1/2 the input range.
-    thresh = DEFAULT_THRESHOLD;               // threshold a little above the trough
-    amp = 100;                  // beat amplitude 1/10 of input range.
-    firstBeat = true;           // looking for the first beat
-    secondBeat = false;         // not yet looking for the second beat in a row
+    resetSensor();
   }
 
   int getLatestSample() {
@@ -86,6 +68,25 @@ class MinimalPulseSensor {
 
   boolean isInsideBeat() {
     return pulse;
+  }
+
+  // Initialize (seed) the pulse detector
+  void resetSensor() {  
+    for (int i = 0; i < 10; ++i) {
+      rate[i] = 0;
+    }
+    qs = false;
+    bpm = 0;
+    ibi = 600;                  // 600ms per beat = 100 Beats Per Minute (bpm)
+    pulse = false;
+    sampleCounter = 0;
+    lastBeatTime = 0;
+    peak = MEDIAN_INPUT;                    // peak at 1/2 the input range of 0..1023
+    trough = MEDIAN_INPUT;                    // trough at 1/2 the input range.
+    thresh = DEFAULT_THRESHOLD;               // threshold a little above the trough
+    amp = 100;                  // beat amplitude 1/10 of input range.
+    firstBeat = true;           // looking for the first beat
+    secondBeat = false;         // not yet looking for the second beat in a row
   }
 
   void readNextSample() {
@@ -155,13 +156,7 @@ class MinimalPulseSensor {
     }
 
     if (timeSinceLastMS > 2000) {            // reset if time since last beat is very long
-      thresh = DEFAULT_THRESHOLD;                // set thresh default
-      peak = MEDIAN_INPUT;                   // set P default
-      trough = MEDIAN_INPUT;                 // set T default
-      lastBeatTime = sampleCounter;          // bring the lastBeatTime up to date
-      firstBeat = true;                      // set these to avoid noise
-      secondBeat = false;                    // when we get the heartbeat back
-      bpm = 0;                               // make sure we don't report this sensor as valid
+      resetSensor();
     }
   }
 };
