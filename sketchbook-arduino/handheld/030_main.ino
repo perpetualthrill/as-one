@@ -1,12 +1,10 @@
-// Sensors
-const int SENSOR_COUNT = 3;
+static const int SENSOR_COUNT = 3;
 MinimalPulseSensor sensors[SENSOR_COUNT];
 
 // track time until reading next sample
 volatile unsigned long nextSampleMicros;
 
 // track time until reporting next sample
-const int MS_PER_REPORT = 40;
 volatile unsigned long nextReportMicros;
 
 void setup() {
@@ -32,6 +30,8 @@ boolean checkForSample() {
   if ((long) (nextSampleMicros - nowMicros) > 0L) {
     return false;  // not time yet.
   }
+
+  // ok, time to take a sample. reset the clock
   nextSampleMicros = nowMicros + MS_PER_READ * 1000L;
 
   // Process new samples

@@ -1,18 +1,9 @@
 #include <Arduino.h>
 
-static const int MS_PER_READ = 2;
-
-static const int DEFAULT_THRESHOLD = 550;
-static const int MEDIAN_INPUT = 1024 / 2; // range is 1024
-
-static const int MAX_BPM = 130;
-static const int MIN_INTERVAL_MS = 60000 / MAX_BPM;
-static const int MIN_BPM = 60;
-
 class MinimalPulseSensor {
 
   // Configuration
-  int InputPin;           // Analog input pin for MinimalPulseSensor.
+  int pin;           // Analog input pin for MinimalPulseSensor.
 
   // Pulse detection output variables.
   // Volatile because our pulse detection code could be called from an Interrupt
@@ -21,7 +12,6 @@ class MinimalPulseSensor {
   volatile int ibi;                // int that holds the time interval (ms) between beats! Must be seeded!
   volatile boolean pulse;          // "True" when User's live heartbeat is detected. "False" when not a "live beat".
   volatile boolean qs;             // The start of beat has been detected and not read by the Sketch.
-  volatile int threshSetting;      // used to seed and reset the thresh variable
   volatile int amp;                         // used to hold amplitude of pulse waveform, seeded (sample value)
   volatile unsigned long lastBeatTime;      // used to find IBI. Time (sampleCounter) of the previous detected beat start.
 
@@ -41,13 +31,13 @@ class MinimalPulseSensor {
   // Blank default constructor for array initialization
   MinimalPulseSensor() { } 
 
+  // Legit constructor for using this object
   MinimalPulseSensor(int inputPin) {
-  //class MinimalPulseSensor(int inputPin) {
+  
     // Initialize the default configuration
-    InputPin = inputPin;
+    pin = inputPin;
 
     // Initialize (seed) the pulse detector
-    sampleIntervalMs = MS_PER_READ;
     for (int i = 0; i < 10; ++i) {
       rate[i] = 0;
     }
@@ -59,16 +49,10 @@ class MinimalPulseSensor {
     lastBeatTime = 0;
     peak = MEDIAN_INPUT;                    // peak at 1/2 the input range of 0..1023
     trough = MEDIAN_INPUT;                    // trough at 1/2 the input range.
-    threshSetting = DEFAULT_THRESHOLD;        // used to seed and reset the thresh variable
-    thresh = threshSetting;               // threshold a little above the trough
+    thresh = DEFAULT_THRESHOLD;               // threshold a little above the trough
     amp = 100;                  // beat amplitude 1/10 of input range.
     firstBeat = true;           // looking for the first beat
     secondBeat = false;         // not yet looking for the second beat in a row
-  }
-
-  void setThreshold(int threshold) {
-    threshSetting = threshold;
-    thresh = threshold;
   }
 
   int getLatestSample() {
@@ -106,11 +90,11 @@ class MinimalPulseSensor {
 
   void readNextSample() {
     // We assume assigning to an int is atomic.
-    signal = analogRead(InputPin);
+    signal = analogRead(pin);
   }
 
   void processLatestSample() {
-    sampleCounter += sampleIntervalMs;         // keep track of the time in mS with this variable
+    sampleCounter += MS_PER_READ;                  // keep track of the time in mS with this variable
     int timeSinceLastMS = sampleCounter - lastBeatTime;      // monitor the time since the last beat to avoid noise
 
     //  find the peak and trough of the pulse wave
@@ -171,7 +155,7 @@ class MinimalPulseSensor {
     }
 
     if (timeSinceLastMS > 2000) {            // reset if time since last beat is very long
-      thresh = threshSetting;                // set thresh default
+      thresh = DEFAULT_THRESHOLD;                // set thresh default
       peak = MEDIAN_INPUT;                   // set P default
       trough = MEDIAN_INPUT;                 // set T default
       lastBeatTime = sampleCounter;          // bring the lastBeatTime up to date
