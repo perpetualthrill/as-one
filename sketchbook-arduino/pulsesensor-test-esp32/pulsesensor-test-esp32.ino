@@ -50,13 +50,13 @@
    Set this to SERIAL_PLOTTER if you're going to run
     the Arduino IDE's Serial Plotter.
 */
-const int OUTPUT_TYPE = PROCESSING_VISUALIZER;
-//const int OUTPUT_TYPE = SERIAL_PLOTTER;
+//const int OUTPUT_TYPE = PROCESSING_VISUALIZER;
+const int OUTPUT_TYPE = SERIAL_PLOTTER;
 
 /*
    Number of PulseSensor devices we're reading from.
 */
-const int PULSE_SENSOR_COUNT = 2;
+const int PULSE_SENSOR_COUNT = 3;
 
 
 /*
@@ -73,6 +73,7 @@ const int PULSE_SENSOR_COUNT = 2;
 */
 const int PIN_INPUT_1 = A0;
 const int PIN_INPUT_2 = A3;
+const int PIN_INPUT_3 = A6;
 const int PIN_BLINK = LED_BUILTIN;    // Pin 13 is the on-board LED
 //const int PIN_FADE = 5;
 const int THRESHOLD = 550;   // Adjust this number to avoid noise when idle
@@ -126,6 +127,7 @@ void setup() {
   // Configure the PulseSensor manager.
   pulseSensor.analogInput(PIN_INPUT_1, 0);
   pulseSensor.analogInput(PIN_INPUT_2, 1);
+  pulseSensor.analogInput(PIN_INPUT_3, 2);
 
   //pulseSensor.blinkOnPulse(PIN_BLINK);
  // pulseSensor.fadeOnPulse(PIN_FADE);
