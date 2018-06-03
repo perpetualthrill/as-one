@@ -1,5 +1,5 @@
 static const int SENSOR_COUNT = 3;
-MinimalPulseSensor sensors[SENSOR_COUNT];
+BufferPulseSensor sensors[SENSOR_COUNT];
 
 // track time until reading next sample
 volatile unsigned long nextSampleMicros;
@@ -8,9 +8,9 @@ volatile unsigned long nextSampleMicros;
 volatile unsigned long nextReportMicros;
 
 void setup() {
-  sensors[0] = MinimalPulseSensor(A0);
-  sensors[1] = MinimalPulseSensor(A3);
-  sensors[2] = MinimalPulseSensor(A6);
+  sensors[0] = BufferPulseSensor(A0);
+  sensors[1] = BufferPulseSensor(A3);
+  sensors[2] = BufferPulseSensor(A6);
   nextSampleMicros = micros() + MS_PER_READ * 1000L;
   nextReportMicros = micros() + MS_PER_REPORT * 1000L;
 
