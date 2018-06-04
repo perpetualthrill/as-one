@@ -48,6 +48,9 @@ void loop() {
     if (micros() > nextReportMicros) {
       nextReportMicros = micros() + MS_PER_REPORT * 1000L;
       for (int i = 0; i < SENSOR_COUNT; ++i) {
+        sensors[i].getBeatsPerMinute();
+      }
+        /*
         if (i != 0) {
           Serial.print(F(","));
         }
@@ -56,7 +59,9 @@ void loop() {
         Serial.print(sensors[i].getLatestSample());
       }
       Serial.println();
+        */
     }
+
   }
 }
 

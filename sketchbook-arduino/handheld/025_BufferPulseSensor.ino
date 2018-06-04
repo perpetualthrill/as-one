@@ -1,6 +1,5 @@
 #include <Arduino.h>
 
-
 class BufferPulseSensor {
   private:
     
@@ -11,7 +10,7 @@ class BufferPulseSensor {
   static const int SENTINEL = 9999; 
   // Magic number: a large enough difference from average to trigger
   // beat detection. Empirically gathered.
-  static const int DIFFERENCE_THRESHOLD = 20;
+  static const int DIFFERENCE_THRESHOLD = 60;
 
   // Configuration
   int pin;
@@ -20,7 +19,7 @@ class BufferPulseSensor {
   int signal;              // latest reading from sensor
   int latest[LATEST_SIZE]; // latest signal, measured across a few samples
   int fifo[FIFO_SIZE];     // buffer to measure latest against
-  long lastBeatMs = 0;     // when was last beat detected
+  long lastBeatMs;         // when was last beat detected
   long goodBeatTimes[GOOD_BEAT_SIZE];  // keep timestamps for successful detections
 
   // Blank default constructor for array initialization
@@ -39,6 +38,10 @@ class BufferPulseSensor {
     for (int i = 0; i < FIFO_SIZE; i++) {
       fifo[i] = SENTINEL;
     }
+    for (int i = 0; i < GOOD_BEAT_SIZE; i++) {
+      goodBeatTimes[i] = 0;
+    }
+    lastBeatMs = 0;
   }
 
   private: void bufferValue(int value, int buff[], int buffSize) {
@@ -69,15 +72,56 @@ class BufferPulseSensor {
     return sum / buffSize;
   }
 
-  private: bool detectBeat() {
+  private: bool detectBeat(long currentTime) {
+    // If we just detected a beat, return early because
+    // we know we cannot detect another yet.
+    if (currentTime < (lastBeatMs + MIN_INTERVAL_MS)) {
+      return false;
+    }
+
+    // Calculate average and compare to latest
     int fifoAvg = bufferAverage(fifo, FIFO_SIZE);
     int latestAvg = bufferAverage(latest, LATEST_SIZE);
     if (fifoAvg == -1) return false; // A bad data sentinel was found. No possibility of a beat
     if ((latestAvg - fifoAvg) > DIFFERENCE_THRESHOLD) {
+      Serial.print("pin ");
+      Serial.print(pin);
+      Serial.print(" latest avg = ");
+      Serial.print(latestAvg);
+      Serial.print(" fifo avg = ");
+      Serial.print(fifoAvg);
+      Serial.print(" difference = ");
+      Serial.println(latestAvg - fifoAvg);
       return true;
     }
     return false;
-  }  
+  }
+
+  private: bool detectBeat2(long currentTime) {
+    // If we just detected a beat, do return early because
+    // we know we cannot detect another yet.
+    if (currentTime < (lastBeatMs + MIN_INTERVAL_MS)) {
+      return false;
+    }
+
+    // Calculate average and compare to signal
+    int fifoAvg = bufferAverage(fifo, FIFO_SIZE);
+    if (fifoAvg == -1) return false; // A bad data sentinel was found. No possibility of a beat
+    if ((signal - fifoAvg) > DIFFERENCE_THRESHOLD) {
+      Serial.print("pin ");
+      Serial.print(pin);
+      Serial.print(" signal = ");
+      Serial.print(signal);
+      Serial.print(" fifo avg = ");
+      Serial.print(fifoAvg);
+      Serial.print(" difference = ");
+      Serial.println(signal - fifoAvg);
+      return true;
+    }
+
+    // Difference was below threshold, no beat found
+    return false;
+  }
 
   private: void saveGoodBeat(int time) {
     for (int i = GOOD_BEAT_SIZE - 1; i > 0; i--) {
@@ -90,10 +134,16 @@ class BufferPulseSensor {
     signal = analogRead(pin);
     bufferValue(signal);
     long currentTime = millis();
-    if (detectBeat()) {
+    if (detectBeat2(currentTime)) {
       long interval = currentTime - lastBeatMs;
       lastBeatMs = currentTime;
       if (interval > MIN_INTERVAL_MS && interval < MAX_INTERVAL_MS) {
+        Serial.print("Pin ");
+        Serial.print(pin);
+        Serial.print(" found interval: ");
+        Serial.print(interval);
+        Serial.print(" -> ");
+        Serial.println(MS_PER_MINUTE / interval);
         saveGoodBeat(currentTime);
       }
     }
@@ -110,7 +160,11 @@ class BufferPulseSensor {
     int sumBPM = 0;
     for (int i = 0; i < GOOD_BEAT_SIZE - 1; i++) {
       if ((goodBeatTimes[i] - goodBeatTimes[i+1]) == 0) return 0; // avoid divide by zero
-      sumBPM += MS_PER_SECOND / (goodBeatTimes[i] - goodBeatTimes[i+1]);
+      sumBPM += MS_PER_MINUTE / (goodBeatTimes[i] - goodBeatTimes[i+1]);
+      //Serial.print("Internal BPM pin ");
+      //Serial.print(pin);
+      //Serial.print(": ");
+      //Serial.println(MS_PER_MINUTE / (goodBeatTimes[i] - goodBeatTimes[i+1]));
     }
     int bpm = sumBPM / (GOOD_BEAT_SIZE - 1);
     if (bpm > MAX_BPM || bpm < MIN_BPM) {
