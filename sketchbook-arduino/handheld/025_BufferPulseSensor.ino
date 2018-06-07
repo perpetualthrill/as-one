@@ -21,6 +21,11 @@ class BufferPulseSensor {
   int fifo[FIFO_SIZE];     // buffer to measure latest against
   long lastBeatMs;         // when was last beat detected
   long goodBeatTimes[GOOD_BEAT_SIZE];  // keep timestamps for successful detections
+  
+  // Experimental
+  int latestAverage;
+  boolean detecto = false;
+  int interval = 0;
 
   // Blank default constructor for array initialization
   public: BufferPulseSensor() { } 
@@ -82,8 +87,10 @@ class BufferPulseSensor {
     // Calculate average and compare to latest
     int fifoAvg = bufferAverage(fifo, FIFO_SIZE);
     int latestAvg = bufferAverage(latest, LATEST_SIZE);
+    latestAverage = latestAvg;
     if (fifoAvg == -1) return false; // A bad data sentinel was found. No possibility of a beat
     if ((latestAvg - fifoAvg) > DIFFERENCE_THRESHOLD) {
+      /*
       Serial.print("pin ");
       Serial.print(pin);
       Serial.print(" latest avg = ");
@@ -92,6 +99,7 @@ class BufferPulseSensor {
       Serial.print(fifoAvg);
       Serial.print(" difference = ");
       Serial.println(latestAvg - fifoAvg);
+      */
       return true;
     }
     return false;
@@ -122,7 +130,7 @@ class BufferPulseSensor {
     // Difference was below threshold, no beat found
     return false;
   }
-
+  
   private: void saveGoodBeat(int time) {
     for (int i = GOOD_BEAT_SIZE - 1; i > 0; i--) {
       goodBeatTimes[i] = goodBeatTimes[i - 1];
@@ -134,18 +142,21 @@ class BufferPulseSensor {
     signal = analogRead(pin);
     bufferValue(signal);
     long currentTime = millis();
-    if (detectBeat2(currentTime)) {
-      long interval = currentTime - lastBeatMs;
+    if (detectBeat(currentTime)) {
+      interval = currentTime - lastBeatMs;
       lastBeatMs = currentTime;
       if (interval > MIN_INTERVAL_MS && interval < MAX_INTERVAL_MS) {
+        /*
         Serial.print("Pin ");
         Serial.print(pin);
         Serial.print(" found interval: ");
         Serial.print(interval);
         Serial.print(" -> ");
         Serial.println(MS_PER_MINUTE / interval);
+        */
         saveGoodBeat(currentTime);
       }
+      detecto = true;
     }
   }
 
@@ -154,6 +165,18 @@ class BufferPulseSensor {
 
   public: int getLatestSample() {
     return signal;
+  }
+
+  public: int getLatestAverage() {
+    return latestAverage;
+  }
+
+  public: int checkDetecto() {
+    if (detecto) {
+      detecto = false;
+      return 222;
+    }
+    return 0;
   }
 
   public: int getBeatsPerMinute() {
@@ -171,6 +194,11 @@ class BufferPulseSensor {
       return 0;
     }
     return bpm;
+  }
+
+  public: int getBeatsPerMinute2() {
+    if (interval <= 0) return 0;
+    return MS_PER_MINUTE / interval;
   }
 
 };

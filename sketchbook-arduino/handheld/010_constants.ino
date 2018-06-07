@@ -1,5 +1,5 @@
-static const int MS_PER_READ = 10;
-static const int MS_PER_REPORT = 20;
+static const int MS_PER_READ = 2;
+static const int MS_PER_REPORT = 10;
 
 static const int SIGNAL_MAX_VALUE = 1023;
 static const int DEFAULT_THRESHOLD = 550;

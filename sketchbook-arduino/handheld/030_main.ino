@@ -1,6 +1,10 @@
 static const int SENSOR_COUNT = 3;
 BufferPulseSensor sensors[SENSOR_COUNT];
 
+// for each sensor, keep the last n readings
+static const int MEDIAN_ARRAY_SIZE = SENSOR_COUNT * 3;
+int medianArray[MEDIAN_ARRAY_SIZE];
+
 // track time until reading next sample
 volatile unsigned long nextSampleMicros;
 
@@ -43,25 +47,63 @@ boolean checkForSample() {
   return true;
 }
 
+void orderedInsert(int value, int a[]) {
+  int insertPoint = 0;
+  for (int i = 0; i < MEDIAN_ARRAY_SIZE; i++) {
+    if (a[i] < value) {
+      insertPoint = i;
+    }
+  }
+  for (int j = 0; j < insertPoint; j++) {
+    a[j] = a[j+1];
+  }
+  a[insertPoint] = value;
+}
+
+void keepBPM(int value) {
+  // discard duplicates
+  for (int i = 0; i < MEDIAN_ARRAY_SIZE; i++) {
+    if (medianArray[i] == value) return; 
+  }
+  // replace last value, shifting down
+  for (int i = 0; i < MEDIAN_ARRAY_SIZE - 1; i++) {
+    medianArray[i] = medianArray[i+1];
+  }
+  medianArray[MEDIAN_ARRAY_SIZE - 1] = value;
+}
+
 void loop() {
   if (checkForSample()) {
     if (micros() > nextReportMicros) {
       nextReportMicros = micros() + MS_PER_REPORT * 1000L;
-      for (int i = 0; i < SENSOR_COUNT; ++i) {
-        sensors[i].getBeatsPerMinute();
-      }
+      for (int i = 0; i < SENSOR_COUNT; i++) {
         /*
         if (i != 0) {
           Serial.print(F(","));
         }
-        Serial.print(sensors[i].getBeatsPerMinute());
-        Serial.print(F(","));
-        Serial.print(sensors[i].getLatestSample());
-      }
-      Serial.println();
+        //Serial.print(sensors[i].getLatestAverage());
+        Serial.print(sensors[i].getBeatsPerMinute2());
+        Serial.print(",");
+        Serial.print(sensors[i].checkDetecto());
         */
+        int bpm = sensors[i].getBeatsPerMinute2();
+        if (bpm > 0) {
+         // Serial.println(bpm);
+          keepBPM(bpm);
+        }
+      }
+      // Sort array
+      int sortedArray[MEDIAN_ARRAY_SIZE];
+      for (int i = 0; i < MEDIAN_ARRAY_SIZE; i++) {
+        orderedInsert(medianArray[i], sortedArray);
+      }
+      // Display
+      for (int i = 0; i < MEDIAN_ARRAY_SIZE; i++) {
+        Serial.print(sortedArray[i]);
+        Serial.print(",");
+      }
+      Serial.println(999);
     }
-
   }
 }
 
