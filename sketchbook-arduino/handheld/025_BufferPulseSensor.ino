@@ -11,6 +11,8 @@ class BufferPulseSensor {
   // Magic number: a large enough difference from average to trigger
   // beat detection. Empirically gathered.
   static const int DIFFERENCE_THRESHOLD = 60;
+  // Reset sensor after this many ms without a beat detected
+  static const int RESET_MS = 1500;
 
   // Configuration
   int pin;
@@ -47,6 +49,7 @@ class BufferPulseSensor {
       goodBeatTimes[i] = 0;
     }
     lastBeatMs = 0;
+    interval = 0;
   }
 
   private: void bufferValue(int value, int buff[], int buffSize) {
@@ -142,6 +145,10 @@ class BufferPulseSensor {
     signal = analogRead(pin);
     bufferValue(signal);
     long currentTime = millis();
+    if (lastBeatMs > 0 && currentTime - lastBeatMs > RESET_MS) {
+      resetSensor();
+      return;
+    }
     if (detectBeat(currentTime)) {
       interval = currentTime - lastBeatMs;
       lastBeatMs = currentTime;

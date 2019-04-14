@@ -61,9 +61,12 @@ void orderedInsert(int value, int a[]) {
 }
 
 void keepBPM(int value) {
-  // discard duplicates
+  // discard spam
+  int dupes = 0;
   for (int i = 0; i < MEDIAN_ARRAY_SIZE; i++) {
-    if (medianArray[i] == value) return; 
+    if (medianArray[i] == value) dupes++;
+    //if (dupes > SENSOR_COUNT) return;
+    if (dupes > 0) return;
   }
   // replace last value, shifting down
   for (int i = 0; i < MEDIAN_ARRAY_SIZE - 1; i++) {
@@ -87,7 +90,7 @@ void loop() {
         Serial.print(sensors[i].checkDetecto());
         */
         int bpm = sensors[i].getBeatsPerMinute2();
-        if (bpm > 0) {
+        if (bpm > MIN_BPM && bpm < MAX_BPM) {
          // Serial.println(bpm);
           keepBPM(bpm);
         }
@@ -102,7 +105,7 @@ void loop() {
         Serial.print(sortedArray[i]);
         Serial.print(",");
       }
-      Serial.println(999);
+      Serial.println(sortedArray[MEDIAN_ARRAY_SIZE / 2]);
     }
   }
 }
