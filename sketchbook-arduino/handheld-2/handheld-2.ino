@@ -18,8 +18,14 @@ long lastReport;
 void setup() {
   Serial.begin(115200);
 
+
+  // Configure the ESP32 ADC. This is from esp32-hal-adc.h
+  analogSetWidth(10); // range 0 - 1023, as expected by pulsesensor
+  analogSetAttenuation(ADC_11db); // highest attenuation, used for 3.3v input
+
+
   pulseSensor.analogInput(A3, 0);
-  pulseSensor.analogInput(A2, 1);
+  pulseSensor.analogInput(A6, 1);
   pulseSensor.setThreshold(THRESHOLD);
   pulseSensor.begin();
 
@@ -49,5 +55,8 @@ void loop() {
 
   // Need to do this constantly because we're not using the timer
   pulseSensor.sawNewSample();
+
+  // But not too constantly
+  delay(1);
 
 }
