@@ -2,16 +2,20 @@
 #define USE_ARDUINO_INTERRUPTS false
 #include <PulseSensorPlayground.h>
 
-
 // Adjust this number to avoid noise when idle
 const int THRESHOLD = 500;
 
-const int PEAK_TROUGH = 30;
-const int MAX_SIGNAL = 1024;
+// Reasonable (?) thresholds for resting heart rate
+const int MAX_BPM = 135;
+const int MIN_BPM = 50;
 
 const int SENSOR_COUNT = 4;
 PulseSensorPlayground pulseSensor(SENSOR_COUNT);
 
+// Hold bpm readings to acheive consensus
+int bpmBuffer[SENSOR_COUNT];
+
+// 25 ms => 40 hz
 const int REPORT_PERIOD_MS = 25;
 long lastReport;
 
@@ -42,6 +46,10 @@ void loop() {
     for (int i = 0; i < SENSOR_COUNT; i++) {
       int sample = pulseSensor.getLatestSample(i);
       int bpm = pulseSensor.getBeatsPerMinute(i);
+      if (bpm > MAX_BPM) bpm = bpm / 2; // sensors often report double
+      if (bpm < MIN_BPM) bpm = bpm * 2; // ... or half
+      bpmBuffer[i] = bpm;
+
       if (pulseSensor.isInsideBeat(i)) inBeatCount++;
 
       int fixedSample = sample;
@@ -53,7 +61,24 @@ void loop() {
 //      Serial.print(",");
     }
 
-    Serial.println(inBeatCount * 40);
+    bool hasConsensus = false;
+    for (int i = 0; i < (SENSOR_COUNT - 1); i++) {
+      for (int j = i + 1; j < SENSOR_COUNT; j++) {
+        // close enough!
+        if ((bpmBuffer[j] - 1 == bpmBuffer[i]) ||
+            (bpmBuffer[j] == bpmBuffer[i]) ||
+            (bpmBuffer[j] + 1 == bpmBuffer[i])) hasConsensus = true;
+      }
+    }
+    printArray(bpmBuffer, SENSOR_COUNT);
+    Serial.print(",");
+
+    if (hasConsensus) {
+      Serial.println(inBeatCount * 40);
+    } else {
+      Serial.println(0);
+    }
+
     lastReport = millis();
   }
 
@@ -63,4 +88,13 @@ void loop() {
   // But not too constantly
   delay(1);
 
+}
+
+void printArray(int a[], int len) {
+  Serial.print("[");
+  for (int i = 0; i < len; i++) {
+    Serial.print(a[i]);
+    Serial.print(" ");
+  }
+  Serial.print("]");
 }
