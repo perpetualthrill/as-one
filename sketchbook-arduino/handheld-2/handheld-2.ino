@@ -34,13 +34,7 @@ void loop() {
       int sample = pulseSensor.getLatestSample(i);
       int bpm = pulseSensor.getBeatsPerMinute(i);
 
-      // Remove obnoxious connection noise
       int fixedSample = sample;
-      if (fixedSample > (MAX_SIGNAL - PEAK_TROUGH)) {
-        fixedSample = PEAK_TROUGH;
-      } else if (fixedSample < PEAK_TROUGH) {
-        fixedSample = 0;
-      }
       fixedSample = fixedSample / 4;
 
       Serial.print(fixedSample);
