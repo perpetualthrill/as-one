@@ -1,4 +1,3 @@
-//#define USE_ARDUINO_INTERRUPTS true
 #define USE_ARDUINO_INTERRUPTS false
 #include <PulseSensorPlayground.h>
 
@@ -46,8 +45,8 @@ void loop() {
     for (int i = 0; i < SENSOR_COUNT; i++) {
       int sample = pulseSensor.getLatestSample(i);
       int bpm = pulseSensor.getBeatsPerMinute(i);
-      if (bpm > MAX_BPM) bpm = bpm / 2; // sensors often report double
-      if (bpm < MIN_BPM) bpm = bpm * 2; // ... or half
+      if (bpm > MAX_BPM) bpm /= 2; // sensors often report double
+      if (bpm < MIN_BPM) bpm *= 2; // ... or half
       bpmBuffer[i] = bpm;
 
       if (pulseSensor.isInsideBeat(i)) inBeatCount++;
@@ -57,21 +56,20 @@ void loop() {
 
       Serial.print(fixedSample);
       Serial.print(",");
-//      Serial.print(bpm);
-//      Serial.print(",");
+    }
+
+    for (int i = 0; i < SENSOR_COUNT; i++) {
+      Serial.print(bpmBuffer[i]);
+      Serial.print(",");
     }
 
     bool hasConsensus = false;
     for (int i = 0; i < (SENSOR_COUNT - 1); i++) {
       for (int j = i + 1; j < SENSOR_COUNT; j++) {
         // close enough!
-        if ((bpmBuffer[j] - 1 == bpmBuffer[i]) ||
-            (bpmBuffer[j] == bpmBuffer[i]) ||
-            (bpmBuffer[j] + 1 == bpmBuffer[i])) hasConsensus = true;
+        if (bpmBuffer[j] - 1 <= bpmBuffer[i] <= bpmBuffer[j] + 1) hasConsensus = true;
       }
     }
-    printArray(bpmBuffer, SENSOR_COUNT);
-    Serial.print(",");
 
     if (hasConsensus) {
       Serial.println(inBeatCount * 40);
@@ -88,13 +86,4 @@ void loop() {
   // But not too constantly
   delay(1);
 
-}
-
-void printArray(int a[], int len) {
-  Serial.print("[");
-  for (int i = 0; i < len; i++) {
-    Serial.print(a[i]);
-    Serial.print(" ");
-  }
-  Serial.print("]");
 }
