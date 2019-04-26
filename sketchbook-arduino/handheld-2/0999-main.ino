@@ -24,6 +24,8 @@ long lastMotor = millis();
 const int MOTOR_PERIOD_MS = 180;
 
 EspPwmChannel leds[SENSOR_COUNT];
+const int PWM_RESOLUTION = 10;
+const int PWM_FREQUENCY = 10000;
 
 void setup() {
   Serial.begin(115200);
@@ -44,9 +46,7 @@ void setup() {
   // Configure outputs
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
-
-  //leds.assign(EspPwmChannel(12, 1, 10, 10000, .30));
-  leds[0] = EspPwmChannel(12, 1, 10, 10000, .30);
+  leds[0] = EspPwmChannel(12, 1, PWM_RESOLUTION, PWM_FREQUENCY);
 }
 
 void loop() {
@@ -111,7 +111,7 @@ void loop() {
     }
 
     // Update LEDs
-    leds[0].write(fixedSampleSum / (float)(2 ^ 10));
+    leds[0].write(fixedSampleSum / pow(2, PWM_RESOLUTION));
 
     lastReport = now;
   }
