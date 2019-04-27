@@ -62,8 +62,9 @@
 //
 // Macros to link to interrupt disable/enable only if they exist
 // The name is long to avoid collisions with Sketch and Library symbols.
-#if defined(__arc__)||(ARDUINO_SAMD_MKR1000)||(ARDUINO_SAMD_MKRZERO)||(ARDUINO_SAMD_ZERO)
-  // Arduino 101 doesn't have cli() and sei().
+#if defined(__arc__)||(ARDUINO_SAMD_MKR1000)||(ARDUINO_SAMD_MKRZERO)||(ARDUINO_SAMD_ZERO)\
+||(ARDUINO_ARCH_STM32)||(ARDUINO_STM32_STAR_OTTO)||(ARDUINO_ARCH_NRF5)
+
 #define DISABLE_PULSE_SENSOR_INTERRUPTS
 #define ENABLE_PULSE_SENSOR_INTERRUPTS
 #else
@@ -71,6 +72,11 @@
 #define ENABLE_PULSE_SENSOR_INTERRUPTS sei()
 #endif
 
+
+//	SAVED FOR FUTURE SUPPORT OF TEENSY INTERRUPTS
+#if defined(__MK66FX1M0__)||(__MK64FX512__)||(__MK20DX256__)||(__MK20DX128__)
+// #include <FlexiTimer2.h>
+#endif
 
 /*
    (internal to the library)
@@ -212,6 +218,10 @@ boolean PulseSensorPlaygroundSetupInterrupt() {
       ENABLE_PULSE_SENSOR_INTERRUPTS;          // enable interrupts when you're done
     }
   #endif
+#endif
+
+#if defined(__MK66FX1M0__)||(__MK64FX512__)||(__MK20DX256__)||(__MK20DX128__)
+	// Interrupts not supported yet for Teensy
 #endif
 
 

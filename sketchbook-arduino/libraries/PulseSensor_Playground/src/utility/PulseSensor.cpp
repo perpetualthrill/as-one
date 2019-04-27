@@ -29,11 +29,6 @@
 #define FADE_LEVEL_PER_SAMPLE 12
 #define MAX_FADE_LEVEL (255 * FADE_SCALE)
 
-// HACK! Fake an analogWrite because ESP32 does not implement it
-#ifdef ESP32
-#define analogWrite ledcWrite
-#endif
-
 /*
    Constructs a Pulse detector that will process PulseSensor voltages
    that the caller reads from the PulseSensor.
@@ -201,6 +196,12 @@ void PulseSensor::processLatestSample() {
     lastBeatTime = sampleCounter;          // bring the lastBeatTime up to date
     firstBeat = true;                      // set these to avoid noise
     secondBeat = false;                    // when we get the heartbeat back
+    QS = false;
+    BPM = 0;
+    IBI = 600;                  // 600ms per beat = 100 Beats Per Minute (BPM)
+    Pulse = false;
+    amp = 100;                  // beat amplitude 1/10 of input range.
+
   }
 }
 
@@ -217,8 +218,12 @@ void PulseSensor::initializeLEDs() {
 
 void PulseSensor::updateLEDs() {
   if (BlinkPin >= 0) {
-    digitalWrite(BlinkPin, Pulse);
-  }
+		if(Pulse){
+    	digitalWrite(BlinkPin, HIGH);
+  	}else{
+			digitalWrite(BlinkPin,LOW);
+		}
+	}
 
   if (FadePin >= 0) {
     analogWrite(FadePin, FadeLevel / FADE_SCALE);
