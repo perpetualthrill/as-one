@@ -43,7 +43,7 @@ void setup() {
   // Configure outputs
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
-  leds[0] = EspPwmChannel(12, 1, PWM_RESOLUTION, PWM_FREQUENCY);
+  leds[0] = EspPwmChannel(12, 1, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3);
 }
 
 void loop() {
