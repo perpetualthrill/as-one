@@ -1,6 +1,3 @@
-#define USE_ARDUINO_INTERRUPTS false
-#include <PulseSensorPlayground.h>
-
 // Adjust this number to avoid noise when idle
 const int THRESHOLD = 500;
 
@@ -21,7 +18,7 @@ long lastReport = millis();
 
 long nextMotor = 0;
 long lastMotor = millis();
-const int MOTOR_PERIOD_MS = 180;
+const int MOTOR_PERIOD_MS = 100;
 
 EspPwmChannel leds[SENSOR_COUNT];
 const int PWM_RESOLUTION = 10;

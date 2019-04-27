@@ -1,10 +1,8 @@
-#include <math.h>
-
 // Implements PWM that is guaranteed not to go over a certain % duty cycle.
 // Intended for running LEDs without a resistor, oh noes :-0
 class EspPwmChannel {
   private:
-  int _pin, _channel, _maxDuty;
+  unsigned int _pin, _channel, _maxDuty;
 
   // Should be safe? Max RMS @ 30% seems to be 1.25V or so -- well under 1.8
   // which is the forward voltage for red LEDs

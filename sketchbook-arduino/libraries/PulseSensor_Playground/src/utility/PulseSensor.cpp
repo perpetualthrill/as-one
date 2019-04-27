@@ -29,6 +29,14 @@
 #define FADE_LEVEL_PER_SAMPLE 12
 #define MAX_FADE_LEVEL (255 * FADE_SCALE)
 
+
+// HACK! Fake an analogWrite because ESP32 does not implement it and PulseSensor
+// will not compile without it
+#ifdef ESP32
+#define analogWrite ledcWrite
+#endif
+
+
 /*
    Constructs a Pulse detector that will process PulseSensor voltages
    that the caller reads from the PulseSensor.
