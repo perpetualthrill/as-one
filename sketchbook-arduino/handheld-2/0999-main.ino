@@ -1,5 +1,5 @@
 // Adjust this number to avoid noise when idle
-const int THRESHOLD = 500;
+const int THRESHOLD = pow(2, 9); // half of sensor resolution
 
 // Reasonable (?) thresholds for resting heart rate
 const int MAX_BPM = 135;
@@ -19,6 +19,7 @@ long lastReport = millis();
 long nextMotor = 0;
 long lastMotor = millis();
 const int MOTOR_PERIOD_MS = 100;
+const int MOTOR_PIN = 13; // board D13
 
 EspPwmChannel leds[SENSOR_COUNT];
 const int PWM_RESOLUTION = 10;
@@ -32,18 +33,21 @@ void setup() {
   analogSetAttenuation(ADC_11db); // highest attenuation, used for 3.3v input
 
   // Configure pulseSensor library and gather an initial sample
-  pulseSensor.analogInput(A6, 0); // board D34
-  pulseSensor.analogInput(A7, 1); // board D35
-  pulseSensor.analogInput(A4, 2); // board D32
-  pulseSensor.analogInput(A5, 3); // board D33
+  pulseSensor.analogInput(A5, 0); // board D33
+  pulseSensor.analogInput(A4, 1); // board D32
+  pulseSensor.analogInput(A7, 2); // board D35
+  pulseSensor.analogInput(A6, 3); // board D34
   pulseSensor.setThreshold(THRESHOLD);
   pulseSensor.begin();
   pulseSensor.sawNewSample();
 
-  // Configure outputs
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
-  leds[0] = EspPwmChannel(12, 1, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3);
+  // Configure feedback outputs
+  pinMode(MOTOR_PIN, OUTPUT);
+  digitalWrite(MOTOR_PIN, LOW);
+  leds[0] = EspPwmChannel(12, 0, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3); // board D12
+  leds[1] = EspPwmChannel(14, 1, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3); // board D14
+  leds[2] = EspPwmChannel(27, 2, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3); // board D27
+  leds[3] = EspPwmChannel(26, 3, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3); // board D26
 }
 
 void loop() {
@@ -52,7 +56,6 @@ void loop() {
   if ((now - lastReport) > REPORT_PERIOD_MS) {
 
     int inBeatCount = 0;
-    float fixedSampleSum = 0;
     for (int i = 0; i < SENSOR_COUNT; i++) {
       int sample = pulseSensor.getLatestSample(i);
       int bpm = pulseSensor.getBeatsPerMinute(i);
@@ -62,11 +65,10 @@ void loop() {
 
       if (pulseSensor.isInsideBeat(i)) inBeatCount++;
 
-      int fixedSample = sample;
-      fixedSample = fixedSample / 4;
-      fixedSampleSum += fixedSample;
+      // Update LED percent. Sensor is 10 bit.
+      leds[i].write(((float)sample) / pow(2, PWM_RESOLUTION));
 
-      Serial.print(fixedSample);
+      Serial.print(sample);
       Serial.print(",");
     }
 
@@ -102,13 +104,10 @@ void loop() {
 
     // Turn motor on or off as necessary
     if ((now >= nextMotor) && (now <= (nextMotor + MIN_INTERVAL_MS))) {
-      digitalWrite(13, HIGH);
+      digitalWrite(MOTOR_PIN, HIGH);
     } else {
-      digitalWrite(13, LOW);
+      digitalWrite(MOTOR_PIN, LOW);
     }
-
-    // Update LEDs
-    leds[0].write(fixedSampleSum / pow(2, PWM_RESOLUTION));
 
     lastReport = now;
   }

@@ -5,12 +5,12 @@ class EspPwmChannel {
   private:
   unsigned int _pin, _channel, _maxDuty, _ledChangeMS;
 
-  // Should be safe? Max RMS @ 30% seems to be 1.25V or so -- well under 1.8
+  // Should be safe? Vrms @ 30% seems to be 1.25V or so -- well under 1.8
   // which is the forward voltage for red LEDs
   static constexpr float MAX_DUTY_PERCENT = .3;
 
   static constexpr float EXPANDER_MIDPOINT = .5;
-  static constexpr float EXPANDER_INTENSITY = 3;
+  static constexpr float EXPANDER_INTENSITY = 2.3;
 
   public:
   // Blank constructor for array initialization. Any use of this 
