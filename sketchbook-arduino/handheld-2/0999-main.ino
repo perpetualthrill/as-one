@@ -1,8 +1,8 @@
 // Adjust this number to avoid noise when idle
-const int THRESHOLD = pow(2, 9); // half of sensor resolution
+const int THRESHOLD = pow(2, 9) + 40; // half of sensor resolution plus fudge factor
 
 // Reasonable (?) thresholds for resting heart rate
-const int MAX_BPM = 135;
+const int MAX_BPM = 115; // adjust up once beat detection is less erratic
 const int MIN_INTERVAL_MS = (int)(((float)60 / MAX_BPM) * 1000);
 const int MIN_BPM = 50;
 
@@ -12,13 +12,15 @@ PulseSensorPlayground pulseSensor(SENSOR_COUNT);
 // Hold bpm readings to acheive consensus
 int bpmBuffer[SENSOR_COUNT];
 
+// smoothing buffer -- a single recent reading
+bool wasInBeat[SENSOR_COUNT] = { false };
+
 // 25 ms => 40 hz
 const int REPORT_PERIOD_MS = 25;
 long lastReport = millis();
 
 long nextMotor = 0;
-long lastMotor = millis();
-const int MOTOR_PERIOD_MS = 100;
+const int MOTOR_PERIOD_MS = 150;
 const int MOTOR_PIN = 13; // board D13
 
 EspPwmChannel leds[SENSOR_COUNT];
@@ -63,7 +65,9 @@ void loop() {
       if (bpm < MIN_BPM) bpm *= 2; // ... or half
       bpmBuffer[i] = bpm;
 
-      if (pulseSensor.isInsideBeat(i)) inBeatCount++;
+      bool isInBeat = pulseSensor.isInsideBeat(i);
+      if (isInBeat || wasInBeat[i]) inBeatCount++;
+      wasInBeat[i] = isInBeat;
 
       // Update LED percent. Sensor is 10 bit.
       leds[i].write(((float)sample) / pow(2, PWM_RESOLUTION));
@@ -90,20 +94,22 @@ void loop() {
       }
     }
 
+    // Put down a bump on the plotter if there is consensus
     if (hasConsensus) {
       Serial.println(inBeatCount * 40);
-      // Trigger motor feedback if enough time has passed
-      if ((inBeatCount > 0) &&
-          (now > (nextMotor + MIN_INTERVAL_MS))) {
-        lastMotor = nextMotor;
-        nextMotor = now;
-      }
     } else {
       Serial.println(0);
     }
 
+    // Trigger motor feedback if enough time has passed and two or
+    // more sensors are in-beat
+    if ((inBeatCount > 0) &&
+        (now > (nextMotor + MIN_INTERVAL_MS))) {
+      nextMotor = now;
+    }
+
     // Turn motor on or off as necessary
-    if ((now >= nextMotor) && (now <= (nextMotor + MIN_INTERVAL_MS))) {
+    if ((now >= nextMotor) && (now <= (nextMotor + MOTOR_PERIOD_MS))) {
       digitalWrite(MOTOR_PIN, HIGH);
     } else {
       digitalWrite(MOTOR_PIN, LOW);
@@ -116,6 +122,6 @@ void loop() {
   pulseSensor.sawNewSample();
 
   // ... but not too constantly
-  delay(1);
+  delay(3);
 
 }

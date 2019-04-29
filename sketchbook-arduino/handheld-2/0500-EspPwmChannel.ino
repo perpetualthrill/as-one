@@ -11,7 +11,7 @@ class EspPwmChannel {
   static constexpr float MAX_DUTY_PERCENT = .3;
 
   // Any led attempt below this will be brought up to it
-  static constexpr float MIN_PERCENT = .05;
+  static constexpr float MIN_PERCENT = .025;
 
   static constexpr float EXPANDER_MIDPOINT = .6;
   static constexpr float EXPANDER_INTENSITY = 3;
@@ -47,8 +47,7 @@ class EspPwmChannel {
     if (value > _maxDuty) value = _maxDuty;
 
     // write the value
-    ledc_set_fade_with_time(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)_channel, value, _ledChangeMS);
-    ledc_fade_start(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)_channel, LEDC_FADE_NO_WAIT);
+    ledc_set_fade_time_and_start(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)_channel, value, _ledChangeMS, LEDC_FADE_NO_WAIT);
 
     // save input to average with next
     _prevPercent = percent;
