@@ -4,13 +4,17 @@
 class EspPwmChannel {
   private:
   unsigned int _pin, _channel, _maxDuty, _ledChangeMS;
+  float _prevPercent = .5;
 
   // Should be safe? Vrms @ 30% seems to be 1.25V or so -- well under 1.8
   // which is the forward voltage for red LEDs
   static constexpr float MAX_DUTY_PERCENT = .3;
 
-  static constexpr float EXPANDER_MIDPOINT = .5;
-  static constexpr float EXPANDER_INTENSITY = 2.3;
+  // Any led attempt below this will be brought up to it
+  static constexpr float MIN_PERCENT = .05;
+
+  static constexpr float EXPANDER_MIDPOINT = .6;
+  static constexpr float EXPANDER_INTENSITY = 3;
 
   public:
   // Blank constructor for array initialization. Any use of this 
@@ -29,12 +33,25 @@ class EspPwmChannel {
   }
 
   void write(float percent) {
-    float expandedPercent = expand(percent);
+    // average and expand dynamic range
+    float averagedPercent = (percent + _prevPercent) / 2;
+    float expandedPercent = expand(averagedPercent);
+
+    // set base darkness -- never want it to go black
+    if (expandedPercent < MIN_PERCENT) expandedPercent = MIN_PERCENT;
+
+    // duty cycle to write
     int value = (int)((float)_maxDuty * expandedPercent);
+
     // should not happen. better safe than sorry tho
     if (value > _maxDuty) value = _maxDuty;
-    ledcWrite(_channel, value);
-    //ledc_set_fade_with_time(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)_channel, value, _ledChangeMS);
+
+    // write the value
+    ledc_set_fade_with_time(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)_channel, value, _ledChangeMS);
+    ledc_fade_start(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)_channel, LEDC_FADE_NO_WAIT);
+
+    // save input to average with next
+    _prevPercent = percent;
   }
 
   float expand(float percent) {
