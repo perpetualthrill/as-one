@@ -7,3 +7,7 @@
 
 // Handy stuffs
 #include <math.h>
+
+// 25 ms => 40 hz
+// 20 ms => 50 hz
+const int REPORT_PERIOD_MS = 20;

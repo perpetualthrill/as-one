@@ -15,8 +15,6 @@ int bpmBuffer[SENSOR_COUNT];
 // smoothing buffer -- a single recent reading
 bool wasInBeat[SENSOR_COUNT] = { false };
 
-// 25 ms => 40 hz
-const int REPORT_PERIOD_MS = 25;
 long lastReport = millis();
 
 long nextMotor = 0;
@@ -24,8 +22,6 @@ const int MOTOR_PERIOD_MS = 150;
 const int MOTOR_PIN = 13; // board D13
 
 EspPwmChannel leds[SENSOR_COUNT];
-const int PWM_RESOLUTION = 10;
-const int PWM_FREQUENCY = 10000;
 
 void setup() {
   Serial.begin(115200);
@@ -46,10 +42,10 @@ void setup() {
   // Configure feedback outputs
   pinMode(MOTOR_PIN, OUTPUT);
   digitalWrite(MOTOR_PIN, LOW);
-  leds[0] = EspPwmChannel(12, 0, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3); // board D12
-  leds[1] = EspPwmChannel(14, 1, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3); // board D14
-  leds[2] = EspPwmChannel(27, 2, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3); // board D27
-  leds[3] = EspPwmChannel(26, 3, PWM_RESOLUTION, PWM_FREQUENCY, REPORT_PERIOD_MS - 3); // board D26
+  leds[0] = EspPwmChannel(12, 0); // board D12
+  leds[1] = EspPwmChannel(14, 1); // board D14
+  leds[2] = EspPwmChannel(27, 2); // board D27
+  leds[3] = EspPwmChannel(26, 3); // board D26
 }
 
 void loop() {
@@ -70,7 +66,7 @@ void loop() {
       wasInBeat[i] = isInBeat;
 
       // Update LED percent. Sensor is 10 bit.
-      leds[i].write(((float)sample) / pow(2, PWM_RESOLUTION));
+      leds[i].write(((float)sample) / 1023.0);
 
       Serial.print(sample);
       Serial.print(",");

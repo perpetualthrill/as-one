@@ -13,21 +13,27 @@ class EspPwmChannel {
   // Any led attempt below this will be brought up to it
   static constexpr float MIN_PERCENT = .025;
 
+  // Values above midpoint will be raised, and below lowered. Intensity
+  // is a coefficient on the amount that will happen
   static constexpr float EXPANDER_MIDPOINT = .6;
   static constexpr float EXPANDER_INTENSITY = 3;
 
+  static const int PWM_RESOLUTION = 10;
+  static const int PWM_FREQUENCY = 18000; // this is near the max we can go given 10 bit resolution
+  static const int LED_CHANGE_MS = REPORT_PERIOD_MS - 3; // get there a little quicker than we strictly have to
+
   public:
-  // Blank constructor for array initialization. Any use of this 
+  // Blank constructor for array initialization. Any use of objects created by it
   // is undefined. And bad. <3
   EspPwmChannel() { }
-  
-  EspPwmChannel(int pin, int channel, int resolution, int frequency, int ledChangeMS) {
+
+  EspPwmChannel(int pin, int channel) {
     _pin = pin;
     _channel = channel;
-    _maxDuty = (int)(MAX_DUTY_PERCENT * pow(2, resolution));
-    _ledChangeMS = ledChangeMS;
+    _maxDuty = (int)(MAX_DUTY_PERCENT * pow(2, PWM_RESOLUTION));
+    _ledChangeMS = LED_CHANGE_MS;
     ledc_fade_func_install(_channel);
-    ledcSetup(_channel, frequency, resolution);
+    ledcSetup(_channel, PWM_FREQUENCY, PWM_RESOLUTION);
     ledcAttachPin(_pin, _channel);
     ledcWrite(_channel, 0);
   }
