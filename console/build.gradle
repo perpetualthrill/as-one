@@ -23,6 +23,8 @@ ext {
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
+    implementation 'com.fazecast:jSerialComm:2.5.0'
+
     compile "com.google.dagger:dagger:${daggerVersion}"
     kapt "com.google.dagger:dagger-compiler:${daggerVersion}"
 }
