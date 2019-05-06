@@ -6,6 +6,7 @@ package org.perpetualthrill.asone.console
 import org.perpetualthrill.asone.console.di.DaggerMainComponent
 import org.perpetualthrill.asone.console.di.MainComponent
 import org.perpetualthrill.asone.console.io.SerialMonitor
+import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import javax.inject.Inject
 
 class Console {
@@ -21,8 +22,10 @@ class Console {
     }
 
     fun actualMain() {
-        println("Hello, world!")
-        serialMonitor.hello()
+        serialMonitor.init()
+        serialMonitor.sensorStream.subscribeWithErrorLogging(this) {
+            println("$it")
+        }
     }
 
 }

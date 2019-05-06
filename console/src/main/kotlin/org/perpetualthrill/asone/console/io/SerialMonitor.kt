@@ -3,6 +3,9 @@ package org.perpetualthrill.asone.console.io
 import com.fazecast.jSerialComm.SerialPort
 import com.fazecast.jSerialComm.SerialPortEvent
 import com.fazecast.jSerialComm.SerialPortMessageListener
+import io.reactivex.Flowable
+import io.reactivex.processors.MulticastProcessor
+import org.perpetualthrill.asone.console.model.Sensor
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,31 +15,43 @@ class SerialMonitor
 @Inject
 constructor() {
 
-    var port0: SerialPort? = null
-    var port1: SerialPort? = null
+    private val sensorStreamInternal = MulticastProcessor.create<Sensor.Reading>()
+    val sensorStream: Flowable<Sensor.Reading> = sensorStreamInternal
 
-    private inner class MessageListener(val portName: String) : SerialPortMessageListener {
+    private var port0: SerialPort? = null
+    private var port1: SerialPort? = null
+
+    init {
+        sensorStreamInternal.start() // necessary because it subscribes to nothing
+    }
+
+    private inner class MessageListener(portName: String) : SerialPortMessageListener {
+
+        val sensor = Sensor(portName)
+
         override fun delimiterIndicatesEndOfMessage(): Boolean {
-            return true;
+            return true
         }
 
         override fun getMessageDelimiter(): ByteArray {
-            return byteArrayOf(0x0A.toByte())
+            return byteArrayOf(0x0A.toByte()) // carriage return aka '\n'
         }
 
         override fun getListeningEvents(): Int {
-            return SerialPort.LISTENING_EVENT_DATA_RECEIVED;
+            return SerialPort.LISTENING_EVENT_DATA_RECEIVED
         }
 
         override fun serialEvent(event: SerialPortEvent) {
             val message = String(event.receivedData)
-            print("$portName received the following delimited message: $message")
+            try {
+                val reading = sensor.readingFromSerialInput(message)
+                sensorStreamInternal.offer(reading) // offer() will discard if nothing is listening
+            } catch (_: Exception) { /* garbage inputs filtered here */ }
         }
     }
 
-
-    fun hello() {
-        println("Hello SerialMonitor")
+    // TODO: Retry this all the time for plug / unplug support
+    fun init() {
         try {
             port0 = SerialPort.getCommPort("/dev/ttyUSB0")
             port0?.baudRate = 115200
@@ -49,6 +64,6 @@ constructor() {
             port1?.openPort()
             port1?.addDataListener(MessageListener("usb1"))
         } catch (_: IOException) { }
-        println("$port0 -- $port1")
     }
+
 }
