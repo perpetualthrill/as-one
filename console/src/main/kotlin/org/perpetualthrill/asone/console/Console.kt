@@ -6,12 +6,14 @@ package org.perpetualthrill.asone.console
 import org.perpetualthrill.asone.console.di.DaggerMainComponent
 import org.perpetualthrill.asone.console.di.MainComponent
 import org.perpetualthrill.asone.console.io.SerialMonitor
+import org.perpetualthrill.asone.console.io.WebServer
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import javax.inject.Inject
 
 class Console {
 
     @Inject lateinit var serialMonitor: SerialMonitor
+    @Inject lateinit var webServer: WebServer
 
     private val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
@@ -26,6 +28,7 @@ class Console {
         serialMonitor.sensorStream.subscribeWithErrorLogging(this) {
             println("$it")
         }
+        webServer.start()
     }
 
 }

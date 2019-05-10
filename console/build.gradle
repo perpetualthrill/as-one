@@ -18,6 +18,7 @@ repositories {
 
 ext {
     daggerVersion = '2.22.1'
+    ktorVersion = '1.2.0-rc2'
 }
 
 dependencies {
@@ -25,6 +26,9 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
     implementation 'com.fazecast:jSerialComm:2.5.0'
 
-    compile "com.google.dagger:dagger:${daggerVersion}"
+    implementation "io.ktor:ktor-server-core:${ktorVersion}"
+    implementation "io.ktor:ktor-server-netty:${ktorVersion}"
+
+    implementation "com.google.dagger:dagger:${daggerVersion}"
     kapt "com.google.dagger:dagger-compiler:${daggerVersion}"
 }
