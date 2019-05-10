@@ -12,6 +12,7 @@ import org.perpetualthrill.asone.console.io.SerialMonitor
 import org.perpetualthrill.asone.console.io.WebServer
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import org.slf4j.LoggerFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -33,10 +34,13 @@ class Console {
         val rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME)
         rootLogger.level = Level.INFO
 
-        serialMonitor.init()
-        serialMonitor.sensorStream.subscribeWithErrorLogging(this) {
-            println("$it")
-        }
+        serialMonitor.start()
+        serialMonitor.sensorStream
+            .sample(1, TimeUnit.SECONDS)
+            .subscribeWithErrorLogging(this) {
+                println("$it")
+            }
+
         webServer.start()
     }
 

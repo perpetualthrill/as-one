@@ -4,22 +4,31 @@ import com.fazecast.jSerialComm.SerialPort
 import com.fazecast.jSerialComm.SerialPortEvent
 import com.fazecast.jSerialComm.SerialPortMessageListener
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.processors.MulticastProcessor
 import org.perpetualthrill.asone.console.model.Sensor
-import java.io.IOException
+import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private const val SENSOR_RETRY_MS = 1000L
 
 @Singleton
 class SerialMonitor
 @Inject
 constructor() {
 
+    private data class PortAndSensor(
+        val port: SerialPort,
+        val sensor: Sensor
+    )
+
+    private val sensorAddresses = listOf("/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2")
+    private val sensors = mutableMapOf<String, PortAndSensor>()
+
     private val sensorStreamInternal = MulticastProcessor.create<Sensor.Reading>()
     val sensorStream: Flowable<Sensor.Reading> = sensorStreamInternal
-
-    private var port0: SerialPort? = null
-    private var port1: SerialPort? = null
 
     init {
         sensorStreamInternal.start() // necessary because it subscribes to nothing
@@ -50,20 +59,48 @@ constructor() {
         }
     }
 
-    // TODO: Retry this all the time for plug / unplug support
-    fun init() {
+    fun start() {
+        attemptConnectAll()
+        Observable.interval(SENSOR_RETRY_MS, TimeUnit.MILLISECONDS)
+            .subscribeWithErrorLogging(this) {
+                attemptConnectAll()
+            }
+    }
+
+    private fun attemptConnectAll() {
+        for (address in sensorAddresses) {
+            // First, check for disconnects and remove
+            val check = sensors[address]
+            if (null != check && check.sensor.isDisconnected()) {
+                sensors.remove(address)
+                check.port.removeDataListener()
+                check.port.closePort()
+                println("SENSORS: "+sensors.keys)
+            }
+            // Now, attempt connect for any addresses not in map
+            if(!sensors.containsKey(address)) {
+                val portAndSensor = attemptConnect(address)
+                if (null != portAndSensor) {
+                    sensors[address] = portAndSensor
+                    println("SENSORS: "+sensors.keys)
+                }
+            }
+        }
+    }
+
+    private fun attemptConnect(address: String): PortAndSensor? {
         try {
-            port0 = SerialPort.getCommPort("/dev/ttyUSB0")
-            port0?.baudRate = 115200
-            port0?.openPort()
-            port0?.addDataListener(MessageListener("usb0"))
-        } catch (_: IOException) { }
-        try {
-            port1 = SerialPort.getCommPort("/dev/ttyUSB1")
-            port1?.baudRate = 115200
-            port1?.openPort()
-            port1?.addDataListener(MessageListener("usb1"))
-        } catch (_: IOException) { }
+            val port = SerialPort.getCommPort(address)
+            port?.let {
+                it.baudRate = 115200
+                if(it.openPort(100)) {
+                    val listener = MessageListener(address)
+                    it.addDataListener(listener)
+                    return PortAndSensor(it, listener.sensor)
+                }
+            }
+        } catch (_: Exception) { }
+        return null
     }
 
 }
