@@ -8,11 +8,13 @@ import io.reactivex.Observable
 import io.reactivex.processors.MulticastProcessor
 import org.perpetualthrill.asone.console.model.Sensor
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val SENSOR_RETRY_MS = 1000L
+private const val SENSOR_READING_BUFFER_SIZE = 100
 
 @Singleton
 class SerialMonitor
@@ -30,8 +32,21 @@ constructor() {
     private val sensorStreamInternal = MulticastProcessor.create<Sensor.Reading>()
     val sensorStream: Flowable<Sensor.Reading> = sensorStreamInternal
 
+    private val sensorReadingBuffer = ArrayDeque<Sensor.Reading>(SENSOR_READING_BUFFER_SIZE)
+
     init {
-        sensorStreamInternal.start() // necessary because it subscribes to nothing
+        // necessary because it subscribes to nothing
+        sensorStreamInternal.start()
+
+        // maintain queue of last n readings for web service
+        sensorStream.subscribeWithErrorLogging(this) {
+            // data structure is not thread safe, but so long as this subscriber
+            // is the only thing mutating it we are good
+            sensorReadingBuffer.addFirst(it)
+            while (sensorReadingBuffer.size > SENSOR_READING_BUFFER_SIZE) {
+                sensorReadingBuffer.removeLast()
+            }
+        }
     }
 
     private inner class MessageListener(portName: String) : SerialPortMessageListener {
@@ -102,5 +117,8 @@ constructor() {
         } catch (_: Exception) { }
         return null
     }
+
+    val latestReadings
+        get() = sensorReadingBuffer.toArray()
 
 }

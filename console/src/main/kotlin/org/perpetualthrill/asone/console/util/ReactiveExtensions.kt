@@ -4,10 +4,11 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
+import org.slf4j.LoggerFactory
 
 private fun makeErrorHandler(tag: String): (Throwable) -> Unit = { e: Throwable ->
-    println("$tag -- ERROR")
-    e.printStackTrace()
+    val logger = LoggerFactory.getLogger(tag)
+    logger.error("Subscription error!", e)
 }
 
 fun <T : Any> Flowable<T>.subscribeWithErrorLogging(
