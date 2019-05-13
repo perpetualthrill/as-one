@@ -12,6 +12,7 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import org.perpetualthrill.asone.console.store.ReadingStore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -21,7 +22,7 @@ import javax.inject.Singleton
 class WebServer
 @Inject
 constructor(
-    private val serialMonitor: SerialMonitor
+    private val readingStore: ReadingStore
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
@@ -42,7 +43,7 @@ constructor(
                 }
 
                 get("/sensors/latest") {
-                    call.respond(serialMonitor.latestReadings)
+                    call.respond(readingStore.latestReadings)
                 }
             }
         }

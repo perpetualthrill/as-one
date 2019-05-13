@@ -3,18 +3,16 @@ package org.perpetualthrill.asone.console.io
 import com.fazecast.jSerialComm.SerialPort
 import com.fazecast.jSerialComm.SerialPortEvent
 import com.fazecast.jSerialComm.SerialPortMessageListener
-import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.processors.MulticastProcessor
+import io.reactivex.subjects.PublishSubject
 import org.perpetualthrill.asone.console.model.Sensor
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
 private const val SENSOR_RETRY_MS = 1000L
-private const val SENSOR_READING_BUFFER_SIZE = 100
 
 @Singleton
 class SerialMonitor
@@ -29,25 +27,8 @@ constructor() {
     private val sensorAddresses = listOf("/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2")
     private val sensors = mutableMapOf<String, PortAndSensor>()
 
-    private val sensorStreamInternal = MulticastProcessor.create<Sensor.Reading>()
-    val sensorStream: Flowable<Sensor.Reading> = sensorStreamInternal
-
-    private val sensorReadingBuffer = ArrayDeque<Sensor.Reading>(SENSOR_READING_BUFFER_SIZE)
-
-    init {
-        // necessary because it subscribes to nothing
-        sensorStreamInternal.start()
-
-        // maintain queue of last n readings for web service
-        sensorStream.subscribeWithErrorLogging(this) {
-            // data structure is not thread safe, but so long as this subscriber
-            // is the only thing mutating it we are good
-            sensorReadingBuffer.addFirst(it)
-            while (sensorReadingBuffer.size > SENSOR_READING_BUFFER_SIZE) {
-                sensorReadingBuffer.removeLast()
-            }
-        }
-    }
+    private val sensorStreamInternal = PublishSubject.create<Sensor.Reading>()
+    val sensorStream: Observable<Sensor.Reading> = sensorStreamInternal
 
     private inner class MessageListener(portName: String) : SerialPortMessageListener {
 
@@ -69,7 +50,7 @@ constructor() {
             val message = String(event.receivedData)
             try {
                 val reading = sensor.readingFromSerialInput(message)
-                sensorStreamInternal.offer(reading) // offer() will discard if nothing is listening
+                sensorStreamInternal.onNext(reading)
             } catch (_: Exception) { /* garbage inputs filtered here */ }
         }
     }
@@ -117,8 +98,5 @@ constructor() {
         } catch (_: Exception) { }
         return null
     }
-
-    val latestReadings
-        get() = sensorReadingBuffer.toArray()
 
 }

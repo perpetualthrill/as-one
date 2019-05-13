@@ -10,6 +10,7 @@ import org.perpetualthrill.asone.console.di.DaggerMainComponent
 import org.perpetualthrill.asone.console.di.MainComponent
 import org.perpetualthrill.asone.console.io.SerialMonitor
 import org.perpetualthrill.asone.console.io.WebServer
+import org.perpetualthrill.asone.console.store.ReadingStore
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class Console {
 
     @Inject lateinit var serialMonitor: SerialMonitor
+    @Inject lateinit var readingStore: ReadingStore
     @Inject lateinit var webServer: WebServer
 
     private val mainComponent: MainComponent by lazy {
@@ -35,13 +37,14 @@ class Console {
         rootLogger.level = Level.INFO
 
         serialMonitor.start()
-        serialMonitor.sensorStream
+        webServer.start()
+        readingStore.start()
+
+        readingStore.readingStream
             .sample(1, TimeUnit.SECONDS)
             .subscribeWithErrorLogging(this) {
                 println("$it")
             }
-
-        webServer.start()
     }
 
 }
