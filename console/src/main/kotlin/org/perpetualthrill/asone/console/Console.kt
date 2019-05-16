@@ -23,11 +23,12 @@ class Console {
     @Inject lateinit var readingStore: ReadingStore
     @Inject lateinit var webServer: WebServer
 
-    private val mainComponent: MainComponent by lazy {
+    val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
     }
 
     init {
+        INSTANCE = this
         mainComponent.inject(this)
     }
 
@@ -45,6 +46,17 @@ class Console {
             .subscribeWithErrorLogging(this) {
                 println("$it")
             }
+    }
+
+    companion object {
+        // kinda weird way to do this, but makes it possible to get the
+        // dagger injector from anywhere. if something manages to call this
+        // before it is initialized, it may be a misunderstanding on the
+        // caller's part -jc
+        private lateinit var INSTANCE: Console
+        fun getInstance(): Console {
+            return INSTANCE
+        }
     }
 
 }

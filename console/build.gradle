@@ -21,6 +21,14 @@ ext {
     ktorVersion = '1.2.0-rc2'
 }
 
+// Thanks, IDEA. How come the preprocessor runs automagically in Android
+// Studio but not here?
+task rebuildAndRun {
+    dependsOn 'classes'
+    dependsOn 'run'
+    tasks.findByName('run').mustRunAfter 'classes'
+}
+
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'

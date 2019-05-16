@@ -9,6 +9,8 @@ import io.ktor.http.ContentType
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
+import io.ktor.routing.post
+import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -42,8 +44,15 @@ constructor(
                     call.respondText("Hello, world!", ContentType.Text.Plain)
                 }
 
-                get("/sensors/latest") {
-                    call.respond(readingStore.latestReadings)
+                route("/sensors") {
+                    get("latest") {
+                        call.respond(readingStore.latestReadings)
+                    }
+                    route("/simulated") {
+                        post("add") {
+                            readingStore.addSimulator()
+                        }
+                    }
                 }
             }
         }
