@@ -45,7 +45,7 @@ constructor(
 
     fun addSimulator() {
         val simulator = Injector.get().sensorSimulator()
-        simulator.test()
+        simulator.start()
         simulators.add(simulator)
     }
 
