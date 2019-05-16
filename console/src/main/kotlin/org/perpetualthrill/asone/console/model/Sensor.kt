@@ -34,10 +34,10 @@ class Sensor(private val name: String) {
         val s2: Int,
         val s3: Int,
         val s4: Int,
-        val timestamp: Temporal
+        val timestamp: Temporal = Instant.now()
     ) {
         override fun toString(): String {
-            return "Sensor Reading, $sensorName: $s1 $s2 $s3 $s4"
+            return "Sensor reading for $sensorName: $s1 $s2 $s3 $s4 at $timestamp"
         }
     }
 

@@ -1,27 +1,27 @@
 package org.perpetualthrill.asone.console.io
 
+import org.xbib.jdbc.io.TableReader
+import java.io.InputStreamReader
+import java.io.Reader
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.ResultSet
 import java.sql.ResultSet.CONCUR_READ_ONLY
 import java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE
+import java.sql.Statement
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
-import java.util.Vector
-import java.io.InputStreamReader
-import org.xbib.jdbc.io.TableReader
-import java.io.Reader
-import java.net.HttpURLConnection
-import java.net.URL
-import java.sql.*
 
 
 @Singleton
-class SensorCSVReader
+class SensorDataSource
 @Inject
 constructor() {
 
     private val connection: Connection
 
     init {
-     //   Class.forName("org.relique.jdbc.csv.CsvDriver")
         connection = DriverManager.getConnection("jdbc:xbib:csv:class:"+ResourceFileReader::class.java.name)
     }
 
@@ -32,6 +32,7 @@ constructor() {
     }
 
     fun finish() {
+        // this closes all outstanding result sets, too
         connection.close()
     }
 
@@ -45,18 +46,19 @@ constructor() {
     // Note! This class does a lot of real borderline shit. Check hasNext before calling getNext
     // on a one shot result set or it will throw
     class ResultIterator(private val resultSet: ResultSet, private val oneShot: Boolean) {
-        val hasNext = {
-            if (oneShot) {
-                !resultSet.isAfterLast
-            } else true
-        }
+
+        val hasNext = if (oneShot) !resultSet.isAfterLast else true
 
         fun getNext(): CSVReading {
             val gotNext = resultSet.next()
             if (!gotNext && !oneShot) {
-                resultSet.first()
+                reset()
             }
             return csvReadingFromCurrentRow()
+        }
+
+        fun reset() {
+            resultSet.first()
         }
 
         private fun csvReadingFromCurrentRow(): CSVReading {

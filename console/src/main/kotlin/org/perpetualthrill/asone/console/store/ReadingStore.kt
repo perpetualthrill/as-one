@@ -24,7 +24,7 @@ constructor(
 
     private val readingBuffer = ArrayDeque<Sensor.Reading>(SENSOR_READING_BUFFER_SIZE)
 
-    private val simulators = mutableListOf<SensorSimulator>()
+    private val simulators = mutableMapOf<String, SensorSimulator>()
 
     fun start() {
         serialMonitor.sensorStream.subscribeWith(internalReadingStream)
@@ -43,10 +43,13 @@ constructor(
     val latestReadings: Array<out Any>
         get() = readingBuffer.toArray()
 
-    fun addSimulator() {
+    fun addSimulator(): String {
         val simulator = Injector.get().sensorSimulator()
-        simulator.start()
-        simulators.add(simulator)
+        val name = "simulator${simulator.hashCode()}"
+        simulator.start(name)
+        simulators[name] = simulator
+        simulator.readingStream.subscribeWith(internalReadingStream)
+        return name
     }
 
 }
