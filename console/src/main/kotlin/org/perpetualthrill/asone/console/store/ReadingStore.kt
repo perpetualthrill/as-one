@@ -52,4 +52,14 @@ constructor(
         return name
     }
 
+    fun removeSimulator(name: String): Boolean {
+        val simulator = simulators[name]
+        if (null != simulator) {
+            simulators.remove(name)
+            simulator.finish()
+            return true
+        }
+        return false
+    }
+
 }

@@ -5,7 +5,8 @@ import io.ktor.application.install
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
-import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.locations.*
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@KtorExperimentalLocationsAPI
 @Singleton
 class WebServer
 @Inject
@@ -28,6 +30,11 @@ constructor(
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+
+    @Location("/sensors/simulated/{name}")
+    data class Simulator(
+        val name: String
+    )
 
     fun start() {
         val server = embeddedServer(Netty, 12345) {
@@ -38,22 +45,39 @@ constructor(
                     serializeNulls()
                 }
             }
+            install(Locations)
 
             routing {
+                // Simple check if the server is responding
                 get("/") {
-                    call.respondText("Hello, world!", ContentType.Text.Plain)
+                    call.respondText("Hello, world!")
                 }
 
                 route("/sensors") {
                     get("latest") {
                         call.respond(readingStore.latestReadings)
                     }
-                    route("/simulated") {
+                    route("simulated") {
                         post("add") {
-                            readingStore.addSimulator()
+                            val name = readingStore.addSimulator()
+                            val href = locations.href(Simulator(name=name))
+                            call.respondText(text = href, status = HttpStatusCode.Created)
                         }
                     }
                 }
+
+                get<Simulator> { simulator ->
+                    call.respondText("Simulator at ${locations.href(simulator)}")
+                }
+                delete<Simulator> { simulator ->
+                    if (readingStore.removeSimulator(simulator.name)) {
+                        call.respondText("OK")
+                    } else {
+                        call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)
+                    }
+                }
+
+
             }
         }
         server.start()

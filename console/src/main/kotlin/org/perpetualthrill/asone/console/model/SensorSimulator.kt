@@ -17,6 +17,7 @@ constructor() {
 
     private var name = "unstarted!"
     private var state = SimulatorState.QUIESCENT
+    private var finished = false
 
     // must lazy initialize so that the lateinit vars are filled
     // in by the time this is used. i.e. not at simulator init time
@@ -26,7 +27,9 @@ constructor() {
 
     val readingStream: Observable<Sensor.Reading> = Observable
         .interval(20, TimeUnit.MILLISECONDS)
+        .takeWhile { !finished }
         .map { checkStateAndReturnReading() }
+
 
     fun start(sensorName: String) {
         name = sensorName
@@ -50,6 +53,7 @@ constructor() {
     }
 
     fun finish() {
+        finished = true
         sensorDataSource.finish()
     }
 
