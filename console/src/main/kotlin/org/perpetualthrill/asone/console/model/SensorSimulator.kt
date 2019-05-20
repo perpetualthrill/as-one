@@ -23,7 +23,7 @@ constructor() {
     }
 
     private var name = "unstarted!"
-    private var state = SimulatorState.QUIESCENT
+    private var currentState = SimulatorState.QUIESCENT
     private var finished = false
 
     val readingStream: Observable<Sensor.Reading> = Observable
@@ -31,17 +31,19 @@ constructor() {
         .takeWhile { !finished }
         .map { checkStateAndReturnReading() }
 
+    private val allResults = mutableMapOf<SimulatorState, ResultIterator>()
+
     fun start(sensorName: String) {
         name = sensorName
     }
 
     private fun checkStateAndReturnReading(): Sensor.Reading {
-        val currentStateIterator = resultIteratorOrThrow(state)
+        val currentStateIterator = resultsForState(currentState)
         val next = if (currentStateIterator.hasNext) {
             currentStateIterator.getNext()
         } else {
-            state = state.nextState
-            val nextStateIterator = resultIteratorOrThrow(state)
+            currentState = currentState.nextState
+            val nextStateIterator = resultsForState(currentState)
             nextStateIterator.reset()
             nextStateIterator.getNext()
         }
@@ -53,22 +55,27 @@ constructor() {
         connection.close() // also closes all resultsets
     }
 
-    private fun resultIteratorOrThrow(state: SimulatorState): ResultIterator {
-        return allResults[state] ?: throw RuntimeException("Oh dear! The sensor simulator state machine broke")
+    private fun resultsForState(state: SimulatorState): ResultIterator {
+        val found = allResults[state]
+        if (null != found) return found
+        val made = makeResults(state)
+        allResults[state] = made
+        return made
     }
 
-    private val quiescentResults: ResultIterator by lazy {
+    private fun makeResults(state: SimulatorState): ResultIterator {
         // val countStmt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)
         val statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)
-        val resultSet = statement.executeQuery("select s1, s2, s3, s4, state from log-data-20190512 where state = 'quiescent'")
-        ResultIterator(resultSet, false)
-    }
-
-    private val allResults: Map<SimulatorState, ResultIterator> by lazy {
-        mapOf(SimulatorState.QUIESCENT to quiescentResults)
+        val resultSet = statement.executeQuery("select s1, s2, s3, s4, state from log-data-20190512 where state = '${state.stateColumnValue}'")
+        return ResultIterator(resultSet, false)
     }
 
     private enum class SimulatorState {
+
+        HEARTBEAT {
+            override val nextState = HEARTBEAT
+            override val stateColumnValue = "heartbeat"
+        },
 
         QUIESCENT {
             override val nextState = QUIESCENT
