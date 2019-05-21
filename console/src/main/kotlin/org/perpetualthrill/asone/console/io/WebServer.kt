@@ -7,6 +7,7 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.*
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
@@ -76,6 +77,14 @@ constructor(
                         call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)
                     }
                 }
+                patch<Simulator> { simulator ->
+                    val update = call.receive<SimulatorUpdate>()
+                    if (readingStore.updateSimulatorState(simulator.name, update.newState)) {
+                        call.respondText("OK")
+                    } else {
+                        call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)
+                    }
+                }
 
 
             }
@@ -85,3 +94,7 @@ constructor(
     }
 
 }
+
+data class SimulatorUpdate(
+    val newState: String
+)

@@ -1,6 +1,8 @@
 package org.perpetualthrill.asone.console.model
 
 import io.reactivex.Observable
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.xbib.jdbc.io.TableReader
 import java.io.InputStreamReader
 import java.io.Reader
@@ -15,6 +17,8 @@ import javax.inject.Inject
 class SensorSimulator
 @Inject
 constructor() {
+
+    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     private val connection: Connection
 
@@ -37,13 +41,23 @@ constructor() {
         name = sensorName
     }
 
+    fun updateState(newState: SimulatorState) {
+        logger.debug("Updating simulator $name from $currentState to $newState ")
+        currentState = newState
+    }
+
     private fun checkStateAndReturnReading(): Sensor.Reading {
         val currentStateIterator = resultsForState(currentState)
         val next = if (currentStateIterator.hasNext) {
+            // while we have results, use one
             currentStateIterator.advance()
             currentStateIterator.get()
         } else {
-            currentState = currentState.nextState
+            // if we're out of results:
+            // 1) advance to the next state
+            // 2) reset the reader to start, as it is in an unknown state
+            // 3) return the first row
+            updateState(currentState.nextState)
             val nextStateIterator = resultsForState(currentState)
             nextStateIterator.reset()
             nextStateIterator.get()
@@ -70,20 +84,42 @@ constructor() {
         return Results(resultSet)
     }
 
-    private enum class SimulatorState {
+    enum class SimulatorState {
+
+        QUIESCENT {
+            override val nextState = QUIESCENT
+            override val stateColumnValue = "quiescent"
+        },
 
         HEARTBEAT {
             override val nextState = HEARTBEAT
             override val stateColumnValue = "heartbeat"
         },
 
-        QUIESCENT {
+        PICKUP {
+            override val nextState = HEARTBEAT
+            override val stateColumnValue = "pickup"
+        },
+
+        SETDOWN {
             override val nextState = QUIESCENT
-            override val stateColumnValue = "quiescent"
+            override val stateColumnValue = "setdown"
         };
 
         abstract val nextState: SimulatorState
         abstract val stateColumnValue: String
+
+        companion object {
+            fun forString(value: String): SimulatorState {
+                return when (value.toLowerCase()) {
+                    QUIESCENT.name.toLowerCase() -> QUIESCENT
+                    HEARTBEAT.name.toLowerCase() -> HEARTBEAT
+                    PICKUP.name.toLowerCase() -> PICKUP
+                    SETDOWN.name.toLowerCase() -> SETDOWN
+                    else -> throw RuntimeException("Yikes! Asked simulator for unknown state: $value")
+                }
+            }
+        }
     }
 
     // Note! This class does a lot of real borderline shit. Check hasNext before calling getNext
