@@ -2,11 +2,11 @@
 
 ## Server software
 
-The server code written in Kotlin and located in the [console/](./console/) directory. To compile it, type './gradlew shadowJar' in that directory to assemble a fat jar containing all dependencies. To run that jar, do `java -jar build/libs/AsOne-Console-0.1-all.jar` -- if this is successful, you will be able to access the running server at [http://localhost:12345/](http://localhost:12345/).
+The server code written in Kotlin and located in the [console/backend/](./console/backend/) directory. To compile it, type './gradlew shadowJar' in that directory to assemble a fat jar containing all dependencies. To run that jar, do `java -jar build/libs/AsOne-Console-0.1-all.jar` -- if this is successful, you will be able to access the running server at [http://localhost:12345/](http://localhost:12345/).
 
 A JSON-encoded ordered list of the last 100 sensor readings can be read at via GET request to `/sensors/latest`
 
-To test that and other services, fire up [Postman](https://www.getpostman.com/) and load [the AsOne-Console collection](./console/AsOne-Console.postman_collection.json/). When adding or changing services, please update this collection, as it is effectively our API documentation.
+To test that and other services, fire up [Postman](https://www.getpostman.com/) and load [the AsOne-Console collection](./console/AsOne-Console.postman_collection.json). When adding or changing services, please update this collection, as it is effectively our API documentation.
 
 ### Sensor simulator
 
