@@ -31,7 +31,7 @@ constructor() {
         .takeWhile { !finished }
         .map { checkStateAndReturnReading() }
 
-    private val allResults = mutableMapOf<SimulatorState, ResultIterator>()
+    private val allResults = mutableMapOf<SimulatorState, Results>()
 
     fun start(sensorName: String) {
         name = sensorName
@@ -40,12 +40,13 @@ constructor() {
     private fun checkStateAndReturnReading(): Sensor.Reading {
         val currentStateIterator = resultsForState(currentState)
         val next = if (currentStateIterator.hasNext) {
-            currentStateIterator.getNext()
+            currentStateIterator.advance()
+            currentStateIterator.get()
         } else {
             currentState = currentState.nextState
             val nextStateIterator = resultsForState(currentState)
             nextStateIterator.reset()
-            nextStateIterator.getNext()
+            nextStateIterator.get()
         }
         return Sensor.Reading(name, next.s1, next.s2, next.s3, next.s4)
     }
@@ -55,7 +56,7 @@ constructor() {
         connection.close() // also closes all resultsets
     }
 
-    private fun resultsForState(state: SimulatorState): ResultIterator {
+    private fun resultsForState(state: SimulatorState): Results {
         val found = allResults[state]
         if (null != found) return found
         val made = makeResults(state)
@@ -63,11 +64,10 @@ constructor() {
         return made
     }
 
-    private fun makeResults(state: SimulatorState): ResultIterator {
-        // val countStmt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)
+    private fun makeResults(state: SimulatorState): Results {
         val statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)
         val resultSet = statement.executeQuery("select s1, s2, s3, s4, state from log-data-20190512 where state = '${state.stateColumnValue}'")
-        return ResultIterator(resultSet, false)
+        return Results(resultSet)
     }
 
     private enum class SimulatorState {
@@ -88,15 +88,16 @@ constructor() {
 
     // Note! This class does a lot of real borderline shit. Check hasNext before calling getNext
     // on a one shot result set or it will throw
-    inner class ResultIterator(private val resultSet: ResultSet, private val oneShot: Boolean) {
+    inner class Results(private val resultSet: ResultSet) {
 
-        val hasNext = if (oneShot) !resultSet.isAfterLast else true
+        val hasNext: Boolean
+            get() = !resultSet.isAfterLast
 
-        fun getNext(): Sensor.Reading {
-            val gotNext = resultSet.next()
-            if (!gotNext && !oneShot) {
-                reset()
-            }
+        fun advance() {
+            resultSet.next()
+        }
+
+        fun get(): Sensor.Reading {
             return sensorReadingFromCurrentRow()
         }
 
