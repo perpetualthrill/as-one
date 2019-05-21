@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "8a1c8c8b-5ff2-45f0-8b0b-e959ea89a0c9",
+		"name": "AsOne-Console",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Sensor Simulator",
+			"item": [
+				{
+					"name": "Add Simulator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "be5afa15-2eab-4040-b04a-26996ba85298",
+								"exec": [
+									"// Make sure the creation was successful",
+									"pm.test(\"Expect simulator to have been created\", function () {",
+									"    pm.response.to.have.status(\"Created\");",
+									"});",
+									"",
+									"// Save the path for use in later requests. Not sure why",
+									"// neither pm.environment nor pm.variables will let this",
+									"// work -- it really seems to want a global :-/",
+									"pm.globals.set(\"simulator-path\", pm.response.text());",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sensors/simulated/add",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sensors",
+								"simulated",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Simulator",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{simulator-path}}",
+							"host": [
+								"{{host}}{{simulator-path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Simulator",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{simulator-path}}",
+							"host": [
+								"{{host}}{{simulator-path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Simulate Pickup",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"newState\": \"pickup\" }"
+						},
+						"url": {
+							"raw": "{{host}}{{simulator-path}}",
+							"host": [
+								"{{host}}{{simulator-path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Simulate Set Down",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"newState\": \"setdown\" }"
+						},
+						"url": {
+							"raw": "{{host}}{{simulator-path}}",
+							"host": [
+								"{{host}}{{simulator-path}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Latest Sensor Readings",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "52a43160-8101-4b21-8628-49f37213eb98",
+						"exec": [
+							"pm.test(\"Expect successful response of a json array\", function () {",
+							"    pm.response.to.be.ok;",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.match(/^application\\/json/i);",
+							"    var check = JSON.parse(pm.response.text());",
+							"    pm.expect(Array.isArray(check));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/sensors/latest",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"sensors",
+						"latest"
+					]
+				},
+				"description": "JSON array of readings, intended to be polled for a line chart or similar"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f2b4d98a-c7e1-47d6-9c6d-d27a3d85e036",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "c9642463-f780-4e40-90b1-a8548a5e44f4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "52aad040-332a-42d4-b5a4-425e2b4fa119",
+			"key": "host",
+			"value": "http://localhost:12345",
+			"type": "string"
+		}
+	]
+}

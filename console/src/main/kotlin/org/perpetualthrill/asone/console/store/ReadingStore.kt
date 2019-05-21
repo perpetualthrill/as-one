@@ -62,4 +62,14 @@ constructor(
         return false
     }
 
+    fun updateSimulatorState(name: String, newStateString: String): Boolean {
+        val simulator = simulators[name]
+        if (null != simulator) {
+            val newState = SensorSimulator.SimulatorState.forString(newStateString)
+            simulator.updateState(newState)
+            return true
+        }
+        return false
+    }
+
 }
