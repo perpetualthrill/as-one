@@ -29,6 +29,11 @@ task rebuildAndRun {
     tasks.findByName('run').mustRunAfter 'classes'
 }
 
+// Remove the dang experimental warning. Ignore error underlining here -- who even knows 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=io.ktor.locations.KtorExperimentalLocationsAPI"]
+}
+
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
