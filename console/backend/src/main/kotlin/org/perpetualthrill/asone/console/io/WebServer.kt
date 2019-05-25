@@ -6,6 +6,9 @@ import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.defaultResource
+import io.ktor.http.content.resources
+import io.ktor.http.content.static
 import io.ktor.locations.*
 import io.ktor.request.receive
 import io.ktor.response.respond
@@ -49,9 +52,10 @@ constructor(
             install(Locations)
 
             routing {
-                // Simple check if the server is responding
-                get("/") {
-                    call.respondText("Hello, world!")
+                // Serve web page and related content
+                static("/") {
+                    resources("web-static")
+                    defaultResource("web-static/index.html")
                 }
 
                 route("/sensors") {
