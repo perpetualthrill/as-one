@@ -1,5 +1,6 @@
 import React from 'react'
 import './App.css'
+import { SensorData } from './SensorData'
 
 function App () {
   return (
@@ -9,6 +10,7 @@ function App () {
           Hello world!
         </p>
       </header>
+      <SensorData />
     </div>
   )
 }
