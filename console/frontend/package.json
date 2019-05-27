@@ -5,9 +5,11 @@
   "dependencies": {
     "axios": "^0.18.0",
     "es6-promise": "^4.2.6",
+    "pondjs": "^0.8.10",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "react-scripts": "3.0.1",
+    "react-timeseries-charts": "^0.16.1"
   },
   "scripts": {
     "start": "react-scripts start",
