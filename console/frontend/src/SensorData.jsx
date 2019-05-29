@@ -37,8 +37,6 @@ function SensorData () {
         seriesData.points.push(point)
       }
       let series = new TimeSeries(seriesData)
-      logger.log(series)
-      logger.log(series.timerange())
       setSeries(series)
     }
   }, [data])
@@ -85,7 +83,7 @@ function SensorData () {
           width={800}
         >
           <ChartRow height='300' showGrid>
-            <YAxis id='axis1' label='' min={300} max={800} width='80' type='linear' format='.0f' />
+            <YAxis id='axis1' min={300} max={800} width='40' type='linear' format='.0f' />
             <Charts>
               <LineChart axis='axis1' series={series} columns={['s1', 's2', 's3', 's4']} style={style} />
             </Charts>
