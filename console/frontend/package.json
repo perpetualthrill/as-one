@@ -20,7 +20,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "standardize": "standard --fix",
-    "install": "react-scripts build; rm -r ../backend/src/main/resources/web-static/*; cp -r ./build/* ../backend/src/main/resources/web-static/"
+    "install": "standard --fix; react-scripts build; rm -r ../backend/src/main/resources/web-static/*; cp -r ./build/* ../backend/src/main/resources/web-static/"
   },
   "eslintConfig": {
     "extends": "react-app"
