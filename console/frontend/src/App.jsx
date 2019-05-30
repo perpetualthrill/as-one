@@ -14,7 +14,7 @@ function App () {
           <Col md={0} lg={1} />
           <Col>
             <Navbar expand='lg' variant='light' bg='light' style={{ marginBottom: '40px' }}>
-              <Navbar.Brand href='#'>Navbar</Navbar.Brand>
+              <Navbar.Brand href='#'>As One</Navbar.Brand>
             </Navbar>
           </Col>
           <Col md={0} lg={1} />
