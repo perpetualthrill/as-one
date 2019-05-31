@@ -1,0 +1,3 @@
+[submodule "sketchbook-arduino/libraries/FastLED"]
+	path = sketchbook-arduino/libraries/FastLED
+	url = https://github.com/FastLED/FastLED
