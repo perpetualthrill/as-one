@@ -43,6 +43,7 @@ boolean PulseSensorPlayground::PulseSensorPlayground::begin() {
   NextSampleMicros = micros() + MICROS_PER_READ;
 
   SawNewSample = false;
+	Paused = false;
 
 #if PULSE_SENSOR_MEMORY_USAGE
   // Report the RAM usage and hang.
@@ -54,8 +55,12 @@ boolean PulseSensorPlayground::PulseSensorPlayground::begin() {
 
   if (UsingInterrupts) {
     if (!PulseSensorPlaygroundSetupInterrupt()) {
-			Serial.println("interrupts not supported");
+			Stream *pOut = SerialOutput.getSerial();
+		  if (pOut) {
+		    pOut->print(F("Interrupts not supported on this platform\n"));
+			}
       // The user requested interrupts, but they aren't supported. Say so.
+			Paused = true;
       return false;
     }
   }
@@ -91,6 +96,8 @@ boolean PulseSensorPlayground::sawNewSample() {
 
      When not using interrupts, this function sees whether it's time
      to sample and, if so, reads the sample and processes it.
+
+		 First, check to see if the sketch has paused the Pulse Sensor sampling
   */
 
   if (UsingInterrupts) {
@@ -101,9 +108,14 @@ boolean PulseSensorPlayground::sawNewSample() {
     ENABLE_PULSE_SENSOR_INTERRUPTS;
 
     return sawOne;
-  }
+  }else{
+		if(Paused){
+			SawNewSample = false;
+			return false;
+		}
+	}
 
-  // Not using interrupts
+  // Time the sample as close as you can when not using interrupts
 
   unsigned long nowMicros = micros();
   if ((long) (NextSampleMicros - nowMicros) > 0L) {
@@ -222,6 +234,53 @@ unsigned long PulseSensorPlayground::getLastBeatTime(int sensorIndex) {
   }
   return Sensors[sensorIndex].getLastBeatTime();
 }
+
+boolean PulseSensorPlayground::isPaused() {
+	return Paused;
+}
+
+boolean PulseSensorPlayground::pause() {
+	if (UsingInterrupts) {
+    if (!PulseSensorPlaygroundDisableInterrupt()) {
+			Stream *pOut = SerialOutput.getSerial();
+		  if (pOut) {
+		    pOut->print(F("Could not pause Pulse Sensor\n"));
+			}
+      return false;
+    }else{
+			// DOING THIS HERE BECAUSE IT COULD GET CHOMPED IF WE DO IN resume BELOW
+			for(int i=0; i<SensorCount; i++){
+				Sensors[i].resetVariables();
+			}
+			Paused = true;
+			return true;
+		}
+	}else{
+		// do something here?
+		Paused = true;
+		return true;
+	}
+}
+
+boolean PulseSensorPlayground::resume() {
+	if (UsingInterrupts) {
+    if (!PulseSensorPlaygroundEnableInterrupt()) {
+			Stream *pOut = SerialOutput.getSerial();
+		  if (pOut) {
+		    pOut->print(F("Could not resume Pulse Sensor\n"));
+			}
+      return false;
+    }else{
+			Paused = false;
+			return true;
+		}
+	}else{
+		// do something here?
+		Paused = false;
+		return true;
+	}
+}
+
 
 #if PULSE_SENSOR_MEMORY_USAGE
 void PulseSensorPlayground::printMemoryUsage() {

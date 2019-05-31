@@ -89,14 +89,15 @@
    See the definition (vs. declaration) of this function, below.
 */
 boolean PulseSensorPlaygroundSetupInterrupt();
-
+boolean PulseSensorPlaygroundDisableInterrupt();
+boolean PulseSensorPlaygroundEnableInterrupt();
 
 #if defined(USE_ARDUINO_INTERRUPTS) // that is, if the Sketch is including us...
 
 /*
    (internal to the library) True if the Sketch uses interrupts to
    sample
-   We need to define US_PS_INTERRUPTS once per Sketch, whether or not
+   We need to define USE_PS_INTERRUPTS once per Sketch, whether or not
    the Sketch uses interrupts.
    Not doing this or doing it for every file that includes interrupts.h
    would cause a link error.
@@ -141,7 +142,7 @@ boolean PulseSensorPlaygroundSetupInterrupt() {
       #elif F_CPU == 8000000L // if using 8MHz crystal
         OCR2A = 0X7C;         // set count to 124 for 2mS interrupt
       #endif
-      TIMSK2 = 0x02;          // Enable OCR2A match interrupt
+      TIMSK2 = 0x02;          // Enable OCR2A match interrupt DISABLE BY SETTING TO 0x00
       ENABLE_PULSE_SENSOR_INTERRUPTS;
       // #define _useTimer2
       return true;
@@ -157,21 +158,60 @@ boolean PulseSensorPlaygroundSetupInterrupt() {
         TCCR1B = 0x0B;          // prescaler = 64
         OCR1A = 0x00F9;         // count to 249 for 2mS interrupt
       #endif
-      TIMSK1 = 0x02;            // Enable OCR1A match interrupt
+      TIMSK1 = 0x02;            // Enable OCR1A match interrupt	DISABLE BY SETTING TO 0x00
       ENABLE_PULSE_SENSOR_INTERRUPTS;
       return true;
     #endif
-  // #endif
+  #endif
 
+	#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
 
-  #elif defined(__AVR_ATtiny85__)
-    GTCCR &= 0x81;     // Disable PWM, don't connect pins to events
-    OCR1C = 0x7C;      // Set the top of the count to  124 TEST VALUE
-    OCR1A = 0x7C;      // Set the timer to interrupt after counting to TEST VALUE
+    // check to see if the Servo library is in use
+    #if defined Servo_h
+    // #error "Servos!! Beware" // break compiler for testing
+		// Initializes Timer1 to throw an interrupt every 2mS.
+		// Interferes with PWM on pins 9 and 10
+		TCCR1A = 0x00;            // Disable PWM and go into CTC mode
+		TCCR1C = 0x00;            // don't force compare
+		#if F_CPU == 16000000L    // if using 16MHz crystal
+			TCCR1B = 0x0C;          // prescaler 256
+			OCR1A = 0x007C;         // count to 124 for 2mS interrupt
+		#elif F_CPU == 8000000L   // if using 8MHz crystal
+			TCCR1B = 0x0B;          // prescaler = 64
+			OCR1A = 0x00F9;         // count to 249 for 2mS interrupt
+		#endif
+		TIMSK1 = 0x02;            // Enable OCR1A match interrupt
+		ENABLE_PULSE_SENSOR_INTERRUPTS;
+		return true;
+
+    #else
+		// Initializes Timer2 to throw an interrupt every 2mS
+		// Interferes with PWM on pins 3 and 11
+			TCCR2A = 0x02;          // Disable PWM and go into CTC mode
+			TCCR2B = 0x05;          // don't force compare, 128 prescaler
+			#if F_CPU == 16000000L   // if using 16MHz crystal
+				OCR2A = 0XF9;         // set count to 249 for 2mS interrupt
+			#elif F_CPU == 8000000L // if using 8MHz crystal
+				OCR2A = 0X7C;         // set count to 124 for 2mS interrupt
+			#endif
+			TIMSK2 = 0x02;          // Enable OCR2A match interrupt
+			ENABLE_PULSE_SENSOR_INTERRUPTS;
+			// #define _useTimer2
+			return true;
+
+    #endif
+ #endif
+
+  #if defined(__AVR_ATtiny85__)
+    GTCCR = 0x00;     // Disable PWM, don't connect pins to events
+		OCR1A = 0x7D;			// Set top of count to 125. Timer match throws the interrupt
+    OCR1C = 0x7D;     // Set top of the count to 125. Timer match resets the counter
     #if F_CPU == 16000000L
-      TCCR1 = 0x88;      // Clear Timer on Compare, Set Prescaler to 128 TEST VALUE
+      TCCR1 = 0x89;      // Clear Timer on Compare, Set Prescaler to 256
     #elif F_CPU == 8000000L
-      TCCR1 = 0x89;      // Clear Timer on Compare, Set Prescaler to 128 TEST VALUE
+      TCCR1 = 0x88;      // Clear Timer on Compare, Set Prescaler to 128
+		#elif F_CPU == 1000000L
+			TCCR1 = 0x85			// Clear Timer on Compare, Set Prescaler to 16
     #endif
     bitSet(TIMSK,6);   // Enable interrupt on match between TCNT1 and OCR1A
     ENABLE_PULSE_SENSOR_INTERRUPTS;
@@ -184,7 +224,95 @@ boolean PulseSensorPlaygroundSetupInterrupt() {
 #endif // USE_ARDUINO_INTERRUPTS
 }
 
+boolean PulseSensorPlaygroundDisableInterrupt(){
+#if USE_ARDUINO_INTERRUPTS
+	#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__)
+    // check to see if the Servo library is in use
+    #if defined Servo_h
+		  DISABLE_PULSE_SENSOR_INTERRUPTS;
+      TIMSK2 = 0x00;          // Disable OCR2A match interrupt
+      ENABLE_PULSE_SENSOR_INTERRUPTS;
+      return true;
+    #else
+      DISABLE_PULSE_SENSOR_INTERRUPTS;
+      TIMSK1 = 0x00;            // Disable OCR1A match interrupt
+      ENABLE_PULSE_SENSOR_INTERRUPTS;
+      return true;
+    #endif
+  #endif
 
+	#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+		// check to see if the Servo library is in use
+    #if defined Servo_h
+	    DISABLE_PULSE_SENSOR_INTERRUPTS;
+			TIMSK1 = 0x00;            // Disable OCR1A match interrupt
+			ENABLE_PULSE_SENSOR_INTERRUPTS;
+			return true;
+    #else
+			DISABLE_PULSE_SENSOR_INTERRUPTS;
+			TIMSK2 = 0x00;          // Disable OCR2A match interrupt
+			ENABLE_PULSE_SENSOR_INTERRUPTS;
+			return true;
+    #endif
+ 	#endif
+
+	#if defined(__AVR_ATtiny85__)
+		DISABLE_PULSE_SENSOR_INTERRUPTS;
+		bitClear(TIMSK,6);   // Disable interrupt on match between TCNT1 and OCR1A
+    ENABLE_PULSE_SENSOR_INTERRUPTS;
+    return true;
+	#endif
+
+	// #else
+	  return false;      // unknown or unsupported platform.
+
+#endif
+}
+
+
+boolean PulseSensorPlaygroundEnableInterrupt(){
+#if USE_ARDUINO_INTERRUPTS
+	#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+    // check to see if the Servo library is in use
+    #if defined Servo_h
+		  DISABLE_PULSE_SENSOR_INTERRUPTS;
+      TIMSK2 = 0x02;          // Enable OCR2A match interrupt
+      ENABLE_PULSE_SENSOR_INTERRUPTS;
+      return true;
+    #else
+      DISABLE_PULSE_SENSOR_INTERRUPTS;
+      TIMSK1 = 0x02;            // Enable OCR1A match interrupt
+      ENABLE_PULSE_SENSOR_INTERRUPTS;
+      return true;
+    #endif
+  #endif
+
+	#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+		// check to see if the Servo library is in use
+    #if defined Servo_h
+	    DISABLE_PULSE_SENSOR_INTERRUPTS;
+			TIMSK1 = 0x02;            // Enable OCR1A match interrupt
+			ENABLE_PULSE_SENSOR_INTERRUPTS;
+			return true;
+    #else
+			DISABLE_PULSE_SENSOR_INTERRUPTS;
+			TIMSK2 = 0x02;          // Enable OCR2A match interrupt
+			ENABLE_PULSE_SENSOR_INTERRUPTS;
+			return true;
+    #endif
+ 	#endif
+
+	#if defined(__AVR_ATtiny85__)
+		DISABLE_PULSE_SENSOR_INTERRUPTS;
+		bitSet(TIMSK,6);   // Enable interrupt on match between TCNT1 and OCR1A
+    ENABLE_PULSE_SENSOR_INTERRUPTS;
+    return true;
+	#endif
+
+// #else
+  return false;      // unknown or unsupported platform.
+#endif
+}
 
 #if USE_ARDUINO_INTERRUPTS
 /*
@@ -198,7 +326,7 @@ boolean PulseSensorPlaygroundSetupInterrupt() {
    NOTE: Make sure that this ISR uses the appropriate timer for
    the platform detected by PulseSensorPlaygroundSetupInterrupt(), above.
 */
-#if defined(__AVR__)
+#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) || defined(__AVR_ATtiny85__)
   #if defined Servo_h
     ISR(TIMER2_COMPA_vect)
     {
@@ -218,11 +346,33 @@ boolean PulseSensorPlaygroundSetupInterrupt() {
       ENABLE_PULSE_SENSOR_INTERRUPTS;          // enable interrupts when you're done
     }
   #endif
+#elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+	#if defined Servo_h
+		ISR(TIMER1_COMPA_vect)
+		{
+			DISABLE_PULSE_SENSOR_INTERRUPTS;         // disable interrupts while we do this
+
+			PulseSensorPlayground::OurThis->onSampleTime();
+
+			ENABLE_PULSE_SENSOR_INTERRUPTS;          // enable interrupts when you're done
+		}
+	#else
+		ISR(TIMER2_COMPA_vect)
+		{
+			DISABLE_PULSE_SENSOR_INTERRUPTS;         // disable interrupts while we do this
+
+			PulseSensorPlayground::OurThis->onSampleTime();
+
+			ENABLE_PULSE_SENSOR_INTERRUPTS;          // enable interrupts when you're done
+		}
+	#endif
 #endif
+
 
 #if defined(__MK66FX1M0__)||(__MK64FX512__)||(__MK20DX256__)||(__MK20DX128__)
 	// Interrupts not supported yet for Teensy
 #endif
+
 
 
 
