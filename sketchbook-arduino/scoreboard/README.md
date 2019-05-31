@@ -64,7 +64,7 @@ So, to set the `logo` object to be a light green:
     
     mqtt.publish("asOne/score/logo", (uint8_t *)logo, sizeof(logo));
 
-At a primative level, needing no access to `FastLED`:
+At a primitive level, needing no access to `FastLED`:
 
     byte logo[3];
 	led[0] = 0; // byte value for red

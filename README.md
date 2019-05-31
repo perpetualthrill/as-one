@@ -26,8 +26,14 @@ The codebase conforms to [JavaScript Standard Style](https://standardjs.com/). T
 
 When shipping a feature, don't forget to do `npm run install`, which generates and copies the static files over into the server's static directory. We're currently checking them into source control there to avoid a more complicated build system -- c'est la vie.
 
-## Sensor hardware
+## Sensor firmware
 
 The heartrate sensor runs on an ESP-32 with the Arduino environment and reports its data over USB serial. The code may be found in [sketchbook-arduino/handheld-2/](./sketchbook-arduino/handheld-2/).
 
+## Flame effect firmware
 
+The flame effect is controlled by an ESP8266 running Arduino code. It sends and receives state over MQTT over WiFi. Check it: [sketchbook-arduino/flame-effect/](./sketchbook-arduino/flame-effect/).
+
+## Scoreboard firmware
+
+The scoreboard has two modes currently, one which receives raw frames in the form of an array of RGB values, and another which understands context and can display numerical bpm and timer values etc. For the 2019 build we will be using the former mode exclusively, rendering the game and display state on the server. Lots more information and background may be found in [the README](./sketchbook-arduino/scoreboard/README.md).
