@@ -10,6 +10,7 @@ import org.perpetualthrill.asone.console.di.DaggerMainComponent
 import org.perpetualthrill.asone.console.di.MainComponent
 import org.perpetualthrill.asone.console.io.SerialMonitor
 import org.perpetualthrill.asone.console.io.WebServer
+import org.perpetualthrill.asone.console.io.mqtt.MqttBroker
 import org.perpetualthrill.asone.console.store.ReadingStore
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import org.slf4j.LoggerFactory
@@ -22,6 +23,7 @@ class Console {
     @Inject lateinit var serialMonitor: SerialMonitor
     @Inject lateinit var readingStore: ReadingStore
     @Inject lateinit var webServer: WebServer
+    @Inject lateinit var mqttBroker: MqttBroker
 
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
@@ -40,6 +42,7 @@ class Console {
         serialMonitor.start()
         webServer.start()
         readingStore.start()
+        mqttBroker.start()
 
         readingStore.readingStream
             .sample(1, TimeUnit.SECONDS)

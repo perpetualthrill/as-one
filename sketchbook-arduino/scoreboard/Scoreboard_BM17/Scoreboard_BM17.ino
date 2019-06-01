@@ -159,7 +159,7 @@ void setup() {
 
   mqtt.setClient(espClient);
 //  const char* mqtt_server = "broker.mqtt-dashboard.com";
-  const char* mqtt_server = "asone-router";
+  const char* mqtt_server = "asone-console";
   mqtt.setServer(mqtt_server, 1883);
   mqtt.setCallback(callback);
 
@@ -441,7 +441,7 @@ void connectWiFi() {
 //  const char* ssid = "Looney_Ext";
 //  const char* password = "TinyandTooney";
   const char* ssid = "AsOne";
-  const char* password = "fuckthapolice";
+  const char* password = "purplemotion";
 
   // We start by connecting to a WiFi network
   Serial << endl;

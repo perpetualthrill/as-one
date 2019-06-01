@@ -25,17 +25,18 @@ int beatCountdown = 0;
 int beatLength = 0;
 
 void setup() {
+
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println("O Hai");
+
   pinMode(upperPin, OUTPUT);
   internalDigitalWrite(upperPin, LOW);
   pinMode(lowerPin, OUTPUT);
   internalDigitalWrite(lowerPin, LOW);
-  
-  Serial.begin(38400);
-  Serial.println();
-
-  WiFi.begin("AsOne", "fuckthapolice");
 
   Serial.print("Connecting");
+  WiFi.begin("AsOne", "purplemotion");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -45,7 +46,7 @@ void setup() {
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-  client.setServer("asone-router", 1883);
+  client.setServer("asone-console", 1883);
   client.setCallback(callback);
 }
 
@@ -206,4 +207,3 @@ void loop() {
 
   client.loop();
 }
-
