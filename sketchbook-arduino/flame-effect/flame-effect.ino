@@ -25,17 +25,18 @@ int beatCountdown = 0;
 int beatLength = 0;
 
 void setup() {
+
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println("O Hai");
+
   pinMode(upperPin, OUTPUT);
   internalDigitalWrite(upperPin, LOW);
   pinMode(lowerPin, OUTPUT);
   internalDigitalWrite(lowerPin, LOW);
 
-  Serial.begin(38400);
-  Serial.println();
-
-  WiFi.begin("AsOne", "purplemotion");
-
   Serial.print("Connecting");
+  WiFi.begin("AsOne", "purplemotion");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -206,4 +207,3 @@ void loop() {
 
   client.loop();
 }
-
