@@ -7,7 +7,6 @@ import io.moquette.broker.config.ResourceLoaderConfig;
 import io.moquette.interception.AbstractInterceptHandler
 import io.moquette.interception.messages.InterceptPublishMessage
 import org.perpetualthrill.asone.console.util.logInfo
-import java.nio.charset.StandardCharsets.UTF_8
 import javax.inject.Inject
 import javax.inject.Singleton
 
