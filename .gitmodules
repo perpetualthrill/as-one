@@ -1,3 +1,6 @@
 [submodule "sketchbook-arduino/libraries/FastLED"]
 	path = sketchbook-arduino/libraries/FastLED
 	url = https://github.com/FastLED/FastLED
+[submodule "server-setup/create_ap"]
+	path = server-setup/create_ap
+	url = https://github.com/oblique/create_ap
