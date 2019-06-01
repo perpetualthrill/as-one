@@ -29,11 +29,11 @@ void setup() {
   internalDigitalWrite(upperPin, LOW);
   pinMode(lowerPin, OUTPUT);
   internalDigitalWrite(lowerPin, LOW);
-  
+
   Serial.begin(38400);
   Serial.println();
 
-  WiFi.begin("AsOne", "fuckthapolice");
+  WiFi.begin("AsOne", "purplemotion");
 
   Serial.print("Connecting");
   while (WiFi.status() != WL_CONNECTED) {
@@ -45,7 +45,7 @@ void setup() {
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-  client.setServer("asone-router", 1883);
+  client.setServer("asone-console", 1883);
   client.setCallback(callback);
 }
 
