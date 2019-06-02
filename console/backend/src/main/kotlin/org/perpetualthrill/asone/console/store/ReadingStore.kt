@@ -46,6 +46,16 @@ constructor(
     val sensorNames: List<String>
         get() = (simulators.keys + serialMonitor.sensors.map { it.name }).toList()
 
+    fun readingsForSensor(name: String): Array<out Any> {
+        simulators[name]?.let {
+//            return it
+        }
+        serialMonitor.sensors.firstOrNull { it.name == name }?.let {
+            return it.readings.toArray()
+        }
+        throw Exception("Sensor not found: name")
+    }
+
     fun addSimulator(): String {
         val simulator = Injector.get().sensorSimulator()
         val name = "simulator${simulator.hashCode()}"
