@@ -74,6 +74,7 @@ constructor() {
                 sensorMap.remove(address)
                 check.port.removeDataListener()
                 check.port.closePort()
+                check.sensor.finish()
                 println("SENSORS: "+sensorMap.keys)
             }
             // Now, attempt connect for any addresses not in map

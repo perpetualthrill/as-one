@@ -48,7 +48,7 @@ constructor(
 
     fun readingsForSensor(name: String): Array<out Any> {
         simulators[name]?.let {
-//            return it
+            return it.sensor.readings.toArray()
         }
         serialMonitor.sensors.firstOrNull { it.name == name }?.let {
             return it.readings.toArray()
@@ -75,8 +75,8 @@ constructor(
         return false
     }
 
-    fun updateSimulatorState(name: String, newStateString: String): Boolean {
-        val simulator = simulators[name]
+    fun updateSimulatorState(simulatorName: String, newStateString: String): Boolean {
+        val simulator = simulators[simulatorName]
         if (null != simulator) {
             val newState = SensorSimulator.SimulatorState.forString(newStateString)
             simulator.updateState(newState)

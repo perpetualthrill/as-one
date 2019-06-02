@@ -81,7 +81,11 @@ constructor(
 
                 // Sensors including simulators
                 get<SensorLocation> {
-                    call.respond(readingStore.readingsForSensor(it.name))
+                    try {
+                        call.respond(readingStore.readingsForSensor(it.name))
+                    } catch (_: Exception) {
+                        call.respondText("Not found: ${it.name}", status = HttpStatusCode.NotFound)
+                    }
                 }
 
                 // Simulators

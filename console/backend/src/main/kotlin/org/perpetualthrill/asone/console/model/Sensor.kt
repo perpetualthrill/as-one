@@ -1,6 +1,7 @@
 package org.perpetualthrill.asone.console.model
 
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.time.Instant
 import java.util.*
@@ -13,10 +14,14 @@ private const val PRUNE_READINGS_INTERVAL_MS = 500L
 
 class Sensor(val name: String) {
 
+    private var finished = false
+
     private var lastReading = Instant.now()
 
+    private val pruneTask: Disposable
+
     init {
-        Observable
+        pruneTask = Observable
             .interval(PRUNE_READINGS_INTERVAL_MS, TimeUnit.MILLISECONDS)
             .subscribeWithErrorLogging(this) {
                 val retainPeriodEnd = Instant.now().minusMillis(RETAIN_PERIOD_MS)
@@ -27,6 +32,10 @@ class Sensor(val name: String) {
     }
 
     val readings = ArrayDeque<Reading>()
+        get() {
+            if (finished) throw RuntimeException("Sensor read after finished!")
+            return field
+        }
 
     @Throws(RuntimeException::class) // parser errors
     fun readingFromSerialInput(input: String): Reading {
@@ -47,6 +56,12 @@ class Sensor(val name: String) {
 
     fun isDisconnected(): Boolean {
         return Instant.now().isAfter(lastReading.plusMillis(TIME_TO_DISCONNECT_MS))
+    }
+
+    fun finish() {
+        readings.clear()
+        pruneTask.dispose()
+        finished = true
     }
 
     data class Reading(
