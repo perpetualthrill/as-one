@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8a1c8c8b-5ff2-45f0-8b0b-e959ea89a0c9",
+		"_postman_id": "ffd01a58-8bee-4c83-a1fd-435d329ca484",
 		"name": "AsOne-Console",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -129,7 +129,7 @@
 			]
 		},
 		{
-			"name": "Latest Sensor Readings",
+			"name": "List of Latest Readings",
 			"event": [
 				{
 					"listen": "test",
@@ -159,6 +159,42 @@
 					"path": [
 						"sensors",
 						"latest"
+					]
+				},
+				"description": "JSON array of readings, intended to be polled for a line chart or similar"
+			},
+			"response": []
+		},
+		{
+			"name": "List of Sensors",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "52a43160-8101-4b21-8628-49f37213eb98",
+						"exec": [
+							"pm.test(\"Expect successful response of a json array\", function () {",
+							"    pm.response.to.be.ok;",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.match(/^application\\/json/i);",
+							"    var check = JSON.parse(pm.response.text());",
+							"    pm.expect(Array.isArray(check));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/sensors",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"sensors"
 					]
 				},
 				"description": "JSON array of readings, intended to be polled for a line chart or similar"

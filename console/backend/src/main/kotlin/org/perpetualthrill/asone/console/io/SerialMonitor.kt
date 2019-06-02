@@ -25,14 +25,16 @@ constructor() {
     )
 
     private val sensorAddresses = listOf("/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2")
-    private val sensors = mutableMapOf<String, PortAndSensor>()
+    private val sensorMap = mutableMapOf<String, PortAndSensor>()
+    val sensors: List<Sensor>
+        get() = sensorMap.values.map { it.sensor }
 
     private val sensorStreamInternal = PublishSubject.create<Sensor.Reading>()
     val sensorStream: Observable<Sensor.Reading> = sensorStreamInternal
 
     private inner class MessageListener(portName: String) : SerialPortMessageListener {
 
-        val sensor = Sensor(portName)
+        val sensor = Sensor(portName.substring(1).replace('/', '_'))
 
         override fun delimiterIndicatesEndOfMessage(): Boolean {
             return true
@@ -57,7 +59,8 @@ constructor() {
 
     fun start() {
         attemptConnectAll()
-        Observable.interval(SENSOR_RETRY_MS, TimeUnit.MILLISECONDS)
+        Observable
+            .interval(SENSOR_RETRY_MS, TimeUnit.MILLISECONDS)
             .subscribeWithErrorLogging(this) {
                 attemptConnectAll()
             }
@@ -66,19 +69,19 @@ constructor() {
     private fun attemptConnectAll() {
         for (address in sensorAddresses) {
             // First, check for disconnects and remove
-            val check = sensors[address]
+            val check = sensorMap[address]
             if (null != check && check.sensor.isDisconnected()) {
-                sensors.remove(address)
+                sensorMap.remove(address)
                 check.port.removeDataListener()
                 check.port.closePort()
-                println("SENSORS: "+sensors.keys)
+                println("SENSORS: "+sensorMap.keys)
             }
             // Now, attempt connect for any addresses not in map
-            if(!sensors.containsKey(address)) {
+            if(!sensorMap.containsKey(address)) {
                 val portAndSensor = attemptConnect(address)
                 if (null != portAndSensor) {
-                    sensors[address] = portAndSensor
-                    println("SENSORS: "+sensors.keys)
+                    sensorMap[address] = portAndSensor
+                    println("SENSORS: "+sensorMap.keys)
                 }
             }
         }

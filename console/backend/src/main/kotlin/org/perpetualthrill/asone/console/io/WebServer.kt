@@ -59,6 +59,9 @@ constructor(
                 }
 
                 route("/sensors") {
+                    get {
+                        call.respond(readingStore.sensorNames)
+                    }
                     get("latest") {
                         call.respond(readingStore.latestReadings)
                     }

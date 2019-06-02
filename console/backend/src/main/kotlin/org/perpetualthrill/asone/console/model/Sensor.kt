@@ -5,7 +5,7 @@ import java.time.temporal.Temporal
 
 private const val TIME_TO_DISCONNECT_MS = 1500L
 
-class Sensor(private val name: String) {
+class Sensor(val name: String) {
 
     private var lastReading = Instant.now()
 

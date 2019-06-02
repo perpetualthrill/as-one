@@ -43,6 +43,9 @@ constructor(
     val latestReadings: Array<out Any>
         get() = readingBuffer.toArray()
 
+    val sensorNames: List<String>
+        get() = (simulators.keys + serialMonitor.sensors.map { it.name }).toList()
+
     fun addSimulator(): String {
         val simulator = Injector.get().sensorSimulator()
         val name = "simulator${simulator.hashCode()}"
