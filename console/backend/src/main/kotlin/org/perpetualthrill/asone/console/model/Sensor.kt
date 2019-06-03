@@ -1,20 +1,48 @@
 package org.perpetualthrill.asone.console.model
 
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
+import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.time.Instant
-import java.time.temporal.Temporal
+import java.util.*
+import java.util.concurrent.TimeUnit
+
 
 private const val TIME_TO_DISCONNECT_MS = 1500L
+private const val RETAIN_PERIOD_MS = 5000L
+private const val PRUNE_READINGS_INTERVAL_MS = 500L
 
-class Sensor(private val name: String) {
+class Sensor(val name: String) {
+
+    private var finished = false
 
     private var lastReading = Instant.now()
+
+    private val pruneTask: Disposable
+
+    init {
+        pruneTask = Observable
+            .interval(PRUNE_READINGS_INTERVAL_MS, TimeUnit.MILLISECONDS)
+            .subscribeWithErrorLogging(this) {
+                val retainPeriodEnd = Instant.now().minusMillis(RETAIN_PERIOD_MS)
+                readings.removeIf {
+                    it.timestamp.isBefore(retainPeriodEnd)
+                }
+            }
+    }
+
+    val readings = ArrayDeque<Reading>()
+        get() {
+            if (finished) throw RuntimeException("Sensor read after finished!")
+            return field
+        }
 
     @Throws(RuntimeException::class) // parser errors
     fun readingFromSerialInput(input: String): Reading {
         val tokens = input.split(",")
         val timestamp = Instant.now()
         lastReading = timestamp
-        return Reading(
+        val reading = Reading(
             sensorName = name,
             s1 = tokens[0].toInt(),
             s2 = tokens[1].toInt(),
@@ -22,10 +50,18 @@ class Sensor(private val name: String) {
             s4 = tokens[3].toInt(),
             timestamp = timestamp
         )
+        readings.addFirst(reading)
+        return reading
     }
 
     fun isDisconnected(): Boolean {
-        return (Instant.now().isAfter(lastReading.plusMillis(TIME_TO_DISCONNECT_MS)))
+        return Instant.now().isAfter(lastReading.plusMillis(TIME_TO_DISCONNECT_MS))
+    }
+
+    fun finish() {
+        readings.clear()
+        pruneTask.dispose()
+        finished = true
     }
 
     data class Reading(
@@ -34,7 +70,7 @@ class Sensor(private val name: String) {
         val s2: Int,
         val s3: Int,
         val s4: Int,
-        val timestamp: Temporal = Instant.now()
+        val timestamp: Instant = Instant.now()
     ) {
         override fun toString(): String {
             return "Sensor reading for $sensorName: $s1 $s2 $s3 $s4 at $timestamp"

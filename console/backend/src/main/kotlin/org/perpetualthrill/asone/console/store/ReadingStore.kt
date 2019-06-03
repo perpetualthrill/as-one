@@ -43,12 +43,25 @@ constructor(
     val latestReadings: Array<out Any>
         get() = readingBuffer.toArray()
 
+    val sensorNames: List<String>
+        get() = (simulators.keys + serialMonitor.sensors.map { it.name }).toList()
+
+    fun readingsForSensor(name: String): Array<out Any> {
+        simulators[name]?.let {
+            return it.sensor.readings.toArray()
+        }
+        serialMonitor.sensors.firstOrNull { it.name == name }?.let {
+            return it.readings.toArray()
+        }
+        throw Exception("Sensor not found: name")
+    }
+
     fun addSimulator(): String {
         val simulator = Injector.get().sensorSimulator()
         val name = "simulator${simulator.hashCode()}"
         simulator.start(name)
         simulators[name] = simulator
-        simulator.readingStream.subscribeWith(internalReadingStream)
+        simulator.subscribeObserver(internalReadingStream)
         return name
     }
 
@@ -62,8 +75,8 @@ constructor(
         return false
     }
 
-    fun updateSimulatorState(name: String, newStateString: String): Boolean {
-        val simulator = simulators[name]
+    fun updateSimulatorState(simulatorName: String, newStateString: String): Boolean {
+        val simulator = simulators[simulatorName]
         if (null != simulator) {
             val newState = SensorSimulator.SimulatorState.forString(newStateString)
             simulator.updateState(newState)

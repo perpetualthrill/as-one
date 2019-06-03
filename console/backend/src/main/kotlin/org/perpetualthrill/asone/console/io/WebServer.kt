@@ -36,7 +36,12 @@ constructor(
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @Location("/sensors/simulated/{name}")
-    data class Simulator(
+    data class SimulatorLocation(
+        val name: String
+    )
+
+    @Location("/sensors/{name}")
+    data class SensorLocation(
         val name: String
     )
 
@@ -52,36 +57,48 @@ constructor(
             install(Locations)
 
             routing {
-                // Serve web page and related content
+                // Static frontend and related content
                 static("/") {
                     resources("web-static")
                     defaultResource("web-static/index.html")
                 }
 
+                // Sensors including simulators
                 route("/sensors") {
+                    get {
+                        call.respond(readingStore.sensorNames)
+                    }
                     get("latest") {
                         call.respond(readingStore.latestReadings)
                     }
                     route("simulated") {
                         post("add") {
                             val name = readingStore.addSimulator()
-                            val href = locations.href(Simulator(name=name))
+                            val href = locations.href(SimulatorLocation(name=name))
                             call.respondText(text = href, status = HttpStatusCode.Created)
                         }
                     }
                 }
-
-                get<Simulator> { simulator ->
-                    call.respondText("Simulator at ${locations.href(simulator)}")
+                get<SensorLocation> {
+                    try {
+                        call.respond(readingStore.readingsForSensor(it.name))
+                    } catch (_: Exception) {
+                        call.respondText("Not found: ${it.name}", status = HttpStatusCode.NotFound)
+                    }
                 }
-                delete<Simulator> { simulator ->
+
+                // Simulators
+                get<SimulatorLocation> { simulator ->
+                    call.respondText("SimulatorLocation at ${locations.href(simulator)}")
+                }
+                delete<SimulatorLocation> { simulator ->
                     if (readingStore.removeSimulator(simulator.name)) {
                         call.respondText("OK")
                     } else {
                         call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)
                     }
                 }
-                patch<Simulator> { simulator ->
+                patch<SimulatorLocation> { simulator ->
                     val update = call.receive<SimulatorUpdate>()
                     if (readingStore.updateSimulatorState(simulator.name, update.newState)) {
                         call.respondText("OK")
@@ -89,7 +106,6 @@ constructor(
                         call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)
                     }
                 }
-
 
             }
         }

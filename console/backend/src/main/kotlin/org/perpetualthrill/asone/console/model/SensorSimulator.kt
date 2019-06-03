@@ -1,6 +1,8 @@
 package org.perpetualthrill.asone.console.model
 
 import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.observers.DisposableObserver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.xbib.jdbc.io.TableReader
@@ -26,9 +28,12 @@ constructor() {
         connection = DriverManager.getConnection("jdbc:xbib:csv:class:"+ResourceFileReader::class.java.name)
     }
 
-    private var name = "unstarted!"
     private var currentState = SimulatorState.QUIESCENT
     private var finished = false
+    private var nonComplete: NonComplete? = null
+
+    lateinit var sensor: Sensor
+
 
     val readingStream: Observable<Sensor.Reading> = Observable
         .interval(20, TimeUnit.MILLISECONDS)
@@ -38,12 +43,26 @@ constructor() {
     private val allResults = mutableMapOf<SimulatorState, Results>()
 
     fun start(sensorName: String) {
-        name = sensorName
+        sensor = Sensor(sensorName)
     }
 
     fun updateState(newState: SimulatorState) {
-        logger.debug("Updating simulator $name from $currentState to $newState ")
+        logger.debug("Updating simulator ${sensor.name} from $currentState to $newState ")
         currentState = newState
+    }
+
+    private class NonComplete(private val wrappedObserver: Observer<Sensor.Reading>) : DisposableObserver<Sensor.Reading>() {
+        override fun onComplete() {
+            // no-op. make completion go away
+        }
+
+        override fun onNext(t: Sensor.Reading) {
+            wrappedObserver.onNext(t)
+        }
+
+        override fun onError(e: Throwable) {
+            wrappedObserver.onError(e)
+        }
     }
 
     private fun checkStateAndReturnReading(): Sensor.Reading {
@@ -51,7 +70,7 @@ constructor() {
         val next = if (currentStateIterator.hasNext) {
             // while we have results, use one
             currentStateIterator.advance()
-            currentStateIterator.get()
+            currentStateIterator.getSensorOutputLine()
         } else {
             // if we're out of results:
             // 1) advance to the next state
@@ -60,12 +79,20 @@ constructor() {
             updateState(currentState.nextState)
             val nextStateIterator = resultsForState(currentState)
             nextStateIterator.reset()
-            nextStateIterator.get()
+            nextStateIterator.getSensorOutputLine()
         }
-        return Sensor.Reading(name, next.s1, next.s2, next.s3, next.s4)
+        return sensor.readingFromSerialInput(next)
+    }
+
+    fun subscribeObserver(obs: Observer<Sensor.Reading>) {
+        val nc = NonComplete(obs)
+        readingStream.subscribe(nc)
+        nonComplete = nc
     }
 
     fun finish() {
+        nonComplete?.dispose()
+        sensor.finish()
         finished = true
         connection.close() // also closes all resultsets
     }
@@ -133,22 +160,12 @@ constructor() {
             resultSet.next()
         }
 
-        fun get(): Sensor.Reading {
-            return sensorReadingFromCurrentRow()
+        fun getSensorOutputLine(): String {
+            return "${resultSet.getInt(1)},${resultSet.getInt(2)},${resultSet.getInt(3)},${resultSet.getInt(4)}, etc"
         }
 
         fun reset() {
             resultSet.first()
-        }
-
-        private fun sensorReadingFromCurrentRow(): Sensor.Reading {
-            return Sensor.Reading(
-                sensorName = name,
-                s1 = resultSet.getInt(1),
-                s2 = resultSet.getInt(2),
-                s3 = resultSet.getInt(3),
-                s4 = resultSet.getInt(4)
-            )
         }
 
     }

@@ -4,10 +4,13 @@ import axios from 'axios'
 import logger from './logger'
 import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timeseries-charts'
 import { TimeSeries } from 'pondjs'
+import PropTypes from 'prop-types'
 
-function SensorData () {
-  const URL_LATEST = '/sensors/latest'
+SensorData.propTypes = {
+  url: PropTypes.string.isRequired
+}
 
+function SensorData (props) {
   let [data, setData] = useState([])
   let [loading, setLoading] = useState(true)
   let [series, setSeries] = useState(null)
@@ -43,7 +46,7 @@ function SensorData () {
 
   async function pollServerAndUpdate () {
     try {
-      const response = await axios.get(URL_LATEST)
+      const response = await axios.get(props.url)
       setData(response.data)
       setLoading(false)
     } catch (error) {
@@ -61,15 +64,15 @@ function SensorData () {
       opacity: 0.5
     },
     s2: {
-      stroke: '#a03c3c',
+      stroke: '#b03c3c',
       opacity: 0.5
     },
     s3: {
-      stroke: '#a04c4c',
+      stroke: '#c04c4c',
       opacity: 0.5
     },
     s4: {
-      stroke: '#a05c5c',
+      stroke: '#d05c5c',
       opacity: 0.5
     }
   }
@@ -77,13 +80,9 @@ function SensorData () {
   return (
     <>
       { loading || (series == null) ? ('Loading ...') : (
-
-        <ChartContainer
-          timeRange={series.timerange()}
-          width={800}
-        >
+        <ChartContainer timeRange={series.timerange()} width={668}>
           <ChartRow height='300' showGrid>
-            <YAxis id='axis1' min={300} max={800} width='40' type='linear' format='.0f' />
+            <YAxis id='axis1' min={300} max={650} width={28} type='linear' format='.0f' />
             <Charts>
               <LineChart axis='axis1' series={series} columns={['s1', 's2', 's3', 's4']} style={style} />
             </Charts>
