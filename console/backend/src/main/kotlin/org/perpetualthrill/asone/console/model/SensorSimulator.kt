@@ -1,6 +1,8 @@
 package org.perpetualthrill.asone.console.model
 
 import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.observers.DisposableObserver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.xbib.jdbc.io.TableReader
@@ -28,8 +30,10 @@ constructor() {
 
     private var currentState = SimulatorState.QUIESCENT
     private var finished = false
+    private var nonComplete: NonComplete? = null
 
     lateinit var sensor: Sensor
+
 
     val readingStream: Observable<Sensor.Reading> = Observable
         .interval(20, TimeUnit.MILLISECONDS)
@@ -45,6 +49,20 @@ constructor() {
     fun updateState(newState: SimulatorState) {
         logger.debug("Updating simulator ${sensor.name} from $currentState to $newState ")
         currentState = newState
+    }
+
+    private class NonComplete(private val wrappedObserver: Observer<Sensor.Reading>) : DisposableObserver<Sensor.Reading>() {
+        override fun onComplete() {
+            // no-op. make completion go away
+        }
+
+        override fun onNext(t: Sensor.Reading) {
+            wrappedObserver.onNext(t)
+        }
+
+        override fun onError(e: Throwable) {
+            wrappedObserver.onError(e)
+        }
     }
 
     private fun checkStateAndReturnReading(): Sensor.Reading {
@@ -66,7 +84,14 @@ constructor() {
         return sensor.readingFromSerialInput(next)
     }
 
+    fun subscribeObserver(obs: Observer<Sensor.Reading>) {
+        val nc = NonComplete(obs)
+        readingStream.subscribe(nc)
+        nonComplete = nc
+    }
+
     fun finish() {
+        nonComplete?.dispose()
         sensor.finish()
         finished = true
         connection.close() // also closes all resultsets

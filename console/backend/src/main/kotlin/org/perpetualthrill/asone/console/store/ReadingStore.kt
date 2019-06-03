@@ -61,7 +61,7 @@ constructor(
         val name = "simulator${simulator.hashCode()}"
         simulator.start(name)
         simulators[name] = simulator
-        simulator.readingStream.subscribeWith(internalReadingStream)
+        simulator.subscribeObserver(internalReadingStream)
         return name
     }
 

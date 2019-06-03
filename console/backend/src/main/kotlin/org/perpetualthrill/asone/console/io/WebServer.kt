@@ -57,12 +57,13 @@ constructor(
             install(Locations)
 
             routing {
-                // Serve web page and related content
+                // Static frontend and related content
                 static("/") {
                     resources("web-static")
                     defaultResource("web-static/index.html")
                 }
 
+                // Sensors including simulators
                 route("/sensors") {
                     get {
                         call.respond(readingStore.sensorNames)
@@ -78,8 +79,6 @@ constructor(
                         }
                     }
                 }
-
-                // Sensors including simulators
                 get<SensorLocation> {
                     try {
                         call.respond(readingStore.readingsForSensor(it.name))
