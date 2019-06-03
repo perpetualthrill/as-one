@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import { SensorData } from './SensorData'
+import { SensorMonitor } from './SensorMonitor'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -22,7 +22,7 @@ function App () {
         <Row>
           <Col md={0} lg={1} />
           <Col>
-            <SensorData />
+            <SensorMonitor />
           </Col>
           <Col md={0} lg={1} />
         </Row>
