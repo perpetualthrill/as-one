@@ -1,8 +1,12 @@
 # As One Project
 
+When checking out this repository, be sure to fill in the submodules, or things will not work: `git submodule update --init --recursive`
+
 ## Console
 
 The console software sends and receives data from all of the other pieces. It is responsible for determining a good signal, updating the scoreboard, triggering the flame effect when queued by the operator.
+
+The console hardware includes a wireless card acting as the AP for the project. Configuration for that may be found in [server-setup/](./server-setup/).
 
 ### Backend development
 
@@ -24,16 +28,20 @@ To get up and running with hacking on it, cd into that directory and issue `npm 
 
 The codebase conforms to [JavaScript Standard Style](https://standardjs.com/). To auto-format current changes to match, issue `npm run standardize`.
 
-When shipping a feature, don't forget to do `npm run install`, which generates and copies the static files over into the server's static directory. We're currently checking them into source control there to avoid a more complicated build system -- c'est la vie.
+When shipping a feature, don't forget to do `npm run make-static`, which generates and copies the static files over into the server's static directory. We're currently checking them into source control there to avoid a more complicated build system -- c'est la vie.
 
-## Sensor firmware
+## Firmware
+
+Firmware builds are done with the Arduino environment -- the most recently tested version is 1.8.9. You'll need to add ESP32 and ESP8266 board support. Be sure to have this repository's submodules checked out as well, as some libraries are downloaded as well: `git submodule update --init --recursive`
+
+### Sensor
 
 The heartrate sensor runs on an ESP-32 with the Arduino environment and reports its data over USB serial. The code may be found in [sketchbook-arduino/handheld-2/](./sketchbook-arduino/handheld-2/).
 
-## Flame effect firmware
+### Flame effect
 
 The flame effect is controlled by an ESP8266 running Arduino code. It sends and receives state over MQTT over WiFi. Check it: [sketchbook-arduino/flame-effect/](./sketchbook-arduino/flame-effect/).
 
-## Scoreboard firmware
+### Scoreboard
 
 The scoreboard has two modes currently, one which receives raw frames in the form of an array of RGB values, and another which understands context and can display numerical bpm and timer values etc. For the 2019 build we will be using the former mode exclusively, rendering the game and display state on the server. Lots more information and background may be found in [the README](./sketchbook-arduino/scoreboard/README.md).
