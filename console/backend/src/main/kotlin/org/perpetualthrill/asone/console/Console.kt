@@ -6,12 +6,15 @@ package org.perpetualthrill.asone.console
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
+import io.reactivex.Single
 import org.perpetualthrill.asone.console.di.DaggerMainComponent
 import org.perpetualthrill.asone.console.di.MainComponent
 import org.perpetualthrill.asone.console.io.SerialMonitor
 import org.perpetualthrill.asone.console.io.WebServer
 import org.perpetualthrill.asone.console.io.mqtt.MqttBroker
 import org.perpetualthrill.asone.console.store.ReadingStore
+import org.perpetualthrill.asone.console.store.ScoreboardStore
+import org.perpetualthrill.asone.console.util.logInfo
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -24,6 +27,7 @@ class Console {
     @Inject lateinit var readingStore: ReadingStore
     @Inject lateinit var webServer: WebServer
     @Inject lateinit var mqttBroker: MqttBroker
+    @Inject lateinit var scoreboardStore: ScoreboardStore
 
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
@@ -43,6 +47,13 @@ class Console {
         webServer.start()
         readingStore.start()
         mqttBroker.start()
+
+        Single
+            .just(true)
+            .delay(2000, TimeUnit.MILLISECONDS)
+            .subscribeWithErrorLogging(this) {
+                logInfo("Scoreboard connection status: "+scoreboardStore.connected)
+            }
 
         readingStore.readingStream
             .sample(1, TimeUnit.SECONDS)
