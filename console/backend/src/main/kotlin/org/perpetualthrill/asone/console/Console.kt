@@ -39,9 +39,6 @@ class Console {
     }
 
     fun actualMain() {
-        val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-        val rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME)
-        rootLogger.level = Level.INFO
 
         serialMonitor.start()
         webServer.start()
