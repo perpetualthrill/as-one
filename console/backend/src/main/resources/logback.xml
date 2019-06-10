@@ -12,6 +12,4 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="io.moquette" level="WARN"/>
-
 </configuration>

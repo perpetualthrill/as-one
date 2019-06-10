@@ -1,14 +1,9 @@
 package org.perpetualthrill.asone.console.io.mqtt
 
-import io.moquette.broker.Server
-import java.util.Collections.singletonList
-import io.moquette.broker.config.ClasspathResourceLoader
-import io.moquette.broker.config.ResourceLoaderConfig
-import io.moquette.interception.AbstractInterceptHandler
-import io.moquette.interception.messages.InterceptPublishMessage
-import org.perpetualthrill.asone.console.util.logInfo
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
+import com.github.sylvek.embbededmosquitto.Mosquitto
+import org.fusesource.mqtt.client.FutureConnection
+import org.fusesource.mqtt.client.MQTT
+import org.fusesource.mqtt.client.QoS
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,29 +14,19 @@ constructor() {
 
     private val listeners = mutableMapOf<String, List<MqttListener>>()
 
-    inner class PublisherListener : AbstractInterceptHandler() {
-        override fun getID(): String {
-            return "EverythingListener"
-        }
-
-        override fun onPublish(msg: InterceptPublishMessage) {
-            val list = listeners[msg.topicName]
-            if (!list.isNullOrEmpty()) {
-                val content = msg.payload.toString(StandardCharsets.UTF_8)
-                for (listener in list) {
-                    listener.handler(content)
-                }
-            }
-        }
-    }
+    private val mqttClient = MQTT()
+    private var mqttClientConnection: FutureConnection? = null
 
     fun start() {
-        val classpathLoader = ClasspathResourceLoader()
-        val classPathConfig = ResourceLoaderConfig(classpathLoader, "moquette.conf")
+        Mosquitto.getInstance().start()
 
-        val mqttBroker = Server()
-        val userHandlers = singletonList(PublisherListener())
-        mqttBroker.startServer(classPathConfig, userHandlers)
+        mqttClient.setHost("localhost", 1883)
+        mqttClient.setClientId("console")
+        mqttClient.version = "3.1.1"
+        mqttClient.isCleanSession = true // retain nothing
+        mqttClient.keepAlive = 15 // send keepalive message after 15s idle
+        mqttClientConnection = mqttClient.futureConnection()
+        mqttClientConnection?.connect()
     }
 
     fun registerListener(listener: MqttListener) {
@@ -57,6 +42,10 @@ constructor() {
     abstract class MqttListener {
         abstract val topic: String
         abstract val handler: (String) -> (Unit)
+    }
+
+    fun publishAtMostOnce(topic: String, byteArray: ByteArray) {
+        mqttClientConnection?.publish(topic, byteArray, QoS.AT_MOST_ONCE, false)
     }
 
 }
