@@ -32,13 +32,10 @@
         - 3: use UART with gamma correction and linear temporal interpolation
         - 4: use UART with gamma correction and temporal dithering
 
-   - publishes:
-      - "asOne/openPixelControl/scoreboard/ipAddress": String. IP address the scoreboard is listening on for OPC messages
-
-
 */
 
 #include <ESP8266WiFi.h>
+#define MQTT_MAX_PACKET_SIZE 1024
 #include <PubSubClient.h>
 
 #include <Metro.h>
@@ -62,21 +59,15 @@ extern "C" {
 WiFiClient espClient;
 PubSubClient mqtt;
 
-#define OpcServerPort  7890
-WiFiServer opcServer(OpcServerPort);
-WiFiClient opcClient;
-
-int opcMessageState;
-int opcDataIndex;
-int opcMessageLen;
-int opcChannel;
-int opcCommand;
-
-// track the state
+// track the state. unused with directonly. setting this to 1 keeps
+// the internal routines from generating their own scoreboard status
 byte state = 1;
 
-byte directOnly = 0;
-byte acceleration = 0;
+// enable directonly by default
+byte directOnly = 1;
+
+// which one of these is best? whoooo knows
+byte acceleration = 4;
 
 byte serial1 = 0;
 
@@ -87,6 +78,7 @@ const byte stopLogo = startLogo + nLogoLED - 1;
 
 // small segment displays
 const byte nsDigit = 13;
+
 // track the timer
 const byte nTimerLED = nsDigit + nsDigit; // 26
 const byte startTimer = 62;
@@ -114,9 +106,12 @@ CRGBArray <nTotalLED> leds;
 
 // pin definitions
 #define PIN_LED_DMA_METHOD 3
-#define PIN_LED_UART_METHOD 2
 #define PIN_LED_GPIO_METHOD 15
+#define PIN_LED_UART_METHOD 2
+
 // select which; set the JUMPER!
+// aka change the wiring around in the controller -- pins are listed there
+// as well on blue tape
 #define PIN_LED PIN_LED_UART_METHOD
 
 // track the need to do a FastLED.show();
@@ -129,10 +124,10 @@ boolean haveUpdate = false;
 #define RED_OFF HIGH
 
 // publish a heartbeat on this interval
-#define HEARTBEAT_INTERVAL 2000UL // ms
+#define HEARTBEAT_INTERVAL_MS 2000UL
 
-// set target FPS
-const unsigned long targetFPS = 30; // frames per second
+// set target frames per second
+const unsigned long targetFPS = 24;
 
 // for temporal dithering
 CRGBArray <nTotalLED> previousLeds;
@@ -158,14 +153,11 @@ void setup() {
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   mqtt.setClient(espClient);
-//  const char* mqtt_server = "broker.mqtt-dashboard.com";
   const char* mqtt_server = "asone-console";
   mqtt.setServer(mqtt_server, 1883);
   mqtt.setCallback(callback);
 
-  CRGB foo[nLeftLED];
-
-  FastLED.addLeds<WS2811, PIN_LED, RGB>(leds, nTotalLED).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<WS2811, PIN_LED, RGB>(leds, nTotalLED).setCorrection(Typical8mmPixel);
   FastLED.setBrightness(255);
   leds.fill_solid(CRGB::Red);
   FastLED.show();
@@ -187,7 +179,6 @@ void setup() {
   FastLED.clear(true);
   Serial << F("Scoreboard.  Startup complete.") << endl;
 
-  opcServer.begin();
 }
 
 void loop() {
@@ -198,6 +189,9 @@ void loop() {
   if (!mqtt.connected()) {
     connectMQTT();
   } else {
+    // blink red during execution
+    digitalWrite(RED_LED, RED_ON);
+
     // look for a message
     mqtt.loop();
 
@@ -226,34 +220,21 @@ void loop() {
 
     // if we have an update, show it
     if ( haveUpdate ) showScoreboard();
+
     // send a heartbeat on an interval heartbeat interval
     heartbeatMQTT();
 
   }
 
-  if (opcClient) {
-    while (opcClient.available()) {
-      int c = opcClient.read();
-      if(c >= 0) {
-        opcStateMachine(c);
-      } else {
-        break;
-      }
-    }
-  }
-  if ((!opcClient || !opcClient.connected()) && (opcClient = opcServer.available())) {
-    Serial.println("OPC Connected");
-  }
+  if (acceleration) writeUART();
 
-  if ( acceleration ) writeUART();
+  digitalWrite(RED_LED, RED_OFF);
+
+  yield();
 }
 
 // the real meat of the work is done here, where we process messages.
 void callback(char* topic, byte* payload, unsigned int length) {
-  // toggle the blue LED when we get a new message
-  static boolean ledState = false;
-  ledState = !ledState;
-  digitalWrite(RED_LED, ledState);
 
   // String class is much easier to work with
   char * msg = (char*)payload;
@@ -261,9 +242,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
   // drop our own heartbeat
   const String msgHeartbeat = "asOne/score/heartbeat";
-  if ( t.equals(msgHeartbeat) ) return;
+  if ( t.equals(msgHeartbeat) ) {
+    return;
+  }
 
-  Serial << F("<- ") << t;
+  Serial << millis() << F(" -- ") << t;
 
   // we have an update, unless otherwise noted
   haveUpdate = true;
@@ -286,6 +269,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     state = payload[0];
     FastLED.clear(); // clear the LEDs
     Serial << F(" = ") << state;
+
   } else if (t.equals(msgLogo)) {
     if(directOnly){
       Serial << "ignored";
@@ -305,17 +289,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
     updateDithering(startLogo, stopLogo, &logoDitherTiming);
     leds(startLogo, stopLogo) = CRGBSet( (CRGB*)payload, nLogoLED );
 
-    //    Serial << F(" =");
-    //    Serial << F(" R:") << leds[startLogo + 4].red;
-    //    Serial << F(" G:") << leds[startLogo + 4].green;
-    //    Serial << F(" B:") << leds[startLogo + 4].blue;
-
   } else if (t.equals(msgTimer)) {
     if(directOnly){
       Serial << "ignored";
     } else {
-//      String m = (char*)payload;
-//      byte timer = m.toInt();
       byte timer = payload[0];
       Serial << F(" = ") << timer/10 << F(",") << timer %10;
 
@@ -323,15 +300,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
       setSmallDigit(timer%10, startTimer, CRGB::White, CRGB::Black);
       setSmallDigit(timer/10, startTimer+nsDigit, CRGB::White, CRGB::Black);
     }
+
   } else if (t.equals(msgTimerDirect)) {
     updateDithering(startTimer, stopTimer, &timerDitherTiming);
     leds(startTimer, stopTimer) = CRGBSet( (CRGB*)payload, nTimerLED );
+
   } else if (t.equals(msgLeft)) {
     if(directOnly){
       Serial << "ignored";
     } else {
-//      String m = (char*)payload;
-//      byte bpm = m.toInt();
       leftBPM = payload[0];
       Serial << F(" = ") << leftBPM/100 << F(",") << (leftBPM/10)%10 << F(",") << leftBPM%10;
 
@@ -339,23 +316,21 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
       // on color based on BPM delta
       CRGB onColor = setBPMColor(leftBPM, rightBPM);
-//      onColor = CRGB::Blue;
       
       setLargeDigit(leftBPM%10, startLeft, onColor, CRGB::Black);
       setLargeDigit((leftBPM/10)%10, startLeft+nlDigit, onColor, CRGB::Black);
       // special case for hundreds digit
       leds(startLeft+2*nlDigit, startLeft+2*nlDigit+nlHundreds-1) = leftBPM/100 ? onColor : CRGB::Black;
     }
+
   } else if (t.equals(msgLeftDirect)) {
     updateDithering(startLeft, stopLeft, &leftDitherTiming);
     leds(startLeft, stopLeft) = CRGBSet( (CRGB*)payload, nLeftLED );
+
   } else if (t.equals(msgRight)) {
-    if(directOnly){
+    if(directOnly) {
       Serial << "ignored";
     } else {
-//      String m = (char*)payload;
-//      byte bpm = m.toInt();
-//      rightBPM = bpm;
       rightBPM = payload[0];
       Serial << F(" = ") << rightBPM/100 << F(",") << (rightBPM/10)%10 << F(",") << rightBPM%10;
 
@@ -369,9 +344,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
       // special case for hundreds digit
       leds(startRight+2*nlDigit, startRight+2*nlDigit+nlHundreds-1) = rightBPM/100 ? onColor : CRGB::Black;
     }
+
   } else if (t.equals(msgRightDirect)) {
     updateDithering(startRight, stopRight, &rightDitherTiming);
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
+
   } else if (t.equals(msgDirectOnly)) {
     directOnly = payload[0];
     if(!directOnly && acceleration > 1) {
@@ -380,11 +357,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     }
     haveUpdate = false;
     Serial << F(" = ") << directOnly;
+
   } else if (t.equals(msgAcceleration)) {
     acceleration = payload[0];
     setUART();
     haveUpdate = false;
     Serial << F(" = ") << acceleration;
+
   } else {
     haveUpdate = false;
     Serial << F(" WARNING. unknown topic. continuing.");
@@ -394,21 +373,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 CRGB setBPMColor(byte b1, byte b2) {
-/*
-  // use Blue as the base
-  CRGB onColor = CRGB::Blue;
-  onColor -= 128;
-  if( b1 > b2) {
-    // HR too fast.  slow it down, and suggest that by blending in Red
-    byte redLevel = map(constrain(b1-b2, 0, 50), 0, 50, 32, 255);
-    onColor += CRGB(redLevel, 0, 0);
-  } else {
-    // HR too slow.  speed it up, and suggest that by blending in Green
-    byte greenLevel = map(constrain(b2-b1, 0, 50), 0, 50, 32, 255);
-    onColor += CRGB(0, greenLevel, 0);
-  }
-  return( onColor );
-*/
   int deltaBPM = b1 - b2; // positive if b1 > b2
   int hue = HUE_GREEN - deltaBPM; // Green if they're equal.
   hue = constrain(hue, HUE_RED, HUE_BLUE); // Red: slow down; Blue: speed up
@@ -437,9 +401,7 @@ void connectWiFi() {
   digitalWrite(RED_LED, RED_ON);
   delay(10);
 
-  // Update these.
-//  const char* ssid = "Looney_Ext";
-//  const char* password = "TinyandTooney";
+  // Hard-coded credentials for the win
   const char* ssid = "AsOne";
   const char* password = "purplemotion";
 
@@ -493,26 +455,13 @@ void connectMQTT() {
 void heartbeatMQTT() {
   const char* pub = "asOne/score/heartbeat";
   static char msg[32];
-  static Metro heartbeatInterval(HEARTBEAT_INTERVAL);
+  static Metro heartbeatInterval(HEARTBEAT_INTERVAL_MS);
 
   if ( heartbeatInterval.check() ) {
     itoa(millis(), msg, 10);
     mqtt.publish(pub, msg);
-    publishMyIP();
     heartbeatInterval.reset();
   }
-}
-
-void publishMyIP() {
-  const char* pub = "asOne/openPixelControl/scoreboard/ipAddress";
-  IPAddress ip = WiFi.localIP();
-  static byte msg[4];
-  msg[0] = ip[0];
-  msg[1] = ip[1];
-  msg[2] = ip[2];
-  msg[3] = ip[3];
-
-  mqtt.publish(pub, msg, 4); // 4 bytes, not null-terminated
 }
 
 // Segment layout: 
@@ -640,44 +589,41 @@ static const uint8_t uartBitPatterns[4] = {
 
 // 16-bit gamma correction, from jes5199's esperPixels
 const uint16_t gamma16[] = {
- 0, 256, 256, 256, 257, 257, 258, 259,
-260, 262, 264, 266, 269, 272, 275, 279,
-284, 289, 295, 301, 308, 316, 324, 333,
-343, 354, 365, 377, 390, 404, 419, 435,
-451, 469, 488, 507, 528, 549, 572, 596,
-621, 647, 674, 703, 733, 764, 796, 829,
-864, 900, 938, 977, 1017, 1058, 1102, 1146,
-1192, 1240, 1289, 1340, 1392, 1446, 1501, 1558,
-1617, 1677, 1739, 1803, 1868, 1936, 2005, 2076,
-2148, 2223, 2299, 2377, 2458, 2540, 2624, 2710,
-2798, 2888, 2980, 3074, 3170, 3268, 3368, 3471,
-3575, 3682, 3791, 3902, 4015, 4130, 4248, 4368,
-4491, 4615, 4742, 4872, 5003, 5138, 5274, 5413,
-5555, 5698, 5845, 5994, 6145, 6299, 6456, 6615,
-6776, 6941, 7108, 7277, 7450, 7625, 7802, 7983,
-8166, 8352, 8541, 8732, 8926, 9124, 9324, 9527,
-9733, 9941, 10153, 10368, 10585, 10806, 11029, 11256,
-11486, 11718, 11954, 12193, 12435, 12680, 12929, 13180,
-13435, 13693, 13954, 14218, 14486, 14756, 15031, 15308,
-15589, 15873, 16160, 16451, 16746, 17043, 17344, 17649,
-17957, 18268, 18583, 18902, 19224, 19550, 19879, 20212,
-20548, 20888, 21232, 21579, 21930, 22285, 22643, 23005,
-23371, 23741, 24114, 24491, 24872, 25257, 25646, 26038,
-26435, 26835, 27239, 27648, 28060, 28476, 28896, 29320,
-29748, 30180, 30616, 31057, 31501, 31949, 32402, 32858,
-33319, 33784, 34253, 34727, 35204, 35686, 36172, 36662,
-37157, 37656, 38159, 38667, 39179, 39695, 40215, 40740,
-41270, 41804, 42342, 42885, 43432, 43984, 44540, 45101,
-45666, 46236, 46811, 47390, 47974, 48562, 49155, 49753,
-50355, 50962, 51573, 52190, 52811, 53437, 54068, 54703,
-55343, 55989, 56638, 57293, 57953, 58617, 59287, 59961,
-60641, 61325, 62014, 62708, 63407, 64112, 64821, 65535
+  0, 256, 256, 256, 257, 257, 258, 259,
+  260, 262, 264, 266, 269, 272, 275, 279,
+  284, 289, 295, 301, 308, 316, 324, 333,
+  343, 354, 365, 377, 390, 404, 419, 435,
+  451, 469, 488, 507, 528, 549, 572, 596,
+  621, 647, 674, 703, 733, 764, 796, 829,
+  864, 900, 938, 977, 1017, 1058, 1102, 1146,
+  1192, 1240, 1289, 1340, 1392, 1446, 1501, 1558,
+  1617, 1677, 1739, 1803, 1868, 1936, 2005, 2076,
+  2148, 2223, 2299, 2377, 2458, 2540, 2624, 2710,
+  2798, 2888, 2980, 3074, 3170, 3268, 3368, 3471,
+  3575, 3682, 3791, 3902, 4015, 4130, 4248, 4368,
+  4491, 4615, 4742, 4872, 5003, 5138, 5274, 5413,
+  5555, 5698, 5845, 5994, 6145, 6299, 6456, 6615,
+  6776, 6941, 7108, 7277, 7450, 7625, 7802, 7983,
+  8166, 8352, 8541, 8732, 8926, 9124, 9324, 9527,
+  9733, 9941, 10153, 10368, 10585, 10806, 11029, 11256,
+  11486, 11718, 11954, 12193, 12435, 12680, 12929, 13180,
+  13435, 13693, 13954, 14218, 14486, 14756, 15031, 15308,
+  15589, 15873, 16160, 16451, 16746, 17043, 17344, 17649,
+  17957, 18268, 18583, 18902, 19224, 19550, 19879, 20212,
+  20548, 20888, 21232, 21579, 21930, 22285, 22643, 23005,
+  23371, 23741, 24114, 24491, 24872, 25257, 25646, 26038,
+  26435, 26835, 27239, 27648, 28060, 28476, 28896, 29320,
+  29748, 30180, 30616, 31057, 31501, 31949, 32402, 32858,
+  33319, 33784, 34253, 34727, 35204, 35686, 36172, 36662,
+  37157, 37656, 38159, 38667, 39179, 39695, 40215, 40740,
+  41270, 41804, 42342, 42885, 43432, 43984, 44540, 45101,
+  45666, 46236, 46811, 47390, 47974, 48562, 49155, 49753,
+  50355, 50962, 51573, 52190, 52811, 53437, 54068, 54703,
+  55343, 55989, 56638, 57293, 57953, 58617, 59287, 59961,
+  60641, 61325, 62014, 62708, 63407, 64112, 64821, 65535
 };
 
-
-
-static inline uint8_t getTxLengthForUART1()
-{
+static inline uint8_t getTxLengthForUART1() {
   return (U1S >> USTXC) & 0xff;
 }
 
@@ -698,8 +644,7 @@ void writeUART() {
   }
 }
 
-static inline void writeByteToUART1(uint8_t byte)
-{
+static inline void writeByteToUART1(uint8_t byte) {
   U1F = byte;
 }
 
@@ -809,59 +754,6 @@ void updateDitherTiming(struct ditherTiming *myDitherTiming) {
     myDitherTiming->avgUpdateMillis = (myDitherTiming->avgUpdateMillis + elapsed) / 2;
   }
   myDitherTiming->lastUpdateMillis = now;
-}
-
-void opcStateMachine(char c) {
-    if(opcMessageState == 0) {
-      opcMessageState = 1;
-      opcChannel = c;
-    } else if(opcMessageState == 1) {
-      opcMessageState = 2;
-      opcCommand = c;
-      if(opcCommand == 0) {
-        updateDitheringForChannel(opcChannel);
-      }
-    } else if(opcMessageState == 2) {
-      opcMessageState = 3;
-      opcMessageLen = c * 256;
-    } else if(opcMessageState == 3) {
-      opcMessageState = 4;
-      opcMessageLen += c;
-      opcDataIndex = 0;
-    } else if(opcMessageState == 4) {
-      opcMessageLen -= 1;
-      if(opcCommand == 0) {
-        int pixelIndex = opcDataIndex / 3;
-        int color = opcDataIndex % 3;
-        setPixelColor(opcChannel, pixelIndex, color, c);
-      }
-      opcDataIndex += 1;
-    }
-
-    if(opcMessageState == 4 && opcMessageLen <= 0) {
-      opcMessageState = 0;
-    }
-}
-
-void setPixelColor(byte channel, int pixelIndex, byte color, byte value) {
-  if(channel == 0) { // not really used in As One but this is OPC spec
-    setPixelColor(1, pixelIndex, color, value);
-    setPixelColor(2, pixelIndex, color, value);
-    setPixelColor(3, pixelIndex, color, value);
-    setPixelColor(4, pixelIndex, color, value);
-    return;
-  }
-
-  int pixelOffset;
-  switch(channel) {
-    case 1: pixelOffset = startRight; break;
-    case 2: pixelOffset = startLogo; break;
-    case 3: pixelOffset = startTimer; break;
-    case 4: pixelOffset = startLeft; break;
-  }
-
-  leds[pixelOffset + pixelIndex][color] = value;
-  haveUpdate = true;
 }
 
 void updateDitheringForChannel(byte channel) {
