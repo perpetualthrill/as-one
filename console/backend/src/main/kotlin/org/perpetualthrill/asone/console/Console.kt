@@ -6,9 +6,9 @@ package org.perpetualthrill.asone.console
 import io.reactivex.Single
 import org.perpetualthrill.asone.console.di.DaggerMainComponent
 import org.perpetualthrill.asone.console.di.MainComponent
+import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.io.SerialMonitor
 import org.perpetualthrill.asone.console.io.WebServer
-import org.perpetualthrill.asone.console.io.mqtt.MqttBroker
 import org.perpetualthrill.asone.console.store.ReadingStore
 import org.perpetualthrill.asone.console.store.ScoreboardStore
 import org.perpetualthrill.asone.console.util.logInfo
@@ -22,7 +22,7 @@ class Console {
     @Inject lateinit var serialMonitor: SerialMonitor
     @Inject lateinit var readingStore: ReadingStore
     @Inject lateinit var webServer: WebServer
-    @Inject lateinit var mqttBroker: MqttBroker
+    @Inject lateinit var mqttManager: MqttManager
     @Inject lateinit var scoreboardStore: ScoreboardStore
 
     val mainComponent: MainComponent by lazy {
@@ -38,7 +38,7 @@ class Console {
         serialMonitor.start()
         webServer.start()
         readingStore.start()
-        mqttBroker.start()
+        mqttManager.start()
 
         Single
             .just(true)

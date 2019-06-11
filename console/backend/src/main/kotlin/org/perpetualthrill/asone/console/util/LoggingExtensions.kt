@@ -6,3 +6,8 @@ fun Any.logInfo(message: String) {
     val logger = LoggerFactory.getLogger(this.javaClass.name)
     logger.info(message)
 }
+
+fun Any.logDebug(message: String) {
+    val logger = LoggerFactory.getLogger(this.javaClass.name)
+    logger.debug(message)
+}

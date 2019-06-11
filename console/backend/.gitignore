@@ -64,3 +64,5 @@ Thumbs.db
 #NDK
 obj/
 
+## Apparently mosquitto generates these while running
+.lck

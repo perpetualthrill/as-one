@@ -1,8 +1,8 @@
 package org.perpetualthrill.asone.console.store
 
 import io.reactivex.Observable
-import org.perpetualthrill.asone.console.io.mqtt.MqttBroker
-import org.perpetualthrill.asone.console.util.logInfo
+import org.perpetualthrill.asone.console.io.MqttManager
+import org.perpetualthrill.asone.console.util.logDebug
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -14,9 +14,9 @@ private const val SCOREBOARD_DISCONNECT_THRESHOLD_MS = 2500
 @Singleton
 class ScoreboardStore
 @Inject
-constructor(private val mqtt: MqttBroker) {
+constructor(private val mqtt: MqttManager) {
 
-    private val listener: MqttBroker.MqttListener
+    private val listener: MqttManager.MqttListener
 
     private var lastHeartbeat: Instant? = null
 
@@ -28,10 +28,10 @@ constructor(private val mqtt: MqttBroker) {
         }
 
     init {
-        listener = object : MqttBroker.MqttListener() {
+        listener = object : MqttManager.MqttListener() {
             override val topic = "asOne/score/heartbeat"
-            override val handler = { content: String ->
-                logInfo("Got a heartbeat: $content")
+            override val handler = { content: ByteArray ->
+                logDebug("Got a heartbeat: ${content.toString(Charsets.UTF_8)}")
                 lastHeartbeat = Instant.now()
             }
         }
