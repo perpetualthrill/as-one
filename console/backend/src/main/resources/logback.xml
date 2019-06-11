@@ -1,0 +1,15 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} %msg%n</pattern>
+            <!--pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern-->
+            <!--pattern>%date - %-5p %t %-25logger{0} %F:%L %m%n</pattern-->
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

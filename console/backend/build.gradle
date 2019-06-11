@@ -15,6 +15,7 @@ version '0.1'
 repositories {
     mavenCentral()
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 // Thanks, IDEA. How come the preprocessor runs automagically in Android
@@ -68,7 +69,8 @@ dependencies {
     implementation 'com.fazecast:jSerialComm:2.5.1'
     implementation 'ch.qos.logback:logback-classic:1.2.3' // secretly this is also slf4j
     implementation 'org.xbib.jdbc:jdbc-driver-csv:1.2.0'
-    implementation 'io.moquette:moquette-broker:0.12.1'
+    implementation 'com.github.sylvek:embedded-mosquitto:-SNAPSHOT'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.1'
 
     implementation "io.ktor:ktor-server-core:$ktorVersion"
     implementation "io.ktor:ktor-server-netty:$ktorVersion"
