@@ -44,8 +44,11 @@ constructor() {
         }
     }
 
-    fun start() {
-        Mosquitto.getInstance().start()
+    fun start(enableInternalBroker: Boolean = true) {
+        if (enableInternalBroker) {
+            logInfo("Starting internal MQTT broker")
+            Mosquitto.getInstance().start()
+        }
 
         client = MqttAsyncClient("tcp://localhost:1883", "console")
         val options = MqttConnectOptions().apply {

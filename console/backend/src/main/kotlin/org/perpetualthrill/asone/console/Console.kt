@@ -3,6 +3,9 @@
 
 package org.perpetualthrill.asone.console
 
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
 import io.reactivex.Single
 import org.perpetualthrill.asone.console.di.DaggerMainComponent
 import org.perpetualthrill.asone.console.di.MainComponent
@@ -17,13 +20,15 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
-class Console {
+class Console : CliktCommand() {
 
     @Inject lateinit var serialMonitor: SerialMonitor
     @Inject lateinit var readingStore: ReadingStore
     @Inject lateinit var webServer: WebServer
     @Inject lateinit var mqttManager: MqttManager
     @Inject lateinit var scoreboardStore: ScoreboardStore
+
+    val disableMqttArgument by option("--no-internal-mqtt", help = "disable internal MQTT broker").flag()
 
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
@@ -34,11 +39,11 @@ class Console {
         mainComponent.inject(this)
     }
 
-    fun actualMain() {
+    override fun run() {
         serialMonitor.start()
         webServer.start()
         readingStore.start()
-        mqttManager.start()
+        mqttManager.start(enableInternalBroker = !disableMqttArgument)
 
         Single
             .just(true)
@@ -68,6 +73,6 @@ class Console {
 
 }
 
-fun main() {
-    Console().actualMain()
+fun main(args: Array<String>) {
+    Console().main(args)
 }
