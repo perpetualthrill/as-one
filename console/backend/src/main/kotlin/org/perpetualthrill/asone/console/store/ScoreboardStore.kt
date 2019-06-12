@@ -38,40 +38,29 @@ constructor(private val mqtt: MqttManager) {
         mqtt.registerListener(listener)
     }
 
+    private val frameClock = Observable
+        .interval(250, TimeUnit.MILLISECONDS)
+
+    private fun makeCRGBArray(pixelLength: Int, counterStart: Long): ByteArray {
+        var counter = counterStart
+        val array = ByteArray(pixelLength * 3)
+        for (i in array.indices step 3) {
+            counter += 25
+            array[i] = counter.rem(256).toByte()
+            array[i + 1] = (counter + 100).rem(256).toByte()
+            array[i + 2] = (counter + 200).rem(256).toByte()
+        }
+        return array
+    }
+
     fun coloriffic() {
         mqtt.publishAtMostOnce("asOne/scoreboard/directOnly", byteArrayOf(1))
         mqtt.publishAtMostOnce("asOne/scoreboard/acceleration", byteArrayOf(4))
-        Observable
-            .fromIterable(object : Iterable<ByteArray> {
-                override fun iterator(): Iterator<ByteArray> {
-                    return object : Iterator<ByteArray> {
-
-                        val SIZE = 15 * 3
-
-                        var counter: Long = 100
-
-                        override fun hasNext(): Boolean {
-                            return true
-                        }
-
-                        override fun next(): ByteArray {
-                            val logo = ByteArray(SIZE)
-                            for (i in logo.indices step 3) {
-                                counter += 25
-                                logo[i] = counter.rem(256).toByte()
-                                logo[i + 1] = (counter + 100).rem(256).toByte()
-                                logo[i + 2] = (counter + 200).rem(256).toByte()
-                            }
-                            return logo
-                        }
-
-                    }
-                }
-            })
-            .sample(250, TimeUnit.MILLISECONDS)
-            .subscribeWithErrorLogging(this) {
-                mqtt.publishAtMostOnce("asOne/score/logo/direct", it)
-            }
+        frameClock.subscribeWithErrorLogging(this) {
+            val counterStart = it * 25 // start each frame a bit further
+            val byteArray = makeCRGBArray(15, counterStart) // logo area is 15 pixels
+            mqtt.publishAtMostOnce("asOne/score/logo/direct", byteArray)
+        }
     }
 
 }
