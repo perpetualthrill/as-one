@@ -1,4 +1,4 @@
-# Setting up box as WiFi router
+## Setting up box as WiFi router
 
 Presumes Ubuntu 18.04
 
@@ -15,3 +15,8 @@ If wifi has been turned off somehow, `rfkill unblock wifi` may fix it.
 
 If there are unknown errors, `systemctl status create_ap.service` and `systemctl status hostapd.service` may be of use.
 
+## Configuring MQTT
+
+Unfortunately, Ubuntu 18.04 ships with an older version of Mosquitto that does not support the necessary configuration options. Do `sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa` to add newer versions to apt, then `sudo apt install mosquitto` which will install a current one.
+
+Copy over the mosquitto.conf file to /etc/mosquitto/conf.d/ and reload: `sudo systemctl stop mosquitto`, `sudo systemctl enable mosquitto`, `sudo systemctl start mosquitto`

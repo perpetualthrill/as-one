@@ -153,7 +153,7 @@ void setup() {
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   mqtt.setClient(espClient);
-  const char* mqtt_server = "asone-console";
+  const char* mqtt_server = "asone-console.local";
   mqtt.setServer(mqtt_server, 1883);
   mqtt.setCallback(callback);
 

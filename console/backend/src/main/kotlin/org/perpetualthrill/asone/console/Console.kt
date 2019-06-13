@@ -28,7 +28,9 @@ class Console : CliktCommand() {
     @Inject lateinit var mqttManager: MqttManager
     @Inject lateinit var scoreboardStore: ScoreboardStore
 
-    val disableMqttArgument by option("--no-internal-mqtt", help = "disable internal MQTT broker").flag()
+    // clikt args
+    private val enableMqttArgument by option("--internal-mqtt", help = "enable internal MQTT broker").flag()
+    private val disableSerialArgument by option("--disable-serial", help = "turn off USB serial monitoring").flag()
 
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
@@ -40,10 +42,12 @@ class Console : CliktCommand() {
     }
 
     override fun run() {
-        serialMonitor.start()
+        if (!disableSerialArgument) {
+            serialMonitor.start()
+        }
         webServer.start()
         readingStore.start()
-        mqttManager.start(enableInternalBroker = !disableMqttArgument)
+        mqttManager.start(enableInternalBroker = enableMqttArgument)
 
         Single
             .just(true)

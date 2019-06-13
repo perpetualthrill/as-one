@@ -50,7 +50,8 @@ constructor() {
             Mosquitto.getInstance().start()
         }
 
-        client = MqttAsyncClient("tcp://localhost:1883", "console")
+        // client = MqttAsyncClient("tcp://localhost:1883", "console")
+        client = MqttAsyncClient("tcp://192.168.12.1:1883", "console")
         val options = MqttConnectOptions().apply {
             isCleanSession = true // do not send this client old stuff
             keepAliveInterval = 15 // keepalive call time for quiet connection in seconds
