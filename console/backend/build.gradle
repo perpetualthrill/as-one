@@ -71,6 +71,7 @@ dependencies {
     implementation 'org.xbib.jdbc:jdbc-driver-csv:1.2.0'
     implementation 'com.github.sylvek:embedded-mosquitto:-SNAPSHOT'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.1'
+    implementation 'com.github.ajalt:clikt:2.0.0'
 
     implementation "io.ktor:ktor-server-core:$ktorVersion"
     implementation "io.ktor:ktor-server-netty:$ktorVersion"

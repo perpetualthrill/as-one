@@ -3,6 +3,10 @@
 
 package org.perpetualthrill.asone.console
 
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
 import io.reactivex.Single
 import org.perpetualthrill.asone.console.di.DaggerMainComponent
 import org.perpetualthrill.asone.console.di.MainComponent
@@ -17,13 +21,18 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
-class Console {
+class Console : CliktCommand() {
 
     @Inject lateinit var serialMonitor: SerialMonitor
     @Inject lateinit var readingStore: ReadingStore
     @Inject lateinit var webServer: WebServer
     @Inject lateinit var mqttManager: MqttManager
     @Inject lateinit var scoreboardStore: ScoreboardStore
+
+    // clikt args
+    private val enableMqttArgument by option("--internal-mqtt", help = "enable internal MQTT broker").flag()
+    private val disableSerialArgument by option("--disable-serial", help = "turn off USB serial monitoring").flag()
+    private val hostArgument: String by option("--hostname", help = "hostname or ip address to bind services to. defaults to localhost").default("localhost")
 
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
@@ -34,11 +43,13 @@ class Console {
         mainComponent.inject(this)
     }
 
-    fun actualMain() {
-        serialMonitor.start()
-        webServer.start()
+    override fun run() {
+        if (!disableSerialArgument) {
+            serialMonitor.start()
+        }
+        webServer.start(hostName = hostArgument)
         readingStore.start()
-        mqttManager.start()
+        mqttManager.start(enableInternalBroker = enableMqttArgument, hostName = hostArgument)
 
         Single
             .just(true)
@@ -68,6 +79,6 @@ class Console {
 
 }
 
-fun main() {
-    Console().actualMain()
+fun main(args: Array<String>) {
+    Console().main(args)
 }

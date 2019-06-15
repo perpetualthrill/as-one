@@ -45,8 +45,8 @@ constructor(
         val name: String
     )
 
-    fun start() {
-        val server = embeddedServer(Netty, 12345) {
+    fun start(hostName: String) {
+        val server = embeddedServer(Netty, port = 12345, host = hostName) {
             install(Compression)
             install(ContentNegotiation) {
                 gson {

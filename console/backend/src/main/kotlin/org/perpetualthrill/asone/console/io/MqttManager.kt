@@ -44,10 +44,13 @@ constructor() {
         }
     }
 
-    fun start() {
-        Mosquitto.getInstance().start()
+    fun start(enableInternalBroker: Boolean = true, hostName: String) {
+        if (enableInternalBroker) {
+            logInfo("Starting internal MQTT broker")
+            Mosquitto.getInstance().start()
+        }
 
-        client = MqttAsyncClient("tcp://localhost:1883", "console")
+        client = MqttAsyncClient("tcp://$hostName:1883", "console")
         val options = MqttConnectOptions().apply {
             isCleanSession = true // do not send this client old stuff
             keepAliveInterval = 15 // keepalive call time for quiet connection in seconds
