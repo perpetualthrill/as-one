@@ -4,6 +4,7 @@
 package org.perpetualthrill.asone.console
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import io.reactivex.Single
@@ -31,6 +32,7 @@ class Console : CliktCommand() {
     // clikt args
     private val enableMqttArgument by option("--internal-mqtt", help = "enable internal MQTT broker").flag()
     private val disableSerialArgument by option("--disable-serial", help = "turn off USB serial monitoring").flag()
+    private val hostArgument: String by option("--hostname", help = "hostname or ip address to bind services to. defaults to localhost").default("localhost")
 
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
@@ -45,9 +47,9 @@ class Console : CliktCommand() {
         if (!disableSerialArgument) {
             serialMonitor.start()
         }
-        webServer.start()
+        webServer.start(hostName = hostArgument)
         readingStore.start()
-        mqttManager.start(enableInternalBroker = enableMqttArgument)
+        mqttManager.start(enableInternalBroker = enableMqttArgument, hostName = hostArgument)
 
         Single
             .just(true)

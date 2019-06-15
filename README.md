@@ -16,6 +16,13 @@ A JSON-encoded ordered list of the last 100 sensor readings can be read at via G
 
 To test that and other services, fire up [Postman](https://www.getpostman.com/) and load [the AsOne-Console collection](./console/AsOne-Console.postman_collection.json). When adding or changing services, please update this collection, as it is effectively our API documentation.
 
+#### Command line arguments
+`--disable-serial`: Turn off the reading of serial ports. This is useful when trying to debug Arduino code over a board's serial connection.
+
+`--internal-mqtt`: Use internal MQTT broker. This does not work very well, and will almost certainly break websockets, but may be useful on a box where Mosquitto cannot be installed.
+
+`--hostname <name>`: Specify a hostname or IP address to operate on. Defaults to localhost. Useful for binding to the IP of the AP-mode wifi interface so that the open ports are not externally available.
+
 ### Sensor simulator
 
 With the server running, simulated sensors can be used to test other parts of the server stack, such as scoreboard output. To create one of these, POST a request to `http://localhost:12345/sensors/simulated/add`. That will return a relative location fragment containing the simulator's name, which further actions can be directed to. To remove the simulator, send a DELETE request to the relevant sensor url. To simulate picking up the controller, reading a heartbeat, etc, please see the Postman collection linked above.
