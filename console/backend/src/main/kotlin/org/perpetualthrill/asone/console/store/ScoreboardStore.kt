@@ -58,8 +58,8 @@ constructor(private val mqtt: MqttManager) {
         mqtt.publishAtMostOnce("asOne/scoreboard/acceleration", byteArrayOf(4))
         frameClock.subscribeWithErrorLogging(this) {
             val counterStart = it * 25 // start each frame a bit further
-            val byteArray = makeCRGBArray(15, counterStart) // logo area is 15 pixels
-            mqtt.publishAtMostOnce("asOne/score/logo/direct", byteArray)
+            val byteArray = makeCRGBArray(135, counterStart) // full scoreboard is 135 pixels
+            mqtt.publishAtMostOnce("asOne/score/all/direct", byteArray)
         }
     }
 

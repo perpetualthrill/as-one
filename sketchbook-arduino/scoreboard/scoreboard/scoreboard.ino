@@ -54,7 +54,6 @@ extern "C" {
 #define UART1 1
 #define UART1_INV_MASK (0x3f << 19)
 
-
 WiFiClient espClient;
 PubSubClient mqtt;
 
@@ -181,12 +180,23 @@ void setup() {
 }
 
 void loop() {
-  if (WiFi.status() != WL_CONNECTED) {
+  // Check for wifi, blocking if disconnected
+  wl_status_t status = WiFi.status();
+  if (status != WL_CONNECTED) {
+    Serial.print("wifi not connected. status = ");
+    Serial.println(status);
+    // Comment in for some marginally helpful wifi diagnosis
+    // WiFi.printDiag(Serial);
+
     // this is a blocking routine.  read: we halt until WiFi is connected
     connectWiFi();
   }
+
+  // Check for MQTT, connect if possible
   if (!mqtt.connected()) {
     connectMQTT();
+
+  // If connected to wifi and mqtt, execute main loop
   } else {
     // blink red during execution
     digitalWrite(RED_LED, RED_ON);
@@ -260,6 +270,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   const String msgLeftDirect = "asOne/score/leftBPM/direct";
   const String msgRight = "asOne/score/rightBPM";
   const String msgRightDirect = "asOne/score/rightBPM/direct";
+  const String msgAllDirect = "asOne/score/all/direct";
 
   const String msgDirectOnly = "asOne/scoreboard/directOnly";
   const String msgAcceleration = "asOne/scoreboard/acceleration";
@@ -348,6 +359,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
     updateDithering(startRight, stopRight, &rightDitherTiming);
     leds(startRight, stopRight) = CRGBSet( (CRGB*)payload, nRightLED );
 
+  } else if (t.equals(msgAllDirect)) {
+    updateDitheringForEverything();
+    leds(0, stopLeft) = CRGBSet( (CRGB*)payload, nTotalLED);
+
   } else if (t.equals(msgDirectOnly)) {
     directOnly = payload[0];
     if(!directOnly && acceleration > 1) {
@@ -420,7 +435,6 @@ void connectWiFi() {
   Serial << F("IP address: ") << WiFi.localIP() << endl;;
   digitalWrite(RED_LED, RED_OFF);
 }
-
 
 void connectMQTT() {
   digitalWrite(RED_LED, RED_ON);
@@ -538,7 +552,6 @@ void testDigitS(byte val) {
   Serial << sDigit[val][ 4]<< sDigit[val][ 5] << sDigit[val][ 6] << endl;
   Serial << endl;
 }
- 
 
 void setSmallDigit(byte val, byte startPos, CRGB on, CRGB off) { 
   val = constrain(val, 0, 9);
