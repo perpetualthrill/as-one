@@ -143,6 +143,7 @@ struct ditherTiming rightDitherTiming;
 
 void setup() {
   Serial.begin(115200);
+  delay(10); // Just in case
   Serial << endl << endl << F("Scoreboard. Startup.") << endl;
 
   pinMode(RED_LED, OUTPUT);     // Initialize the red LED pin as an output
@@ -175,11 +176,20 @@ void setup() {
   delay(5000);
   
   FastLED.clear(true);
+
+  // Since acceleration may be enabled by default ...
+  if (acceleration) {
+    setUART();
+  }
+
   Serial << F("Scoreboard.  Startup complete.") << endl;
 
 }
 
 void loop() {
+  // blink red during execution
+  digitalWrite(RED_LED, RED_ON);
+
   // Check for wifi, blocking if disconnected
   wl_status_t status = WiFi.status();
   if (status != WL_CONNECTED) {
@@ -188,18 +198,24 @@ void loop() {
     // Comment in for some marginally helpful wifi diagnosis
     // WiFi.printDiag(Serial);
 
+    // Show grey while disconnected
+    leds.fill_solid(CRGB::LightSlateGrey);
+    showOrWriteUART();
+
     // this is a blocking routine.  read: we halt until WiFi is connected
     connectWiFi();
   }
 
   // Check for MQTT, connect if possible
   if (!mqtt.connected()) {
+    // The sky over the port was the color of a television, tuned to a dead channel.
+    fill_random(leds, nTotalLED);
+    showOrWriteUART();
+
     connectMQTT();
 
   // If connected to wifi and mqtt, execute main loop
   } else {
-    // blink red during execution
-    digitalWrite(RED_LED, RED_ON);
 
     // look for a message
     mqtt.loop();
@@ -775,5 +791,22 @@ void updateDitheringForChannel(byte channel) {
     case 2: updateDithering(startLogo, stopLogo, &logoDitherTiming); break;
     case 3: updateDithering(startTimer, stopTimer, &timerDitherTiming); break;
     case 4: updateDithering(startLeft, stopLeft, &leftDitherTiming); break;
+  }
+}
+
+inline void fill_random(CRGB* leds, uint16_t numLeds) {
+  for (int i = 1; i < numLeds; i++) {
+    leds[i].r = random(256);
+    leds[i].g = random(256);
+    leds[i].b = random(256);
+  }
+}
+
+inline void showOrWriteUART() {
+  if (acceleration) {
+    updateDitheringForEverything();
+    writeUART();
+  } else {
+    FastLED.show();
   }
 }
