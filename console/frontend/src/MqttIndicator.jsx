@@ -20,16 +20,17 @@ function MqttIndicator (props) {
         logger.error('error connecting to mqtt')
         logger.error(e)
       }
-    }
-    if (!started) {
+
       // blink when a message comes in
       mqtt.on('message', function () {
         setBlinking(true)
       })
+    }
+    if (!started) {
       subscribe()
       setStarted(true)
     }
-  }, [blinking])
+  }, [mqtt, started])
 
   // de-blink the indicator routinely
   useInterval(() => {

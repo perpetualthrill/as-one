@@ -1,13 +1,16 @@
 import React from 'react'
+import AsyncClient from 'async-mqtt'
+
 import './App.css'
 import { SensorMonitor } from './SensorMonitor'
 import { MqttIndicator } from './MqttIndicator'
+import { ScoreboardEmulator } from './ScoreboardEmulator'
+
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
-import AsyncClient from 'async-mqtt'
 
 const mqttClient = AsyncClient.connect('ws://' + window.location.hostname + ':8181')
 
@@ -31,6 +34,13 @@ function App () {
           <Col md={0} lg={1} />
           <Col>
             <SensorMonitor />
+          </Col>
+          <Col md={0} lg={1} />
+        </Row>
+        <Row>
+          <Col md={0} lg={1} />
+          <Col>
+            <ScoreboardEmulator mqtt={mqttClient} />
           </Col>
           <Col md={0} lg={1} />
         </Row>
