@@ -47,5 +47,6 @@
       "mocha": true
     }
   },
-  "proxy": "http://localhost:12345/"
+  "_comment": "specify ip address when running with As One access point / local network. otherwise localhost",
+  "proxy": "http://192.168.12.1:12345/"
 }
