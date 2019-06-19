@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import axios from 'axios'
 import logger from './logger'
 
@@ -45,4 +45,26 @@ function useInterval (callback, delay) {
   }, [delay])
 }
 
-export { useFetch, useInterval }
+// via https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
+// hacked to attend to window resize events
+function useClientRect () {
+  const [rect, setRect] = useState(null)
+
+  const ref = useCallback(node => {
+    function update () {
+      if (node !== null) {
+        setRect(node.getBoundingClientRect())
+      }
+    }
+    window.addEventListener('resize', update)
+    update()
+
+    return () => {
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  return [rect, ref]
+}
+
+export { useFetch, useInterval, useClientRect }
