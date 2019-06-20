@@ -3,15 +3,33 @@ import logger from './logger'
 import PropTypes from 'prop-types'
 import { Stage, Layer, Rect } from 'react-konva'
 import { useClientRect } from './hooks'
+import scoreboardAddressTable from './scoreboard-lookup.json'
+
+const SCOREBOARD_WIDTH = 31
+const SCOREBOARD_HEIGHT = 10
+const GREYISH_BLACK = '#222222'
+const DEFAULT_TINY_WIDTH_PX = 200
 
 function ScoreboardEmulator (props) {
   const mqtt = props.mqtt
 
   let [started, setStarted] = useState(false)
   let [leds, setLeds] = useState([])
-  let [processedArray, setProcessedArray] = useState([])
+  let [board, setBoard] = useState([])
+  let [checkedWidth, setCheckedWidth] = useState(DEFAULT_TINY_WIDTH_PX)
+  let [rect, ref] = useClientRect()
 
-  const [rect, ref] = useClientRect()
+  function _rgbToHex (r, g, b) {
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+  }
+
+  function _locationToKey (x, y) {
+    return 'key_' + x + '_' + y
+  }
+
+  function _pixelSize (divWidth) {
+    return divWidth / SCOREBOARD_WIDTH
+  }
 
   // Should run only at mount time
   useEffect(() => {
@@ -34,46 +52,64 @@ function ScoreboardEmulator (props) {
     }
   }, [mqtt, started])
 
-  // Runs whenever new raw values are set
+  // Runs whenever new raw values are set. Updates the existing screen
   useEffect(() => {
     if (leds) {
-      var newProcessed = []
+      // First, process the incoming rgb values into an array of hex triplets
+      const processedArray = []
       for (var i = 0; i < leds.length; i += 3) {
-        // var newColor = [leds[i], leds[i + 1], leds[i + 2]]
-        var newColor = '#' + _rgbToHex(leds[i], leds[i + 1], leds[i + 2])
-        newProcessed.push(newColor)
+        const newColor = _rgbToHex(leds[i], leds[i + 1], leds[i + 2])
+        processedArray.push(newColor)
       }
-      setProcessedArray(newProcessed)
+
+      // Then, use those to update the board
+      const pixelSize = _pixelSize(checkedWidth)
+      processedArray.map(function (value, index) {
+        const x = scoreboardAddressTable[index].x
+        const y = scoreboardAddressTable[index].y
+        const replacement = <Rect
+          x={pixelSize * x}
+          y={pixelSize * y}
+          width={pixelSize}
+          height={pixelSize}
+          fill={value}
+          key={_locationToKey(x, y)} />
+        board[x][y] = replacement
+        return value
+      })
+      setBoard(board)
     }
-  }, [leds])
+  }, [leds, board, checkedWidth])
 
-  function _rgbToHex (r, g, b) {
-    return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
-  }
+  // Runs whenever the screen is resized. Sets the width we're rendering to
+  // and creates a screen using that size
+  useEffect(() => {
+    // tiny default so that we don't ever end up with a null screen
+    var newCheckedWidth = 200
+    if (rect) {
+      newCheckedWidth = rect.width
+    }
+    setCheckedWidth(newCheckedWidth)
 
-  // make sure we do not pass a null rect into render
-  var checkedWidth = 200
-  if (rect) {
-    checkedWidth = rect.width
-  }
-  // scoreboard is logically 31 pixels wide by 10 pixels tall
-  const pixelSize = checkedWidth / 31
+    // using that value, create the board
+    const pixelSize = _pixelSize(newCheckedWidth)
+    const screen = []
+    for (var i = 0; i < SCOREBOARD_WIDTH; i++) {
+      const column = []
+      for (var j = 0; j < SCOREBOARD_HEIGHT; j++) {
+        const pixel = <Rect x={pixelSize * i} y={pixelSize * j} width={pixelSize} height={pixelSize} fill={GREYISH_BLACK} key={_locationToKey(i, j)} />
+        column.push(pixel)
+      }
+      screen.push(column)
+    }
+    setBoard(screen)
+  }, [rect])
 
   return (
     <div ref={ref}>
       <Stage width={checkedWidth} height={checkedWidth / 3}>
         <Layer>
-          { processedArray.map(function (value, index) {
-            var x = 0; var y = 0
-            for (var i = 0; i < index; i++) {
-              x += pixelSize
-              if (x > checkedWidth) {
-                x = 0
-                y += pixelSize
-              }
-            }
-            return <Rect x={x} y={y} width={pixelSize} height={pixelSize} fill={value} key={index} />
-          })}
+          { board.flat() }
         </Layer>
       </Stage>
     </div>
