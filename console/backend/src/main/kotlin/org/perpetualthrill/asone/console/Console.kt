@@ -13,8 +13,8 @@ import org.perpetualthrill.asone.console.di.MainComponent
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.io.SerialMonitor
 import org.perpetualthrill.asone.console.io.WebServer
-import org.perpetualthrill.asone.console.store.ReadingStore
-import org.perpetualthrill.asone.console.store.ScoreboardStore
+import org.perpetualthrill.asone.console.state.ScoreboardState
+import org.perpetualthrill.asone.console.state.SensorState
 import org.perpetualthrill.asone.console.util.logInfo
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.util.concurrent.TimeUnit
@@ -24,10 +24,10 @@ import javax.inject.Inject
 class Console : CliktCommand() {
 
     @Inject lateinit var serialMonitor: SerialMonitor
-    @Inject lateinit var readingStore: ReadingStore
+    @Inject lateinit var sensorState: SensorState
     @Inject lateinit var webServer: WebServer
     @Inject lateinit var mqttManager: MqttManager
-    @Inject lateinit var scoreboardStore: ScoreboardStore
+    @Inject lateinit var scoreboardState: ScoreboardState
 
     // clikt args
     private val enableMqttArgument by option("--internal-mqtt", help = "enable internal MQTT broker").flag()
@@ -48,18 +48,18 @@ class Console : CliktCommand() {
             serialMonitor.start()
         }
         webServer.start(hostName = hostArgument)
-        readingStore.start()
+        sensorState.start()
         mqttManager.start(enableInternalBroker = enableMqttArgument, hostName = hostArgument)
 
         Single
             .just(true)
             .delay(3000, TimeUnit.MILLISECONDS)
             .subscribeWithErrorLogging(this) {
-                logInfo("Scoreboard connection status: " + scoreboardStore.connected)
-                scoreboardStore.coloriffic()
+                logInfo("Scoreboard connection status: " + scoreboardState.connected)
+                scoreboardState.coloriffic()
             }
 
-        readingStore.readingStream
+        sensorState.readingStream
             .sample(1, TimeUnit.SECONDS)
             .subscribeWithErrorLogging(this) {
                 println("$it")

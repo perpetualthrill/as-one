@@ -1,4 +1,4 @@
-package org.perpetualthrill.asone.console.store
+package org.perpetualthrill.asone.console.state
 
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 private const val SENSOR_READING_BUFFER_SIZE = 100
 
 @Singleton
-class ReadingStore
+class SensorState
 @Inject
 constructor(
     private val serialMonitor: SerialMonitor

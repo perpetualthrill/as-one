@@ -19,7 +19,7 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import org.perpetualthrill.asone.console.store.ReadingStore
+import org.perpetualthrill.asone.console.state.SensorState
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -30,7 +30,7 @@ import javax.inject.Singleton
 class WebServer
 @Inject
 constructor(
-    private val readingStore: ReadingStore
+    private val sensorState: SensorState
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
@@ -66,14 +66,14 @@ constructor(
                 // Sensors including simulators
                 route("/sensors") {
                     get {
-                        call.respond(readingStore.sensorNames)
+                        call.respond(sensorState.sensorNames)
                     }
                     get("latest") {
-                        call.respond(readingStore.latestReadings)
+                        call.respond(sensorState.latestReadings)
                     }
                     route("simulated") {
                         post("add") {
-                            val name = readingStore.addSimulator()
+                            val name = sensorState.addSimulator()
                             val href = locations.href(SimulatorLocation(name=name))
                             call.respondText(text = href, status = HttpStatusCode.Created)
                         }
@@ -81,7 +81,7 @@ constructor(
                 }
                 get<SensorLocation> {
                     try {
-                        call.respond(readingStore.readingsForSensor(it.name))
+                        call.respond(sensorState.readingsForSensor(it.name))
                     } catch (_: Exception) {
                         call.respondText("Not found: ${it.name}", status = HttpStatusCode.NotFound)
                     }
@@ -92,7 +92,7 @@ constructor(
                     call.respondText("SimulatorLocation at ${locations.href(simulator)}")
                 }
                 delete<SimulatorLocation> { simulator ->
-                    if (readingStore.removeSimulator(simulator.name)) {
+                    if (sensorState.removeSimulator(simulator.name)) {
                         call.respondText("OK")
                     } else {
                         call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)
@@ -100,7 +100,7 @@ constructor(
                 }
                 patch<SimulatorLocation> { simulator ->
                     val update = call.receive<SimulatorUpdate>()
-                    if (readingStore.updateSimulatorState(simulator.name, update.newState)) {
+                    if (sensorState.updateSimulatorState(simulator.name, update.newState)) {
                         call.respondText("OK")
                     } else {
                         call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)

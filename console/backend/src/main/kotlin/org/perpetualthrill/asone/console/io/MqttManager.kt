@@ -1,9 +1,13 @@
 package org.perpetualthrill.asone.console.io
 
 import com.github.sylvek.embbededmosquitto.Mosquitto
+import io.reactivex.Observable
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions.MQTT_VERSION_3_1_1
+import org.perpetualthrill.asone.console.util.logError
 import org.perpetualthrill.asone.console.util.logInfo
+import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,6 +19,8 @@ constructor() {
     private val listeners = mutableMapOf<String, List<MqttListener>>()
 
     private var client: IMqttAsyncClient? = null
+
+    private var started = false
 
     private val asyncActionListener = object : IMqttActionListener {
         override fun onSuccess(asyncActionToken: IMqttToken) {
@@ -45,6 +51,8 @@ constructor() {
     }
 
     fun start(enableInternalBroker: Boolean = true, hostName: String) {
+        if (started) return // Multiple starts = not good
+
         if (enableInternalBroker) {
             logInfo("Starting internal MQTT broker")
             Mosquitto.getInstance().start()
@@ -60,6 +68,17 @@ constructor() {
         }
         client?.setCallback(mqttMessageCallback)
         client?.connect(options, asyncActionListener)
+
+        Observable
+            .interval(500, TimeUnit.MILLISECONDS)
+            .subscribeWithErrorLogging(this) {
+                val c = client
+                if (null != c && !c.isConnected) {
+                    c.connect(options, asyncActionListener)
+                }
+            }
+
+        started = true
     }
 
     fun registerListener(listener: MqttListener) {
@@ -81,8 +100,12 @@ constructor() {
     }
 
     fun publishAtMostOnce(topic: String, byteArray: ByteArray) {
-        // you know? i am not even going to mess with making an enum for QoS
-        client?.publish(topic, byteArray, 0, false)
+        try {
+            // you know? i am not even going to mess with making an enum for QoS
+            client?.publish(topic, byteArray, 0, false)
+        } catch (e: MqttException) {
+            logError("Exception on publish: $e")
+        }
     }
 
 }

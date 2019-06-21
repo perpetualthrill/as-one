@@ -1,4 +1,4 @@
-package org.perpetualthrill.asone.console.store
+package org.perpetualthrill.asone.console.state
 
 import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 private const val SCOREBOARD_DISCONNECT_THRESHOLD_MS = 2500
 
 @Singleton
-class ScoreboardStore
+class ScoreboardState
 @Inject
 constructor(private val mqtt: MqttManager) {
 
