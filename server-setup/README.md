@@ -19,6 +19,8 @@ If there are unknown errors, `systemctl status create_ap.service` and `systemctl
 
 Unfortunately, Ubuntu 18.04 ships with an older version of Mosquitto that does not support the necessary configuration options. Do `sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa` to add newer versions to apt, then `sudo apt install mosquitto` which will install a current one.
 
+For Mac, some mosquitto instructions may be found in a text file in this directory. That text file was copied from https://gist.github.com/KazChe/6bcafbaf29e10a7f309d3ca2e2a0f706 on 20190620. Just copy mosquitto.conf to /etc first and you should be golden.
+
 Using sudo:
 1) Copy over the mosquitto.conf file to /etc/mosquitto/conf.d/ to enable one tcp packet per message.
 1) Copy the mosquitto.service file to /usr/lib/systemd/system/ -- not sure what the issue is, but start-on-boot does not work with whatever comes out of the box. At least with 1.6.2 which is the current as of this edit.

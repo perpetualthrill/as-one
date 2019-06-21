@@ -1,0 +1,44 @@
+(from : https://simplifiedthinking.co.uk/2015/10/03/install-mqtt-server/ )
+
+Installing Brew
+
+The Mosquitto MQTT Server can be easily installed using Homebrew.  If it’s not installed on your system already, then a quick visit to the homepage will give you all you need to get going.  Homebrew is an OS X Package Manager for installing and updating non-Mac OS X utilities that are more commonly found in other variants of Linux.  To install the basic package manager run the following command.
+
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+Installing Mosquitto MQTT
+
+Let’s use our new Homebrew installation to download and install the necessary Mosquitto binaries.  This will also download additional libraries required to support secure access via OpenSSL.
+
+brew install mosquitto
+
+The install script finishes by providing the instructions to start the MQTT server on startup.
+
+ln -sfv /usr/local/opt/mosquitto/*.plist ~/Library/LaunchAgents
+
+Finally, to save a restart, the server can be started now by running
+
+launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mosquitto.plist
+
+Now you can test the installation and ensure the server is running successfully.  Open a new command window and start a listener.
+
+mosquitto_sub -t topic/state
+
+In another window, send a message to the listener.
+
+mosquitto_pub -t topic/state -m "Hello World"
+
+Nicely done.
+
+Installing the Python Libraries
+
+To create the link between Python and MQTT we need to install the Python Eclipse MQTT library.  Visit here for the latest downloads and follow the link to download the required version.  Specifically, I downloaded these Python Libraries.
+
+Once downloaded, unpack the tar file and install the library
+
+tar xvf org.eclipse.pho.mqtt.python-1.1.tar
+cd org.eclipse.pho.mqtt.python-1.1
+sudo python setup.py install
+
+And that’s it.  We’re ready to start sending and receiving MQTT messages around the home.  There are a vast number of additional options that can be set up around the MQTT server – security is an obvious choice, Quality of Service, users, etc.  I’m keeping it simple for now.
+
