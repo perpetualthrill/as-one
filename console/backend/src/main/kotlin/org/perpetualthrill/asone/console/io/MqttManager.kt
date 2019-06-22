@@ -1,6 +1,5 @@
 package org.perpetualthrill.asone.console.io
 
-import com.github.sylvek.embbededmosquitto.Mosquitto
 import io.reactivex.Observable
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions.MQTT_VERSION_3_1_1
@@ -50,13 +49,8 @@ constructor() {
         }
     }
 
-    fun start(enableInternalBroker: Boolean = true, hostName: String) {
+    fun start(hostName: String) {
         if (started) return // Multiple starts = not good
-
-        if (enableInternalBroker) {
-            logInfo("Starting internal MQTT broker")
-            Mosquitto.getInstance().start()
-        }
 
         client = MqttAsyncClient("tcp://$hostName:1883", "console")
         val options = MqttConnectOptions().apply {

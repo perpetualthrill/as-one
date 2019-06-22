@@ -30,7 +30,6 @@ class Console : CliktCommand() {
     @Inject lateinit var scoreboardState: ScoreboardState
 
     // clikt args
-    private val enableMqttArgument by option("--internal-mqtt", help = "enable internal MQTT broker").flag()
     private val disableSerialArgument by option("--disable-serial", help = "turn off USB serial monitoring").flag()
     private val hostArgument: String by option("--hostname", help = "hostname or ip address to bind services to. defaults to localhost").default("localhost")
 
@@ -49,7 +48,7 @@ class Console : CliktCommand() {
         }
         webServer.start(hostName = hostArgument)
         sensorState.start()
-        mqttManager.start(enableInternalBroker = enableMqttArgument, hostName = hostArgument)
+        mqttManager.start(hostName = hostArgument)
 
         Single
             .just(true)
