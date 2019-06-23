@@ -24,7 +24,10 @@ function App () {
             <Navbar expand='lg' variant='dark' bg='dark ' style={{ marginBottom: '40px' }}>
               <Navbar.Brand href='#'>As One</Navbar.Brand>
               <Nav className='ml-auto' style={{ maxHeight: '32px' }}>
-                <MqttIndicator mqtt={mqttClient} />
+                {/* scoreboard heartbeat */}
+                <MqttIndicator mqtt={mqttClient} topic="asOne/score/heartbeat" emoji="📺" />
+                {/* all messages, all topics */}
+                <MqttIndicator mqtt={mqttClient} topic="asOne/#" emoji="📢" />
               </Nav>
             </Navbar>
           </Col>
