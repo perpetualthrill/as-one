@@ -9,7 +9,6 @@ import Col from 'react-bootstrap/Col'
 const SENSOR_LIST_URL = '/sensors'
 
 function SensorMonitor () {
-
   let [sensorList, setSensorList] = useState([])
 
   async function pollServerAndUpdate () {

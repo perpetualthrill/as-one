@@ -18,7 +18,7 @@ function MqttIndicator (props) {
       const mqtt = AsyncClient.connect(address)
       try {
         await mqtt.subscribe(topic)
-        logger.log('subscribed mqttindicator '+emoji+' to topic '+topic)
+        logger.log('subscribed mqttindicator ' + emoji + ' to topic ' + topic)
       } catch (e) {
         logger.error('error connecting to mqtt')
         logger.error(e)
