@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useInterval } from './hooks'
 import axios from 'axios'
 import logger from './logger'
@@ -6,9 +6,9 @@ import { SensorData } from './SensorData'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
-function SensorMonitor () {
-  const SENSOR_LIST_URL = '/sensors'
+const SENSOR_LIST_URL = '/sensors'
 
+function SensorMonitor () {
   let [sensorList, setSensorList] = useState([])
 
   async function pollServerAndUpdate () {
@@ -23,9 +23,6 @@ function SensorMonitor () {
   useInterval(() => {
     pollServerAndUpdate()
   }, 1000)
-
-  useEffect(() => {
-  })
 
   return (
     sensorList.map(sensorName =>

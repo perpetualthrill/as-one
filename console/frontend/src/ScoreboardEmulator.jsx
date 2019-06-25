@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { Stage, Layer, Rect } from 'react-konva'
 import { useClientRect } from './hooks'
 import scoreboardAddressTable from './scoreboard-lookup.json'
+import AsyncClient from 'async-mqtt'
 
 const SCOREBOARD_WIDTH = 31
 const SCOREBOARD_HEIGHT = 10
@@ -11,7 +12,7 @@ const GREYISH_BLACK = '#222222'
 const DEFAULT_TINY_WIDTH_PX = 200
 
 function ScoreboardEmulator (props) {
-  const mqtt = props.mqtt
+  const address = props.address
 
   let [started, setStarted] = useState(false)
   let [leds, setLeds] = useState([])
@@ -34,6 +35,7 @@ function ScoreboardEmulator (props) {
   // Should run only at mount time
   useEffect(() => {
     async function subscribe () {
+      const mqtt = AsyncClient.connect(address)
       try {
         await mqtt.subscribe('asOne/score/all/direct')
         logger.log('subscribed scoreboardemulator')
@@ -50,7 +52,7 @@ function ScoreboardEmulator (props) {
       subscribe()
       setStarted(true)
     }
-  }, [mqtt, started])
+  }, [started, address])
 
   // Runs whenever new raw values are set. Updates the existing screen
   useEffect(() => {
@@ -117,7 +119,7 @@ function ScoreboardEmulator (props) {
 }
 
 ScoreboardEmulator.propTypes = {
-  mqtt: PropTypes.object
+  address: PropTypes.string
 }
 
-export { ScoreboardEmulator }
+export { ScoreboardEmulator, GREYISH_BLACK }

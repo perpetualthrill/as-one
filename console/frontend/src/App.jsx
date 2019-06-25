@@ -1,20 +1,20 @@
-import React from 'react'
-import AsyncClient from 'async-mqtt'
+import React, { useState } from 'react'
 
-import './App.css'
 import { SensorMonitor } from './SensorMonitor'
 import { MqttIndicator } from './MqttIndicator'
-import { ScoreboardEmulator } from './ScoreboardEmulator'
+import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Navbar from 'react-bootstrap/Navbar'
-import Nav from 'react-bootstrap/Nav'
+import Collapse from 'react-bootstrap/Collapse'
 
-const mqttClient = AsyncClient.connect('ws://' + window.location.hostname + ':8181')
+const mqttAddress = 'ws://' + window.location.hostname + ':8181'
 
 function App () {
+  let [scoreboardOpen, setScoreboardOpen] = useState(true)
+
   return (
     <div className='App'>
       <Container fluid='true'>
@@ -23,9 +23,13 @@ function App () {
           <Col md={12} lg={10}>
             <Navbar expand='lg' variant='dark' bg='dark ' style={{ marginBottom: '40px' }}>
               <Navbar.Brand href='#'>As One</Navbar.Brand>
-              <Nav className='ml-auto' style={{ maxHeight: '32px' }}>
-                <MqttIndicator mqtt={mqttClient} />
-              </Nav>
+              <div className='d-flex ml-auto flex-nowrap'>
+                {/* scoreboard heartbeat */}
+                <MqttIndicator address={mqttAddress} topic='asOne/score/heartbeat' emoji='📺' />
+                <div style={{ width: '10px' }} />
+                {/* all messages, all topics */}
+                <MqttIndicator address={mqttAddress} topic='asOne/#' emoji='📢' />
+              </div>
             </Navbar>
           </Col>
           <Col md={0} lg={1} />
@@ -40,7 +44,19 @@ function App () {
         <Row>
           <Col md={0} lg={1} />
           <Col>
-            <ScoreboardEmulator mqtt={mqttClient} />
+            <div className='card' style={{ backgroundColor: GREYISH_BLACK }}>
+              <h4 className='card-header'>
+                <a href='#/' onClick={() => setScoreboardOpen(!scoreboardOpen)}>
+                Scoreboard
+                  <span className='float-right'>▼</span>
+                </a>
+              </h4>
+              <Collapse in={scoreboardOpen}>
+                <div className='card-body'>
+                  <div className='card-text'><ScoreboardEmulator address={mqttAddress} /></div>
+                </div>
+              </Collapse>
+            </div>
           </Col>
           <Col md={0} lg={1} />
         </Row>
