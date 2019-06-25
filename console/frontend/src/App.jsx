@@ -1,17 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { SensorMonitor } from './SensorMonitor'
 import { MqttIndicator } from './MqttIndicator'
-import { ScoreboardEmulator } from './ScoreboardEmulator'
+import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Navbar from 'react-bootstrap/Navbar'
+import Collapse from 'react-bootstrap/Collapse'
 
 const mqttAddress = 'ws://' + window.location.hostname + ':8181'
 
 function App () {
+  let [scoreboardOpen, setScoreboardOpen] = useState(true)
+
   return (
     <div className='App'>
       <Container fluid='true'>
@@ -41,7 +44,19 @@ function App () {
         <Row>
           <Col md={0} lg={1} />
           <Col>
-            <ScoreboardEmulator address={mqttAddress} />
+            <div className='card' style={{ backgroundColor: GREYISH_BLACK }}>
+              <h4 className='card-header'>
+                <a href='#/' onClick={() => setScoreboardOpen(!scoreboardOpen)}>
+                Scoreboard
+                  <span className='float-right'>▼</span>
+                </a>
+              </h4>
+              <Collapse in={scoreboardOpen}>
+                <div className='card-body'>
+                  <div className='card-text'><ScoreboardEmulator address={mqttAddress} /></div>
+                </div>
+              </Collapse>
+            </div>
           </Col>
           <Col md={0} lg={1} />
         </Row>

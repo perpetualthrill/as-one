@@ -122,4 +122,4 @@ ScoreboardEmulator.propTypes = {
   address: PropTypes.string
 }
 
-export { ScoreboardEmulator }
+export { ScoreboardEmulator, GREYISH_BLACK }
