@@ -2,7 +2,6 @@ package org.perpetualthrill.asone.console.state
 
 import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
-import org.perpetualthrill.asone.console.util.logDebug
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -16,26 +15,24 @@ class ScoreboardState
 @Inject
 constructor(private val mqtt: MqttManager) {
 
-    private val listener: MqttManager.MqttListener
+    private val heartbeatListener: MqttManager.MqttListener
 
     private var lastHeartbeat: Instant? = null
 
     val connected: Boolean
         get() {
             val last = lastHeartbeat ?: return false
-            if ((Instant.now().toEpochMilli() - last.toEpochMilli()) > SCOREBOARD_DISCONNECT_THRESHOLD_MS) return false
-            return true
+            return (Instant.now().toEpochMilli() - last.toEpochMilli()) <= SCOREBOARD_DISCONNECT_THRESHOLD_MS
         }
 
     init {
-        listener = object : MqttManager.MqttListener() {
+        heartbeatListener = object : MqttManager.MqttListener() {
             override val topic = "asOne/score/heartbeat"
-            override val handler = { content: ByteArray ->
-                logDebug("Got a heartbeat: ${content.toString(Charsets.UTF_8)}")
+            override val handler = { _ ->
                 lastHeartbeat = Instant.now()
             }
         }
-        mqtt.registerListener(listener)
+        mqtt.registerListener(heartbeatListener)
     }
 
     private val frameClock = Observable
