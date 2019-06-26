@@ -54,7 +54,7 @@ class Console : CliktCommand() {
             .just(true)
             .delay(3000, TimeUnit.MILLISECONDS)
             .subscribeWithErrorLogging(this) {
-                logInfo("Scoreboard connection status: " + scoreboardState.connected)
+                logInfo("Screen connection status: " + scoreboardState.connected)
                 scoreboardState.coloriffic()
             }
 

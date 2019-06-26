@@ -28,9 +28,10 @@ task rebuildAndRun {
     tasks.findByName('run').mustRunAfter 'classes'
 }
 
-// Remove the dang experimental warning. Ignore error underlining here -- who even knows 
+// Remove the dang experimental warnings. Ignore error underlining here -- who even knows 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=io.ktor.locations.KtorExperimentalLocationsAPI"]
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"]
 }
 
 // get current git hash, i.e. to reproduce the build

@@ -2,6 +2,10 @@ package org.perpetualthrill.asone.console.state
 
 import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
+import org.perpetualthrill.asone.console.model.Color
+import org.perpetualthrill.asone.console.model.SCREEN_HEIGHT
+import org.perpetualthrill.asone.console.model.SCREEN_WIDTH
+import org.perpetualthrill.asone.console.model.Screen
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -28,7 +32,7 @@ constructor(private val mqtt: MqttManager) {
     init {
         heartbeatListener = object : MqttManager.MqttListener() {
             override val topic = "asOne/score/heartbeat"
-            override val handler = { _ ->
+            override val handler = { _: ByteArray ->
                 lastHeartbeat = Instant.now()
             }
         }
@@ -38,25 +42,30 @@ constructor(private val mqtt: MqttManager) {
     private val frameClock = Observable
         .interval(250, TimeUnit.MILLISECONDS)
 
-    private fun makeCRGBArray(pixelLength: Int, counterStart: Long): ByteArray {
+    private fun makeScreen(counterStart: Long): Screen {
         var counter = counterStart
-        val array = ByteArray(pixelLength * 3)
-        for (i in array.indices step 3) {
-            counter += 25
-            array[i] = counter.rem(256).toByte()
-            array[i + 1] = (counter + 100).rem(256).toByte()
-            array[i + 2] = (counter + 200).rem(256).toByte()
+        val newScreen = mutableListOf<Array<Color>>()
+        for (i in 0..SCREEN_WIDTH) {
+            val newColumn = mutableListOf<Color>()
+            for (j in 0..SCREEN_HEIGHT) {
+                counter += 25
+                val color = Color(
+                    counter.rem(256).toUByte(),
+                    (counter + 100).rem(256).toUByte(),
+                    (counter + 200).rem(256).toUByte()
+                )
+                newColumn.add(color)
+            }
+            newScreen.add(newColumn.toTypedArray())
         }
-        return array
+        return Screen(newScreen.toTypedArray())
     }
 
     fun coloriffic() {
-        mqtt.publishAtMostOnce("asOne/scoreboard/directOnly", byteArrayOf(1))
-        mqtt.publishAtMostOnce("asOne/scoreboard/acceleration", byteArrayOf(4))
         frameClock.subscribeWithErrorLogging(this) {
             val counterStart = it * 25 // start each frame a bit further
-            val byteArray = makeCRGBArray(135, counterStart) // full scoreboard is 135 pixels
-            mqtt.publishAtMostOnce("asOne/score/all/direct", byteArray)
+            val frame = makeScreen(counterStart)
+            mqtt.publishAtMostOnce("asOne/score/all/direct", frame.toAsOneScoreboard.toByteArray())
         }
     }
 
