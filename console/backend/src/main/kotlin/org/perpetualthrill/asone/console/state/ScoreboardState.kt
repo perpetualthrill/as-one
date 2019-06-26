@@ -17,7 +17,7 @@ private const val SCOREBOARD_DISCONNECT_THRESHOLD_MS = 2500
 @Singleton
 class ScoreboardState
 @Inject
-constructor(private val mqtt: MqttManager) {
+constructor(private val mqtt: MqttManager, private val gameState: GameState) {
 
     private val heartbeatListener: MqttManager.MqttListener
 
@@ -42,8 +42,8 @@ constructor(private val mqtt: MqttManager) {
     private val frameClock = Observable
         .interval(250, TimeUnit.MILLISECONDS)
 
-    private fun makeScreen(counterStart: Long): Screen {
-        var counter = counterStart
+    private fun makeColorBackground(frameNumber: Long): Screen {
+        var counter = frameNumber * 25
         val newScreen = mutableListOf<Array<Color>>()
         for (i in 0..SCREEN_WIDTH) {
             val newColumn = mutableListOf<Color>()
@@ -61,10 +61,17 @@ constructor(private val mqtt: MqttManager) {
         return Screen(newScreen.toTypedArray())
     }
 
+    private fun andBackgroundWithScore(frameNumber: Long): Screen {
+        val background = makeColorBackground(frameNumber)
+        // todo: this should be a zip operation
+        val bpms = gameState.scores.take(1).blockingFirst()
+        println(Screen.toTestString(Screen.renderBigNums(bpms.left.toString())))
+        return background
+    }
+
     fun coloriffic() {
-        frameClock.subscribeWithErrorLogging(this) {
-            val counterStart = it * 25 // start each frame a bit further
-            val frame = makeScreen(counterStart)
+        frameClock.subscribeWithErrorLogging(this) { frameNumber ->
+            val frame = andBackgroundWithScore(frameNumber)
             mqtt.publishAtMostOnce("asOne/score/all/direct", frame.toAsOneScoreboard.toByteArray())
         }
     }
