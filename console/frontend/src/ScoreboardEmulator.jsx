@@ -60,8 +60,14 @@ function ScoreboardEmulator (props) {
       // First, process the incoming rgb values into an array of hex triplets
       const processedArray = []
       for (var i = 0; i < leds.length; i += 3) {
-        const newColor = _rgbToHex(leds[i], leds[i + 1], leds[i + 2])
-        processedArray.push(newColor)
+        const brightnessPercentage = (leds[i] + leds[i + 1] + leds[i + 2]) / (255 * 3)
+        // Magic number threshold below which the pixel will be shown as dim grey
+        if (brightnessPercentage > 0.1) {
+          const newColor = _rgbToHex(leds[i], leds[i + 1], leds[i + 2])
+          processedArray.push(newColor)
+        } else {
+          processedArray.push(GREYISH_BLACK)
+        }
       }
 
       // Then, use those to update the board
