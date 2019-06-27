@@ -10,6 +10,13 @@ object ScreenConstants {
 
     const val BPM_AREA_WIDTH = 11
 
+    // Start locations of bpm areas of screen
+    const val LEFT_BPM_START_X = 0
+    const val LEFT_BPM_START_Y = 2
+    const val RIGHT_BPM_START_X = 20
+    const val RIGHT_BPM_START_Y = 2
+
+
     // Lookup table. Each entry in this array corresponds to a location on the
     // screen. The scoreboard gets filled by sampling the screen, which can be
     // done by walking this table

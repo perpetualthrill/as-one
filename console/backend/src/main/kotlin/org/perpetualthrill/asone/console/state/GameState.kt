@@ -25,7 +25,7 @@ constructor(sensorState: SensorState) {
             }
     }
 
-    val scores = Observable.create<CurrentBPMs> { emitter ->
+    val bpms = Observable.create<CurrentBPMs> { emitter ->
         leftBPM++
         if (leftBPM > 199) leftBPM = 0
         rightBPM--

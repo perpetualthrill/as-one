@@ -4,6 +4,10 @@ import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.model.Color
 import org.perpetualthrill.asone.console.model.Screen
+import org.perpetualthrill.asone.console.model.ScreenConstants.LEFT_BPM_START_X
+import org.perpetualthrill.asone.console.model.ScreenConstants.LEFT_BPM_START_Y
+import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_X
+import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_Y
 import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_HEIGHT
 import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_WIDTH
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
@@ -29,6 +33,9 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
             return (Instant.now().toEpochMilli() - last.toEpochMilli()) <= SCOREBOARD_DISCONNECT_THRESHOLD_MS
         }
 
+    private val frameClock = Observable
+        .interval(250, TimeUnit.MILLISECONDS)
+
     init {
         heartbeatListener = object : MqttManager.MqttListener() {
             override val topic = "asOne/score/heartbeat"
@@ -39,10 +46,9 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         mqtt.registerListener(heartbeatListener)
     }
 
-    private val frameClock = Observable
-        .interval(250, TimeUnit.MILLISECONDS)
-
-    private fun makeColorBackground(frameNumber: Long): Screen {
+    // in the future this will make several kinds of effect backgrounds
+    // depending on gamestate
+    private fun makeCurrentBackground(frameNumber: Long): Screen {
         var counter = frameNumber * 25
         val newScreen = mutableListOf<Array<Color>>()
         for (i in 0..SCREEN_WIDTH) {
@@ -61,18 +67,23 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         return Screen(newScreen.toTypedArray())
     }
 
-    private fun andBackgroundWithScore(frameNumber: Long): Screen {
-        val background = makeColorBackground(frameNumber)
-        // todo: this should be a zip operation
-        val bpms = gameState.scores.take(1).blockingFirst()
-        println(Screen.toTestString(Screen.renderBPMCharacters(bpms.left.toString())))
+    // Use utility function to bitwise AND the scoreboard characters onto
+    // whatever the current background is
+    private fun andBackgroundWithBPM(frameNumber: Long, bpms: GameState.CurrentBPMs): Screen {
+        val background = makeCurrentBackground(frameNumber)
+        val leftBPMArray = Screen.renderBPMCharacters(bpms.left.toString())
+        background.andWithBytes(leftBPMArray, LEFT_BPM_START_X, LEFT_BPM_START_Y)
+        val rightBPMArray = Screen.renderBPMCharacters(bpms.right.toString())
+        background.andWithBytes(rightBPMArray, RIGHT_BPM_START_X, RIGHT_BPM_START_Y)
         return background
     }
 
+    // temporary start function for testing
     fun coloriffic() {
         frameClock.subscribeWithErrorLogging(this) { frameNumber ->
-            val frame = andBackgroundWithScore(frameNumber)
-            mqtt.publishAtMostOnce("asOne/score/all/direct", frame.toAsOneScoreboard.toByteArray())
+            val currentBPMs = gameState.bpms.take(1).blockingFirst()
+            val frame = andBackgroundWithBPM(frameNumber, currentBPMs)
+            mqtt.publishAtMostOnce("asOne/score/all/direct", frame.toAsOneScoreboard().toByteArray())
         }
     }
 
