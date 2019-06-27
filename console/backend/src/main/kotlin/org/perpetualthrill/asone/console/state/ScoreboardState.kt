@@ -3,9 +3,9 @@ package org.perpetualthrill.asone.console.state
 import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.model.Color
-import org.perpetualthrill.asone.console.model.SCREEN_HEIGHT
-import org.perpetualthrill.asone.console.model.SCREEN_WIDTH
 import org.perpetualthrill.asone.console.model.Screen
+import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_HEIGHT
+import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_WIDTH
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -65,7 +65,7 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         val background = makeColorBackground(frameNumber)
         // todo: this should be a zip operation
         val bpms = gameState.scores.take(1).blockingFirst()
-        println(Screen.toTestString(Screen.renderBigNums(bpms.left.toString())))
+        println(Screen.toTestString(Screen.renderBPMCharacters(bpms.left.toString())))
         return background
     }
 
