@@ -2,7 +2,14 @@ package org.perpetualthrill.asone.console.state
 
 import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
-import org.perpetualthrill.asone.console.util.logDebug
+import org.perpetualthrill.asone.console.model.Color
+import org.perpetualthrill.asone.console.model.Screen
+import org.perpetualthrill.asone.console.model.ScreenConstants.LEFT_BPM_START_X
+import org.perpetualthrill.asone.console.model.ScreenConstants.LEFT_BPM_START_Y
+import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_X
+import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_Y
+import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_HEIGHT
+import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_WIDTH
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -14,52 +21,69 @@ private const val SCOREBOARD_DISCONNECT_THRESHOLD_MS = 2500
 @Singleton
 class ScoreboardState
 @Inject
-constructor(private val mqtt: MqttManager) {
+constructor(private val mqtt: MqttManager, private val gameState: GameState) {
 
-    private val listener: MqttManager.MqttListener
+    private val heartbeatListener: MqttManager.MqttListener
 
     private var lastHeartbeat: Instant? = null
 
     val connected: Boolean
         get() {
             val last = lastHeartbeat ?: return false
-            if ((Instant.now().toEpochMilli() - last.toEpochMilli()) > SCOREBOARD_DISCONNECT_THRESHOLD_MS) return false
-            return true
+            return (Instant.now().toEpochMilli() - last.toEpochMilli()) <= SCOREBOARD_DISCONNECT_THRESHOLD_MS
         }
-
-    init {
-        listener = object : MqttManager.MqttListener() {
-            override val topic = "asOne/score/heartbeat"
-            override val handler = { content: ByteArray ->
-                logDebug("Got a heartbeat: ${content.toString(Charsets.UTF_8)}")
-                lastHeartbeat = Instant.now()
-            }
-        }
-        mqtt.registerListener(listener)
-    }
 
     private val frameClock = Observable
         .interval(250, TimeUnit.MILLISECONDS)
 
-    private fun makeCRGBArray(pixelLength: Int, counterStart: Long): ByteArray {
-        var counter = counterStart
-        val array = ByteArray(pixelLength * 3)
-        for (i in array.indices step 3) {
-            counter += 25
-            array[i] = counter.rem(256).toByte()
-            array[i + 1] = (counter + 100).rem(256).toByte()
-            array[i + 2] = (counter + 200).rem(256).toByte()
+    init {
+        heartbeatListener = object : MqttManager.MqttListener() {
+            override val topic = "asOne/score/heartbeat"
+            override val handler = { _: ByteArray ->
+                lastHeartbeat = Instant.now()
+            }
         }
-        return array
+        mqtt.registerListener(heartbeatListener)
     }
 
+    // in the future this will make several kinds of effect backgrounds
+    // depending on gamestate
+    private fun makeCurrentBackground(frameNumber: Long): Screen {
+        var counter = frameNumber * 25
+        val newScreen = mutableListOf<Array<Color>>()
+        for (i in 0..SCREEN_WIDTH) {
+            val newColumn = mutableListOf<Color>()
+            for (j in 0..SCREEN_HEIGHT) {
+                counter += 25
+                val color = Color(
+                    counter.rem(256).toUByte(),
+                    (counter + 100).rem(256).toUByte(),
+                    (counter + 200).rem(256).toUByte()
+                )
+                newColumn.add(color)
+            }
+            newScreen.add(newColumn.toTypedArray())
+        }
+        return Screen(newScreen.toTypedArray())
+    }
+
+    // Use utility function to bitwise AND the scoreboard characters onto
+    // whatever the current background is
+    private fun andBackgroundWithBPM(frameNumber: Long, bpms: GameState.CurrentBPMs): Screen {
+        val background = makeCurrentBackground(frameNumber)
+        val leftBPMArray = Screen.renderBPMCharacters(bpms.left.toString())
+        background.andWithBytes(leftBPMArray, LEFT_BPM_START_X, LEFT_BPM_START_Y)
+        val rightBPMArray = Screen.renderBPMCharacters(bpms.right.toString())
+        background.andWithBytes(rightBPMArray, RIGHT_BPM_START_X, RIGHT_BPM_START_Y)
+        return background
+    }
+
+    // temporary start function for testing
     fun coloriffic() {
-        mqtt.publishAtMostOnce("asOne/scoreboard/directOnly", byteArrayOf(1))
-        mqtt.publishAtMostOnce("asOne/scoreboard/acceleration", byteArrayOf(4))
-        frameClock.subscribeWithErrorLogging(this) {
-            val counterStart = it * 25 // start each frame a bit further
-            val byteArray = makeCRGBArray(135, counterStart) // full scoreboard is 135 pixels
-            mqtt.publishAtMostOnce("asOne/score/all/direct", byteArray)
+        frameClock.subscribeWithErrorLogging(this) { frameNumber ->
+            val currentBPMs = gameState.bpms.take(1).blockingFirst()
+            val frame = andBackgroundWithBPM(frameNumber, currentBPMs)
+            mqtt.publishAtMostOnce("asOne/score/all/direct", frame.toAsOneScoreboard().toByteArray())
         }
     }
 
