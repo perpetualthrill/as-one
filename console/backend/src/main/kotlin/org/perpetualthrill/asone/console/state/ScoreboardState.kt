@@ -6,12 +6,10 @@ import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.model.Color
 import org.perpetualthrill.asone.console.model.Screen
-import org.perpetualthrill.asone.console.model.ScreenConstants.LEFT_BPM_START_X
-import org.perpetualthrill.asone.console.model.ScreenConstants.LEFT_BPM_START_Y
-import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_X
-import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_Y
-import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_HEIGHT
-import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_WIDTH
+import org.perpetualthrill.asone.console.model.ScreenConstants.leftBPMRect
+import org.perpetualthrill.asone.console.model.ScreenConstants.rightBPMRect
+import org.perpetualthrill.asone.console.model.ScreenConstants.screenRect
+import org.perpetualthrill.asone.console.model.ScreenConstants.timerRect
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -59,9 +57,9 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         // generate rainbowey background
         var counter = slowerFrame * 25
         val newScreen = mutableListOf<Array<Color>>()
-        for (i in 0..SCREEN_WIDTH) {
+        for (i in 0..screenRect.width) {
             val newColumn = mutableListOf<Color>()
-            for (j in 0..SCREEN_HEIGHT) {
+            for (j in 0..screenRect.height) {
                 counter += 25
                 val color = Color(
                     counter.rem(256).toUByte(),
@@ -79,10 +77,15 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
     // whatever the current background is
     private fun andBackgroundWithBPM(frameNumber: Long, bpms: GameState.CurrentBPMs): Screen {
         val background = makeCurrentBackground(frameNumber)
+
+        // clear timer area
+        background.fill(timerRect, Color.BLACK)
+
+        // fill in digits
         val leftBPMArray = Screen.renderBPMCharacters(bpms.left.toString())
-        background.andWithBytes(leftBPMArray, LEFT_BPM_START_X, LEFT_BPM_START_Y)
+        background.andWithBytes(leftBPMArray, leftBPMRect.location.x, leftBPMRect.location.y)
         val rightBPMArray = Screen.renderBPMCharacters(bpms.right.toString())
-        background.andWithBytes(rightBPMArray, RIGHT_BPM_START_X, RIGHT_BPM_START_Y)
+        background.andWithBytes(rightBPMArray, rightBPMRect.location.x, rightBPMRect.location.y)
         return background
     }
 
