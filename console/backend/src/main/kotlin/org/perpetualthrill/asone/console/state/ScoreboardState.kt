@@ -1,5 +1,7 @@
 package org.perpetualthrill.asone.console.state
 
+import com.kizitonwose.time.microseconds
+import com.kizitonwose.time.plus
 import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.model.Color
@@ -11,12 +13,14 @@ import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_Y
 import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_HEIGHT
 import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_WIDTH
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
-import java.time.Instant
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val SCOREBOARD_DISCONNECT_THRESHOLD_MS = 2500
+private val SCOREBOARD_DISCONNECT_THRESHOLD = 2500.microseconds
+const val SCOREBOARD_UPDATE_FPS = 24
+private val SCOREBOARD_UPDATE_INTERVAL = 1000.microseconds / SCOREBOARD_UPDATE_FPS
 
 @Singleton
 class ScoreboardState
@@ -25,22 +29,22 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
 
     private val heartbeatListener: MqttManager.MqttListener
 
-    private var lastHeartbeat: Instant? = null
+    private var lastHeartbeat: Calendar? = null
 
     val connected: Boolean
         get() {
             val last = lastHeartbeat ?: return false
-            return (Instant.now().toEpochMilli() - last.toEpochMilli()) <= SCOREBOARD_DISCONNECT_THRESHOLD_MS
+            return (Calendar.getInstance().compareTo(last + SCOREBOARD_DISCONNECT_THRESHOLD)) > 0
         }
 
     private val frameClock = Observable
-        .interval(250, TimeUnit.MILLISECONDS)
+        .interval(SCOREBOARD_UPDATE_INTERVAL.longValue, TimeUnit.MILLISECONDS)
 
     init {
         heartbeatListener = object : MqttManager.MqttListener() {
             override val topic = "asOne/score/heartbeat"
             override val handler = { _: ByteArray ->
-                lastHeartbeat = Instant.now()
+                lastHeartbeat = Calendar.getInstance()
             }
         }
         mqtt.registerListener(heartbeatListener)
@@ -49,7 +53,11 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
     // in the future this will make several kinds of effect backgrounds
     // depending on gamestate
     private fun makeCurrentBackground(frameNumber: Long): Screen {
-        var counter = frameNumber * 25
+        // slow down this effect by only generating a new one every few frames
+        val slowerFrame = frameNumber / 3
+
+        // generate rainbowey background
+        var counter = slowerFrame * 25
         val newScreen = mutableListOf<Array<Color>>()
         for (i in 0..SCREEN_WIDTH) {
             val newColumn = mutableListOf<Color>()

@@ -10,8 +10,9 @@ class GameState
 @Inject
 constructor(sensorState: SensorState) {
 
-    private var leftBPM: Int = 129
-    private var rightBPM: Int = 138
+    // Bogus start values. Frozen on these indicates an error
+    private var leftBPM: Int = 199
+    private var rightBPM: Int = 188
 
     data class CurrentBPMs(
         val left: Int,
@@ -25,11 +26,18 @@ constructor(sensorState: SensorState) {
             }
     }
 
+    // Remove this when actual sensor code exists
+    var frameCount = 0
+
     val bpms = Observable.create<CurrentBPMs> { emitter ->
-        leftBPM++
-        if (leftBPM > 199) leftBPM = 0
-        rightBPM--
-        if (rightBPM < 0) rightBPM = 199
+        frameCount++
+        // Once per second update the scores
+        if (frameCount % SCOREBOARD_UPDATE_FPS == 0) {
+            leftBPM++
+            if (leftBPM > 199) leftBPM = 0
+            rightBPM--
+            if (rightBPM < 0) rightBPM = 199
+        }
         emitter.onNext(CurrentBPMs(leftBPM, rightBPM))
     }
 
