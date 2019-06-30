@@ -54,6 +54,14 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         // slow down this effect by only generating a new one every few frames
         val slowerFrame = frameNumber / 3
 
+        // calculate a small offset so each frame changes slightly
+        val offset = when (frameNumber.rem(3)) {
+            2L -> 0
+            1L -> 1
+            0L -> 2
+            else -> 0
+        } * 5
+
         // generate rainbowey background
         var counter = slowerFrame * 25
         val newScreen = mutableListOf<Array<Color>>()
@@ -62,9 +70,9 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
             for (j in 0..screenRect.height) {
                 counter += 25
                 val color = Color(
-                    counter.rem(256).toUByte(),
-                    (counter + 100).rem(256).toUByte(),
-                    (counter + 200).rem(256).toUByte()
+                    (counter.rem(256) - offset).toUByte(),
+                    ((counter + 100).rem(256) - offset).toUByte(),
+                    ((counter + 200).rem(256) - offset).toUByte()
                 )
                 newColumn.add(color)
             }
@@ -86,6 +94,7 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         background.andWithBytes(leftBPMArray, leftBPMRect.location.x, leftBPMRect.location.y)
         val rightBPMArray = Screen.renderBPMCharacters(bpms.right.toString())
         background.andWithBytes(rightBPMArray, rightBPMRect.location.x, rightBPMRect.location.y)
+
         return background
     }
 
