@@ -14,6 +14,9 @@ const mqttAddress = 'ws://' + window.location.hostname + ':8181'
 
 function App () {
   let [scoreboardOpen, setScoreboardOpen] = useState(true)
+  let [sensorMonitorOpen, setSensorMonitorOpen] = useState(true)
+
+  let spacer = <Row style={{ height: '40px' }} />
 
   return (
     <div className='App'>
@@ -21,7 +24,7 @@ function App () {
         <Row>
           <Col md={0} lg={1} />
           <Col md={12} lg={10}>
-            <Navbar expand='lg' variant='dark' bg='dark ' style={{ marginBottom: '40px' }}>
+            <Navbar expand='lg' variant='dark' bg='dark'>
               <Navbar.Brand href='#'>As One</Navbar.Brand>
               <div className='d-flex ml-auto flex-nowrap'>
                 {/* scoreboard heartbeat */}
@@ -34,13 +37,27 @@ function App () {
           </Col>
           <Col md={0} lg={1} />
         </Row>
+        { spacer }
         <Row>
           <Col md={0} lg={1} />
           <Col>
-            <SensorMonitor />
+            <div className='card' style={{ backgroundColor: GREYISH_BLACK }}>
+              <h4 className='card-header'>
+                <a href='#/' onClick={() => setSensorMonitorOpen(!sensorMonitorOpen)}>
+                  Sensors
+                  <span className='float-right'>▼</span>
+                </a>
+              </h4>
+              <Collapse in={sensorMonitorOpen}>
+                <div className='card-body'>
+                  <div className='card-text'><SensorMonitor /></div>
+                </div>
+              </Collapse>
+            </div>
           </Col>
           <Col md={0} lg={1} />
         </Row>
+        { spacer }
         <Row>
           <Col md={0} lg={1} />
           <Col>
