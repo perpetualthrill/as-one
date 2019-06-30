@@ -17,9 +17,8 @@ A JSON-encoded ordered list of the last 100 sensor readings can be read at via G
 To test that and other services, fire up [Postman](https://www.getpostman.com/) and load [the AsOne-Console collection](./console/AsOne-Console.postman_collection.json). When adding or changing services, please update this collection, as it is effectively our API documentation.
 
 #### Command line arguments
-`--disable-serial`: Turn off the reading of serial ports. This is useful when trying to debug Arduino code over a board's serial connection.
 
-`--internal-mqtt`: Use internal MQTT broker. This does not work very well, and will almost certainly break websockets, but may be useful on a box where Mosquitto cannot be installed.
+`--disable-serial`: Turn off the reading of serial ports. This is useful when trying to debug Arduino code over a board's serial connection.
 
 `--hostname <name>`: Specify a hostname or IP address to operate on. Defaults to localhost. Useful for binding to the IP of the AP-mode wifi interface so that the open ports are not externally available.
 
@@ -54,3 +53,4 @@ The flame effect is controlled by an ESP8266 running Arduino code. It sends and 
 ### Scoreboard
 
 The scoreboard has two modes currently, one which receives raw frames in the form of an array of RGB values, and another which understands context and can display numerical bpm and timer values etc. For the 2019 build we will be using the former mode exclusively, rendering the game and display state on the server. Lots more information and background may be found in [the README](./sketchbook-arduino/scoreboard/README.md). This is also an adafruit feather huzzah board.
+

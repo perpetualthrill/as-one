@@ -75,14 +75,12 @@ constructor() {
                 check.port.removeDataListener()
                 check.port.closePort()
                 check.sensor.finish()
-                println("SENSORS: "+sensorMap.keys)
             }
             // Now, attempt connect for any addresses not in map
             if(!sensorMap.containsKey(address)) {
                 val portAndSensor = attemptConnect(address)
                 if (null != portAndSensor) {
                     sensorMap[address] = portAndSensor
-                    println("SENSORS: "+sensorMap.keys)
                 }
             }
         }

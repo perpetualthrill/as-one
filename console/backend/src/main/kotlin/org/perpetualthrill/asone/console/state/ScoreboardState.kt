@@ -1,22 +1,24 @@
 package org.perpetualthrill.asone.console.state
 
+import com.kizitonwose.time.microseconds
+import com.kizitonwose.time.plus
 import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.model.Color
 import org.perpetualthrill.asone.console.model.Screen
-import org.perpetualthrill.asone.console.model.ScreenConstants.LEFT_BPM_START_X
-import org.perpetualthrill.asone.console.model.ScreenConstants.LEFT_BPM_START_Y
-import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_X
-import org.perpetualthrill.asone.console.model.ScreenConstants.RIGHT_BPM_START_Y
-import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_HEIGHT
-import org.perpetualthrill.asone.console.model.ScreenConstants.SCREEN_WIDTH
+import org.perpetualthrill.asone.console.model.ScreenConstants.leftBPMRect
+import org.perpetualthrill.asone.console.model.ScreenConstants.rightBPMRect
+import org.perpetualthrill.asone.console.model.ScreenConstants.screenRect
+import org.perpetualthrill.asone.console.model.ScreenConstants.timerRect
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
-import java.time.Instant
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val SCOREBOARD_DISCONNECT_THRESHOLD_MS = 2500
+private val SCOREBOARD_DISCONNECT_THRESHOLD = 2500.microseconds
+const val SCOREBOARD_UPDATE_FPS = 24
+private val SCOREBOARD_UPDATE_INTERVAL = 1000.microseconds / SCOREBOARD_UPDATE_FPS
 
 @Singleton
 class ScoreboardState
@@ -25,22 +27,22 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
 
     private val heartbeatListener: MqttManager.MqttListener
 
-    private var lastHeartbeat: Instant? = null
+    private var lastHeartbeat: Calendar? = null
 
     val connected: Boolean
         get() {
             val last = lastHeartbeat ?: return false
-            return (Instant.now().toEpochMilli() - last.toEpochMilli()) <= SCOREBOARD_DISCONNECT_THRESHOLD_MS
+            return (Calendar.getInstance().compareTo(last + SCOREBOARD_DISCONNECT_THRESHOLD)) > 0
         }
 
     private val frameClock = Observable
-        .interval(250, TimeUnit.MILLISECONDS)
+        .interval(SCOREBOARD_UPDATE_INTERVAL.longValue, TimeUnit.MILLISECONDS)
 
     init {
         heartbeatListener = object : MqttManager.MqttListener() {
             override val topic = "asOne/score/heartbeat"
             override val handler = { _: ByteArray ->
-                lastHeartbeat = Instant.now()
+                lastHeartbeat = Calendar.getInstance()
             }
         }
         mqtt.registerListener(heartbeatListener)
@@ -49,16 +51,28 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
     // in the future this will make several kinds of effect backgrounds
     // depending on gamestate
     private fun makeCurrentBackground(frameNumber: Long): Screen {
-        var counter = frameNumber * 25
+        // slow down this effect by only generating a new one every few frames
+        val slowerFrame = frameNumber / 3
+
+        // calculate a small offset so each frame changes slightly
+        val offset = when (frameNumber.rem(3)) {
+            2L -> 0
+            1L -> 1
+            0L -> 2
+            else -> 0
+        } * 5
+
+        // generate rainbowey background
+        var counter = slowerFrame * 25
         val newScreen = mutableListOf<Array<Color>>()
-        for (i in 0..SCREEN_WIDTH) {
+        for (i in 0..screenRect.width) {
             val newColumn = mutableListOf<Color>()
-            for (j in 0..SCREEN_HEIGHT) {
+            for (j in 0..screenRect.height) {
                 counter += 25
                 val color = Color(
-                    counter.rem(256).toUByte(),
-                    (counter + 100).rem(256).toUByte(),
-                    (counter + 200).rem(256).toUByte()
+                    (counter.rem(256) - offset).toUByte(),
+                    ((counter + 100).rem(256) - offset).toUByte(),
+                    ((counter + 200).rem(256) - offset).toUByte()
                 )
                 newColumn.add(color)
             }
@@ -71,10 +85,16 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
     // whatever the current background is
     private fun andBackgroundWithBPM(frameNumber: Long, bpms: GameState.CurrentBPMs): Screen {
         val background = makeCurrentBackground(frameNumber)
+
+        // clear timer area
+        background.fill(timerRect, Color.BLACK)
+
+        // fill in digits
         val leftBPMArray = Screen.renderBPMCharacters(bpms.left.toString())
-        background.andWithBytes(leftBPMArray, LEFT_BPM_START_X, LEFT_BPM_START_Y)
+        background.andWithBytes(leftBPMArray, leftBPMRect.location.x, leftBPMRect.location.y)
         val rightBPMArray = Screen.renderBPMCharacters(bpms.right.toString())
-        background.andWithBytes(rightBPMArray, RIGHT_BPM_START_X, RIGHT_BPM_START_Y)
+        background.andWithBytes(rightBPMArray, rightBPMRect.location.x, rightBPMRect.location.y)
+
         return background
     }
 

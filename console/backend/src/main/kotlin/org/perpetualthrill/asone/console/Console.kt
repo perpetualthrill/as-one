@@ -58,11 +58,6 @@ class Console : CliktCommand() {
                 scoreboardState.coloriffic()
             }
 
-        sensorState.readingStream
-            .sample(1, TimeUnit.SECONDS)
-            .subscribeWithErrorLogging(this) {
-                println("$it")
-            }
     }
 
     companion object {

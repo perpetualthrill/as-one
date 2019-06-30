@@ -2,8 +2,11 @@ package org.perpetualthrill.asone.console.model
 
 object ScreenConstants {
 
-    const val SCREEN_WIDTH = 31
-    const val SCREEN_HEIGHT = 10
+    val screenRect = Rect(
+        Location(0,0),
+        31,
+        10
+    )
 
     const val CHAR_WIDTH = 4
     const val CHAR_HEIGHT = 7
@@ -11,11 +14,16 @@ object ScreenConstants {
     const val BPM_AREA_WIDTH = 11
 
     // Start locations of bpm areas of screen
-    const val LEFT_BPM_START_X = 0
-    const val LEFT_BPM_START_Y = 2
-    const val RIGHT_BPM_START_X = 20
-    const val RIGHT_BPM_START_Y = 2
+    val leftBPMRect = Rect(
+        Location(0, 2),
+        BPM_AREA_WIDTH,
+        CHAR_HEIGHT
+    )
+    val rightBPMRect = leftBPMRect.copy(location = Location(20, 2))
 
+    // Centered timer area
+    val timerStart = Location(12, 0)
+    val timerRect = Rect(timerStart, 7, 5)
 
     // Lookup table. Each entry in this array corresponds to a location on the
     // screen. The scoreboard gets filled by sampling the screen, which can be
@@ -161,7 +169,7 @@ object ScreenConstants {
     val SCOREBOARD_ARRAY_SIZE = locationLookupTable.size * 3 // i.e. rgb triples
 
     // Character to display layout map
-    val bignumTypeface = mapOf(
+    val bpmTypeface = mapOf(
         '0' to arrayOf(
             arrayOf(1, 1, 1, 1),
             arrayOf(1, 0, 0, 1),

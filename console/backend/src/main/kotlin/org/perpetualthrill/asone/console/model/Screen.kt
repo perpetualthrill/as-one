@@ -4,13 +4,30 @@ import org.perpetualthrill.asone.console.model.ScreenConstants.BPM_AREA_WIDTH
 import org.perpetualthrill.asone.console.model.ScreenConstants.CHAR_HEIGHT
 import org.perpetualthrill.asone.console.model.ScreenConstants.CHAR_WIDTH
 import org.perpetualthrill.asone.console.model.ScreenConstants.SCOREBOARD_ARRAY_SIZE
-import org.perpetualthrill.asone.console.model.ScreenConstants.bignumTypeface
+import org.perpetualthrill.asone.console.model.ScreenConstants.bpmTypeface
 import org.perpetualthrill.asone.console.model.ScreenConstants.locationLookupTable
 
 data class Color(
     val r: UByte,
     val g: UByte,
     val b: UByte
+) {
+    constructor(r: Int, g: Int, b: Int) : this(r.toUByte(), g.toUByte(), b.toUByte())
+
+    companion object {
+        val BLACK = Color(0, 0, 0)
+    }
+}
+
+data class Location(
+    val x: Int,
+    val y: Int
+)
+
+data class Rect(
+    val location: Location,
+    val width: Int,
+    val height: Int
 )
 
 data class Screen(
@@ -63,6 +80,15 @@ data class Screen(
         }
     }
 
+    // Fill an area
+    fun fill(rect: Rect, color: Color) {
+        for (i in 0 until rect.width) {
+            for (j in 0 until rect.height) {
+                screenArray[i + rect.location.x][j + rect.location.y] = color
+            }
+        }
+    }
+
     companion object {
         fun renderBPMCharacters(value: String): Array<UByteArray> {
             val charCount = value.length
@@ -72,7 +98,7 @@ data class Screen(
             val array = Array(CHAR_WIDTH * charCount + spacerCount, { UByteArray(CHAR_HEIGHT) })
             for (i in 0 until charCount) {
                 val character = value[i]
-                val glyph = bignumTypeface[character] ?: continue // if the lookup returns null, continue to next character
+                val glyph = bpmTypeface[character] ?: continue // if the lookup returns null, continue to next character
                 val xOffset = i * CHAR_WIDTH + i // the +i is spacers
                 for (x in 0 until CHAR_WIDTH) {
                     for (y in 0 until CHAR_HEIGHT) {
