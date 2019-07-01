@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useCheckedWidth, useInterval } from './hooks'
 import logger from './logger'
 import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timeseries-charts'
@@ -18,30 +18,26 @@ function SensorData (props) {
 
   let [latestNow, setLatestNow] = useState((new Date()).valueOf())
   let [data, setData] = useState(new Ring(300))
-  let [message, setMessage] = useState(null)
   let [ref, checkedWidth] = useCheckedWidth()
   let [started, setStarted] = useState(false)
-  let [buffer, setBuffer] = useState([])
 
-  useEffect(() => {
-    if (message == null) return
-    const msgString = message.toString()
-    if (!msgString.startsWith(name)) return
-    const reading = msgString.split(',')
-    const point = [parseInt(reading[5]), reading[1], reading[2], reading[3], reading[4]]
-    var temp = buffer
-    temp.push(point)
-    setBuffer(temp)
-  }, [message, buffer, name])
+  let bufferRef = useRef([])
+  let currentBuf = bufferRef.current
 
+  // Move new messages from buffer into data state and clear buffer
+  // Clearing is slightly unsafe, but in this application losing a reading
+  // or two is not a big deal
   useInterval(() => {
-    var dataref = data
-    buffer.map( reading => dataref.push(reading) )
-    setData(dataref)
+    setData(dataref => {
+      currentBuf.map( reading => dataref.push(reading) )
+      return dataref
+    })
     setLatestNow((new Date()).valueOf())
-    setBuffer([])
-  }, 333)
+    currentBuf.length = 0
+  }, 100)
 
+  // Initializer. Should only run at mount, but contains a message handler
+  // that pushes all of the state updates into the buffer
   useEffect(() => {
     async function subscribe () {
       const mqtt = AsyncClient.connect(address)
@@ -53,7 +49,14 @@ function SensorData (props) {
         logger.error(e)
       }
 
-      mqtt.on('message', (_, message) => setMessage(message))
+      mqtt.on('message', (_, message) => {
+        if (message == null) return
+        const msgString = message.toString()
+        if (!msgString.startsWith(name)) return
+        const reading = msgString.split(',')
+        const point = [parseInt(reading[5]), reading[1], reading[2], reading[3], reading[4]]
+        currentBuf.push(point)
+      })
 
       return () => {
         if (mqtt.close) mqtt.close()
@@ -64,7 +67,7 @@ function SensorData (props) {
       subscribe()
       setStarted(true)
     }
-  }, [started, address, message])
+  }, [started, address, currentBuf, name])
 
   const style = {
     s1: {
