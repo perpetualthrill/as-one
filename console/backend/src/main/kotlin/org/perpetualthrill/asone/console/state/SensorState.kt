@@ -3,6 +3,7 @@ package org.perpetualthrill.asone.console.state
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import org.perpetualthrill.asone.console.di.Injector
+import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.io.SerialMonitor
 import org.perpetualthrill.asone.console.model.Sensor
 import org.perpetualthrill.asone.console.model.SensorSimulator
@@ -17,7 +18,8 @@ private const val SENSOR_READING_BUFFER_SIZE = 100
 class SensorState
 @Inject
 constructor(
-    private val serialMonitor: SerialMonitor
+    private val serialMonitor: SerialMonitor,
+    private val mqttManager: MqttManager
 ) {
     private val internalReadingStream = PublishSubject.create<Sensor.Reading>()
     val readingStream: Observable<Sensor.Reading> = internalReadingStream
@@ -30,13 +32,19 @@ constructor(
         serialMonitor.sensorStream.subscribeWith(internalReadingStream)
 
         // maintain queue of last n readings for web service
-        readingStream.subscribeWithErrorLogging(this) {
+        readingStream.subscribeWithErrorLogging(this) { reading ->
             // data structure is not thread safe, but so long as this subscriber
             // is the only thing mutating it we are good
-            readingBuffer.addFirst(it)
+            readingBuffer.addFirst(reading)
             while (readingBuffer.size > SENSOR_READING_BUFFER_SIZE) {
-                readingBuffer.removeLast()
+                // not sure why this occasionally throws, but it does
+                try {
+                    readingBuffer.removeLast()
+                } catch (e: NoSuchElementException) { }
             }
+
+            // also, publish these to mqtt
+            mqttManager.publishAtMostOnce("asOne/sensor/reading", reading.toCSVString().toByteArray())
         }
     }
 

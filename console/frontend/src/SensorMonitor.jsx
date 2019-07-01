@@ -5,10 +5,13 @@ import logger from './logger'
 import { SensorData } from './SensorData'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import PropTypes from 'prop-types'
 
 const SENSOR_LIST_URL = '/sensors'
 
-function SensorMonitor () {
+function SensorMonitor (props) {
+  const address = props.address
+
   let [sensorList, setSensorList] = useState([])
 
   async function pollServerAndUpdate () {
@@ -28,11 +31,15 @@ function SensorMonitor () {
     <Row>
       { sensorList.map(sensorName =>
         <Col lg={6} md key={sensorName}>
-          <SensorData url={'/sensors/' + sensorName} />
+          <SensorData name={sensorName} address={address} />
         </Col>
       )}
     </Row>
   )
+}
+
+SensorMonitor.propTypes = {
+  address: PropTypes.string
 }
 
 export { SensorMonitor }

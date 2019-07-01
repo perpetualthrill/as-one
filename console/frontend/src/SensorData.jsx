@@ -1,62 +1,70 @@
 import React, { useState, useEffect } from 'react'
-import { useInterval, useCheckedWidth } from './hooks'
-import axios from 'axios'
+import { useCheckedWidth } from './hooks'
 import logger from './logger'
 import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timeseries-charts'
-import { TimeSeries } from 'pondjs'
+import { TimeSeries, TimeRange } from 'pondjs'
 import PropTypes from 'prop-types'
+import AsyncClient from 'async-mqtt'
+import Ring from "ringjs"
 
 SensorData.propTypes = {
-  url: PropTypes.string.isRequired
+  name: PropTypes.string.isRequired,
+  address: PropTypes.string.isRequired
 }
 
 function SensorData (props) {
-  let [data, setData] = useState([])
-  let [series, setSeries] = useState(null)
-  let [ref, checkedWidth] = useCheckedWidth()
+  const address = props.address
+  const name = props.name
 
-  function makeUnixDate (seconds, nanos) {
-    var millis = seconds * 1000
-    millis += nanos / 1000000
-    return millis
-  }
+  let [latestNow, setLatestNow] = useState((new Date()).valueOf())
+  let [data, setData] = useState(new Ring(100))
+  let [message, setMessage] = useState(null)
+  let [ref, checkedWidth] = useCheckedWidth()
+  let [started, setStarted] = useState(false)
 
   useEffect(() => {
-    let seriesData = {
+    if (message == null) return
+    const msgString = message.toString()
+    if (!msgString.startsWith(name)) return
+    const reading = msgString.split(',')
+    const point = [parseInt(reading[5]), reading[1], reading[2], reading[3], reading[4]]
+    const currentData = data
+    currentData.push(point)
+    setData(currentData)
+    setLatestNow(parseInt(reading[5]))
+  }, [message, name, data, latestNow])
+
+  useEffect(() => {
+    async function subscribe () {
+      const mqtt = AsyncClient.connect(address)
+      try {
+        await mqtt.subscribe('asOne/sensor/reading')
+        logger.log('subscribed sensormonitor')
+      } catch (e) {
+        logger.error('error connecting to mqtt')
+        logger.error(e)
+      }
+
+      mqtt.on('message', (_, message) => setMessage(message))
+
+      return () => {
+        if (mqtt.close) mqtt.close()
+      }
+    }
+
+    if (!started) {
+      subscribe()
+      setStarted(true)
+    }
+  }, [started, address, message])
+
+  const timeSeries = new TimeSeries({
       name: 'readings',
       columns: ['time', 's1', 's2', 's3', 's4'],
-      points: []
-    }
-    if (data.length > 0) {
-      let reversed = data.reverse()
-      for (var reading of reversed) {
-        if (reading == null) continue // not sure why, but this happened once and crashed the app, so
-        let point = []
-        let time = makeUnixDate(reading.timestamp.seconds, reading.timestamp.nanos)
-        point.push(time)
-        point.push(reading.s1)
-        point.push(reading.s2)
-        point.push(reading.s3)
-        point.push(reading.s4)
-        seriesData.points.push(point)
-      }
-      let series = new TimeSeries(seriesData)
-      setSeries(series)
-    }
-  }, [data])
+      points: data.toArray()
+  })
 
-  async function pollServerAndUpdate () {
-    try {
-      const response = await axios.get(props.url)
-      setData(response.data)
-    } catch (error) {
-      logger.error(error)
-    }
-  }
-
-  useInterval(() => {
-    pollServerAndUpdate()
-  }, 250)
+  const lastFewSeconds = new TimeRange(latestNow - 1000, latestNow)
 
   const style = {
     s1: {
@@ -79,18 +87,19 @@ function SensorData (props) {
 
   return (
     <div ref={ref}>
-      { (series == null) ? '' : (
-        <ChartContainer width={checkedWidth} timeRange={series.timerange()}>
+      { (timeSeries == null) ? 'Loading ...' : (
+        <ChartContainer width={checkedWidth} timeRange={lastFewSeconds} title={props.name}>
           <ChartRow height={checkedWidth / 3} showGrid>
             <YAxis id='axis1' min={400} max={600} width={28} type='linear' format='.0f' />
             <Charts>
-              <LineChart axis='axis1' series={series} columns={['s1', 's2', 's3', 's4']} style={style} />
+              <LineChart axis='axis1' series={timeSeries} columns={['s1', 's2', 's3', 's4']} style={style} />
             </Charts>
           </ChartRow>
         </ChartContainer>
       )}
     </div>
   )
+
 }
 
 export { SensorData }

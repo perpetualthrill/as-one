@@ -16,7 +16,8 @@
     "react-dom": "^16.8.6",
     "react-konva": "^16.8.7-3",
     "react-scripts": "3.0.1",
-    "react-timeseries-charts": "^0.16.1"
+    "react-timeseries-charts": "^0.16.1",
+    "ringjs": "0.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

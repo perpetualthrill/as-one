@@ -51,7 +51,7 @@ function App () {
               <Collapse in={sensorMonitorOpen}>
                 <div className='card-body'>
                   <div className='card-text'>
-                    <SensorMonitor />
+                    <SensorMonitor address={mqttAddress} />
                   </div>
                 </div>
               </Collapse>
