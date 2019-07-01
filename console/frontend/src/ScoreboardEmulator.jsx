@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react'
 import logger from './logger'
 import PropTypes from 'prop-types'
 import { Stage, Layer, Rect } from 'react-konva'
-import { useClientRect } from './hooks'
+import { useCheckedWidth } from './hooks'
 import scoreboardAddressTable from './scoreboard-lookup.json'
 import AsyncClient from 'async-mqtt'
 
 const SCOREBOARD_WIDTH = 31
 const SCOREBOARD_HEIGHT = 10
 const GREYISH_BLACK = '#222222'
-const DEFAULT_TINY_WIDTH_PX = 200
 
 function ScoreboardEmulator (props) {
   const address = props.address
@@ -17,8 +16,7 @@ function ScoreboardEmulator (props) {
   let [started, setStarted] = useState(false)
   let [leds, setLeds] = useState([])
   let [board, setBoard] = useState([])
-  let [checkedWidth, setCheckedWidth] = useState(DEFAULT_TINY_WIDTH_PX)
-  let [rect, ref] = useClientRect()
+  let [ref, checkedWidth] = useCheckedWidth()
 
   function _rgbToHex (r, g, b) {
     return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
@@ -92,15 +90,8 @@ function ScoreboardEmulator (props) {
   // Runs whenever the screen is resized. Sets the width we're rendering to
   // and creates a screen using that size
   useEffect(() => {
-    // tiny default so that we don't ever end up with a null screen
-    var newCheckedWidth = 200
-    if (rect) {
-      newCheckedWidth = rect.width
-    }
-    setCheckedWidth(newCheckedWidth)
-
     // using that value, create the board
-    const pixelSize = _pixelSize(newCheckedWidth)
+    const pixelSize = _pixelSize(checkedWidth)
     const screen = []
     for (var i = 0; i < SCOREBOARD_WIDTH; i++) {
       const column = []
@@ -111,7 +102,7 @@ function ScoreboardEmulator (props) {
       screen.push(column)
     }
     setBoard(screen)
-  }, [rect])
+  }, [checkedWidth])
 
   return (
     <div ref={ref}>

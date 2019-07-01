@@ -25,15 +25,13 @@ function SensorMonitor () {
   }, 1000)
 
   return (
-    sensorList.map(sensorName =>
-      <Row key={sensorName}>
-        <Col md={0} lg={1} />
-        <Col>
+    <Row>
+      { sensorList.map(sensorName =>
+        <Col lg={6} md key={sensorName}>
           <SensorData url={'/sensors/' + sensorName} />
         </Col>
-        <Col md={0} lg={1} />
-      </Row>
-    )
+      )}
+    </Row>
   )
 }
 

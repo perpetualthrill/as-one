@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useInterval } from './hooks'
+import { useInterval, useCheckedWidth } from './hooks'
 import axios from 'axios'
 import logger from './logger'
 import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timeseries-charts'
@@ -12,8 +12,8 @@ SensorData.propTypes = {
 
 function SensorData (props) {
   let [data, setData] = useState([])
-  let [loading, setLoading] = useState(true)
   let [series, setSeries] = useState(null)
+  let [ref, checkedWidth] = useCheckedWidth()
 
   function makeUnixDate (seconds, nanos) {
     var millis = seconds * 1000
@@ -30,6 +30,7 @@ function SensorData (props) {
     if (data.length > 0) {
       let reversed = data.reverse()
       for (var reading of reversed) {
+        if (reading == null) continue // not sure why, but this happened once and crashed the app, so
         let point = []
         let time = makeUnixDate(reading.timestamp.seconds, reading.timestamp.nanos)
         point.push(time)
@@ -48,7 +49,6 @@ function SensorData (props) {
     try {
       const response = await axios.get(props.url)
       setData(response.data)
-      setLoading(false)
     } catch (error) {
       logger.error(error)
     }
@@ -78,18 +78,18 @@ function SensorData (props) {
   }
 
   return (
-    <>
-      { loading || (series == null) ? ('Loading ...') : (
-        <ChartContainer timeRange={series.timerange()} width={668}>
-          <ChartRow height='300' showGrid>
-            <YAxis id='axis1' min={300} max={650} width={28} type='linear' format='.0f' />
+    <div ref={ref}>
+      { (series == null) ? '' : (
+        <ChartContainer width={checkedWidth} timeRange={series.timerange()}>
+          <ChartRow height={checkedWidth / 3} showGrid>
+            <YAxis id='axis1' min={400} max={600} width={28} type='linear' format='.0f' />
             <Charts>
               <LineChart axis='axis1' series={series} columns={['s1', 's2', 's3', 's4']} style={style} />
             </Charts>
           </ChartRow>
         </ChartContainer>
       )}
-    </>
+    </div>
   )
 }
 

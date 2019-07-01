@@ -50,7 +50,9 @@ function App () {
               </h4>
               <Collapse in={sensorMonitorOpen}>
                 <div className='card-body'>
-                  <div className='card-text'><SensorMonitor /></div>
+                  <div className='card-text'>
+                    <SensorMonitor />
+                  </div>
                 </div>
               </Collapse>
             </div>
