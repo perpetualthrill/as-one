@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useCheckedWidth } from './hooks'
+import { useCheckedWidth, useInterval } from './hooks'
 import logger from './logger'
 import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timeseries-charts'
 import { TimeSeries, TimeRange } from 'pondjs'
@@ -17,10 +17,11 @@ function SensorData (props) {
   const name = props.name
 
   let [latestNow, setLatestNow] = useState((new Date()).valueOf())
-  let [data, setData] = useState(new Ring(100))
+  let [data, setData] = useState(new Ring(300))
   let [message, setMessage] = useState(null)
   let [ref, checkedWidth] = useCheckedWidth()
   let [started, setStarted] = useState(false)
+  let [buffer, setBuffer] = useState([])
 
   useEffect(() => {
     if (message == null) return
@@ -28,11 +29,18 @@ function SensorData (props) {
     if (!msgString.startsWith(name)) return
     const reading = msgString.split(',')
     const point = [parseInt(reading[5]), reading[1], reading[2], reading[3], reading[4]]
-    const currentData = data
-    currentData.push(point)
-    setData(currentData)
-    setLatestNow(parseInt(reading[5]))
-  }, [message, name, data, latestNow])
+    var temp = buffer
+    temp.push(point)
+    setBuffer(temp)
+  }, [message, buffer, name])
+
+  useInterval(() => {
+    var dataref = data
+    buffer.map( reading => dataref.push(reading) )
+    setData(dataref)
+    setLatestNow((new Date()).valueOf())
+    setBuffer([])
+  }, 333)
 
   useEffect(() => {
     async function subscribe () {
@@ -58,14 +66,6 @@ function SensorData (props) {
     }
   }, [started, address, message])
 
-  const timeSeries = new TimeSeries({
-      name: 'readings',
-      columns: ['time', 's1', 's2', 's3', 's4'],
-      points: data.toArray()
-  })
-
-  const lastFewSeconds = new TimeRange(latestNow - 1000, latestNow)
-
   const style = {
     s1: {
       stroke: '#a02c2c',
@@ -84,6 +84,14 @@ function SensorData (props) {
       opacity: 0.5
     }
   }
+
+  const timeSeries = new TimeSeries({
+      name: 'readings',
+      columns: ['time', 's1', 's2', 's3', 's4'],
+      points: data.toArray()
+  })
+
+  const lastFewSeconds = new TimeRange(latestNow - 5000, latestNow)
 
   return (
     <div ref={ref}>

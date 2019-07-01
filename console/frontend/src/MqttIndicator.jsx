@@ -38,7 +38,7 @@ function MqttIndicator (props) {
   // de-blink the indicator routinely
   useInterval(() => {
     setBlinking(false)
-  }, 50)
+  }, 100)
 
   return (
     <div className={blinking ? 'indicator-blink' : 'indicator'}>
