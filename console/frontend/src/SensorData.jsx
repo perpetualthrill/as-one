@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useCheckedWidth, useInterval } from './hooks'
+import { useCheckedWidth } from './hooks'
+import useInterval from '@restart/hooks/useInterval'
 import logger from './logger'
 import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timeseries-charts'
 import { TimeSeries, TimeRange } from 'pondjs'

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useInterval } from './hooks'
+import useInterval from '@restart/hooks/useInterval'
 import axios from 'axios'
 import logger from './logger'
 import { SensorData } from './SensorData'

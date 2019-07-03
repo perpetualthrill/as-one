@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import logger from './logger'
 
@@ -22,27 +22,6 @@ function useFetch (url) {
     fetchUrl()
   }, [url])
   return [data, loading]
-}
-
-// via https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-function useInterval (callback, delay) {
-  const savedCallback = useRef()
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback
-  }, [callback])
-
-  // Set up the interval.
-  useEffect(() => {
-    function tick () {
-      savedCallback.current()
-    }
-    if (delay !== null) {
-      let id = setInterval(tick, delay)
-      return () => clearInterval(id)
-    }
-  }, [delay])
 }
 
 // via https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
@@ -84,4 +63,4 @@ function useCheckedWidth () {
   return [ref, checkedWidth, setCheckedWidth]
 }
 
-export { useFetch, useInterval, useClientRect, useCheckedWidth }
+export { useFetch, useClientRect, useCheckedWidth }
