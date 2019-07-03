@@ -42,16 +42,13 @@ constructor(
                     readingBuffer.removeLast()
                 } catch (e: NoSuchElementException) { }
             }
-
-            // also, publish these to mqtt
-            mqttManager.publishAtMostOnce("asOne/sensor/reading", reading.toCSVString().toByteArray())
         }
     }
 
     val latestReadings: Array<out Any>
         get() = readingBuffer.toArray()
 
-    val sensorNames: List<String>
+    val activeSensorNames: List<String>
         get() = (simulators.keys + serialMonitor.sensors.map { it.name }).toList()
 
     fun readingsForSensor(name: String): Array<out Any> {

@@ -66,7 +66,7 @@ constructor(
                 // Sensors including simulators
                 route("/sensors") {
                     get {
-                        call.respond(sensorState.sensorNames)
+                        call.respond(sensorState.activeSensorNames)
                     }
                     get("latest") {
                         call.respond(sensorState.latestReadings)

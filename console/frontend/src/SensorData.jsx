@@ -21,6 +21,7 @@ function SensorData (props) {
   let [data, setData] = useState(new Ring(300))
   let [ref, checkedWidth] = useCheckedWidth()
   let [started, setStarted] = useState(false)
+  let [position, setPosition] = useState("")
 
   let bufferRef = useRef([])
   let currentBuf = bufferRef.current
@@ -34,7 +35,7 @@ function SensorData (props) {
       return dataref
     })
     setLatestNow((new Date()).valueOf())
-    currentBuf.length = 0
+    currentBuf.length = 0 // javascript you so crazy
   }, 100)
 
   // Initializer. Should only run at mount, but contains a message handler
@@ -57,6 +58,7 @@ function SensorData (props) {
         const reading = msgString.split(',')
         const point = [parseInt(reading[5]), reading[1], reading[2], reading[3], reading[4]]
         currentBuf.push(point)
+        setPosition(reading[6])
       })
 
       return () => {
@@ -68,7 +70,7 @@ function SensorData (props) {
       subscribe()
       setStarted(true)
     }
-  }, [started, address, currentBuf, name])
+  }, [started, address, currentBuf, name, setPosition])
 
   const style = {
     s1: {
@@ -100,7 +102,7 @@ function SensorData (props) {
   return (
     <div ref={ref}>
       { (timeSeries == null) ? 'Loading ...' : (
-        <ChartContainer width={checkedWidth} timeRange={lastFewSeconds} title={props.name}>
+        <ChartContainer width={checkedWidth} timeRange={lastFewSeconds} title={position+": "+props.name}>
           <ChartRow height={checkedWidth / 3} showGrid>
             <YAxis id='axis1' min={400} max={600} width={28} type='linear' format='.0f' />
             <Charts>
