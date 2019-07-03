@@ -6,7 +6,7 @@ import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timese
 import { TimeSeries, TimeRange } from 'pondjs'
 import PropTypes from 'prop-types'
 import AsyncClient from 'async-mqtt'
-import Ring from "ringjs"
+import Ring from 'ringjs'
 
 SensorData.propTypes = {
   name: PropTypes.string.isRequired,
@@ -21,7 +21,7 @@ function SensorData (props) {
   let [data, setData] = useState(new Ring(300))
   let [ref, checkedWidth] = useCheckedWidth()
   let [started, setStarted] = useState(false)
-  let [position, setPosition] = useState("")
+  let [position, setPosition] = useState('')
 
   let bufferRef = useRef([])
   let currentBuf = bufferRef.current
@@ -31,7 +31,7 @@ function SensorData (props) {
   // or two is not a big deal
   useInterval(() => {
     setData(dataref => {
-      currentBuf.map( reading => dataref.push(reading) )
+      currentBuf.map(reading => dataref.push(reading))
       return dataref
     })
     setLatestNow((new Date()).valueOf())
@@ -92,9 +92,9 @@ function SensorData (props) {
   }
 
   const timeSeries = new TimeSeries({
-      name: 'readings',
-      columns: ['time', 's1', 's2', 's3', 's4'],
-      points: data.toArray()
+    name: 'readings',
+    columns: ['time', 's1', 's2', 's3', 's4'],
+    points: data.toArray()
   })
 
   const lastFewSeconds = new TimeRange(latestNow - 5000, latestNow)
@@ -102,7 +102,7 @@ function SensorData (props) {
   return (
     <div ref={ref}>
       { (timeSeries == null) ? 'Loading ...' : (
-        <ChartContainer width={checkedWidth} timeRange={lastFewSeconds} title={position+": "+props.name}>
+        <ChartContainer width={checkedWidth} timeRange={lastFewSeconds} title={position + ': ' + props.name}>
           <ChartRow height={checkedWidth / 3} showGrid>
             <YAxis id='axis1' min={400} max={600} width={28} type='linear' format='.0f' />
             <Charts>
@@ -113,7 +113,6 @@ function SensorData (props) {
       )}
     </div>
   )
-
 }
 
 export { SensorData }

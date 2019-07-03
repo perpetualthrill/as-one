@@ -86,4 +86,19 @@ constructor(
         emitter.onNext(CurrentBPMs(leftBPM, rightBPM))
     }
 
+    fun flipSensors() {
+        val ref = gameSensors
+        val keys = ref.keys.toList()
+        when (ref.size) {
+            2 -> {
+                val oldZeroPosition = ref[keys[0]] as SensorPosition
+                val oldOnePosition = ref[keys[1]] as SensorPosition
+                gameSensors[keys[0]] = oldOnePosition
+                gameSensors[keys[1]] = oldZeroPosition
+            }
+            1 -> gameSensors[keys[0]] = if (ref[keys[0]] == SensorPosition.LEFT) SensorPosition.RIGHT else SensorPosition.LEFT
+            // else do nothing
+        }
+    }
+
 }
