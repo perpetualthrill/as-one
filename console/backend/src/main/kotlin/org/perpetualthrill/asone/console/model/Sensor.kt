@@ -1,5 +1,6 @@
 package org.perpetualthrill.asone.console.model
 
+import com.kizitonwose.time.milliseconds
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
@@ -7,10 +8,13 @@ import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
 private const val TIME_TO_DISCONNECT_MS = 1500L
 private const val RETAIN_PERIOD_MS = 5000L
 private const val PRUNE_READINGS_INTERVAL_MS = 500L
+
+// Ideally this constant would be shared centrally within the project.
+// Current firmware updates at 50hz, i.e. a 20ms interval
+val SENSOR_UPDATE_INTERVAL = 20.milliseconds
 
 class Sensor(val name: String) {
 
