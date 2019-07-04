@@ -19,6 +19,7 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import org.perpetualthrill.asone.console.state.GameState
 import org.perpetualthrill.asone.console.state.SensorState
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -30,7 +31,8 @@ import javax.inject.Singleton
 class WebServer
 @Inject
 constructor(
-    private val sensorState: SensorState
+    private val sensorState: SensorState,
+    private val gameState: GameState
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
@@ -66,7 +68,7 @@ constructor(
                 // Sensors including simulators
                 route("/sensors") {
                     get {
-                        call.respond(sensorState.sensorNames)
+                        call.respond(sensorState.activeSensorNames)
                     }
                     get("latest") {
                         call.respond(sensorState.latestReadings)
@@ -104,6 +106,14 @@ constructor(
                         call.respondText("OK")
                     } else {
                         call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)
+                    }
+                }
+
+                // Game and flame state
+                route("/game") {
+                    post("flipSensors") {
+                        gameState.flipSensors()
+                        call.respondText("OK")
                     }
                 }
 

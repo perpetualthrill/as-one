@@ -71,12 +71,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/sensors",
+							"raw": "{{host}}/sensors/{{first-sensor-name}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"sensors"
+								"sensors",
+								"{{first-sensor-name}}"
 							]
 						},
 						"description": "JSON array of readings, intended to be polled for a line chart or similar"
@@ -244,6 +245,29 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Game State",
+			"item": [
+				{
+					"name": "Flip Sensors",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/game/flipSensors",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"game",
+								"flipSensors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -270,7 +294,7 @@
 	],
 	"variable": [
 		{
-			"id": "52aad040-332a-42d4-b5a4-425e2b4fa119",
+			"id": "e7bef777-172e-47fc-a197-dbd55574a6cd",
 			"key": "host",
 			"value": "http://localhost:12345",
 			"type": "string"

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import logger from './logger'
 
@@ -24,27 +24,6 @@ function useFetch (url) {
   return [data, loading]
 }
 
-// via https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-function useInterval (callback, delay) {
-  const savedCallback = useRef()
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback
-  }, [callback])
-
-  // Set up the interval.
-  useEffect(() => {
-    function tick () {
-      savedCallback.current()
-    }
-    if (delay !== null) {
-      let id = setInterval(tick, delay)
-      return () => clearInterval(id)
-    }
-  }, [delay])
-}
-
 // via https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
 // hacked to attend to window resize events
 function useClientRect () {
@@ -67,4 +46,21 @@ function useClientRect () {
   return [rect, ref]
 }
 
-export { useFetch, useInterval, useClientRect }
+const DEFAULT_TINY_WIDTH_PX = 200
+function useCheckedWidth () {
+  let [checkedWidth, setCheckedWidth] = useState(DEFAULT_TINY_WIDTH_PX)
+  let [rect, ref] = useClientRect()
+
+  useEffect(() => {
+    // tiny default so that we don't ever end up with a null screen
+    var newCheckedWidth = DEFAULT_TINY_WIDTH_PX
+    if (rect) {
+      newCheckedWidth = rect.width
+    }
+    setCheckedWidth(newCheckedWidth)
+  }, [rect, checkedWidth])
+
+  return [ref, checkedWidth, setCheckedWidth]
+}
+
+export { useFetch, useClientRect, useCheckedWidth }

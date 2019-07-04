@@ -75,6 +75,10 @@ class Sensor(val name: String) {
         override fun toString(): String {
             return "Sensor reading for $sensorName: $s1 $s2 $s3 $s4 at $timestamp"
         }
+
+        fun toCSVString(): String {
+            return "$sensorName,$s1,$s2,$s3,$s4,${timestamp.toEpochMilli()}"
+        }
     }
 
     override fun toString(): String {

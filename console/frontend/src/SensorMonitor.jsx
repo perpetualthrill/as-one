@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
-import { useInterval } from './hooks'
+import useInterval from '@restart/hooks/useInterval'
 import axios from 'axios'
 import logger from './logger'
 import { SensorData } from './SensorData'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import PropTypes from 'prop-types'
 
 const SENSOR_LIST_URL = '/sensors'
 
-function SensorMonitor () {
+function SensorMonitor (props) {
+  const address = props.address
+
   let [sensorList, setSensorList] = useState([])
 
   async function pollServerAndUpdate () {
@@ -25,16 +28,18 @@ function SensorMonitor () {
   }, 1000)
 
   return (
-    sensorList.map(sensorName =>
-      <Row key={sensorName}>
-        <Col md={0} lg={1} />
-        <Col>
-          <SensorData url={'/sensors/' + sensorName} />
+    <Row>
+      { sensorList.map(sensorName =>
+        <Col lg={6} md key={sensorName}>
+          <SensorData name={sensorName} address={address} />
         </Col>
-        <Col md={0} lg={1} />
-      </Row>
-    )
+      )}
+    </Row>
   )
+}
+
+SensorMonitor.propTypes = {
+  address: PropTypes.string
 }
 
 export { SensorMonitor }

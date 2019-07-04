@@ -1,62 +1,76 @@
-import React, { useState, useEffect } from 'react'
-import { useInterval } from './hooks'
-import axios from 'axios'
+import React, { useState, useEffect, useRef } from 'react'
+import { useCheckedWidth } from './hooks'
+import useInterval from '@restart/hooks/useInterval'
 import logger from './logger'
 import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timeseries-charts'
-import { TimeSeries } from 'pondjs'
+import { TimeSeries, TimeRange } from 'pondjs'
 import PropTypes from 'prop-types'
+import AsyncClient from 'async-mqtt'
+import Ring from 'ringjs'
 
 SensorData.propTypes = {
-  url: PropTypes.string.isRequired
+  name: PropTypes.string.isRequired,
+  address: PropTypes.string.isRequired
 }
 
 function SensorData (props) {
-  let [data, setData] = useState([])
-  let [loading, setLoading] = useState(true)
-  let [series, setSeries] = useState(null)
+  const address = props.address
+  const name = props.name
 
-  function makeUnixDate (seconds, nanos) {
-    var millis = seconds * 1000
-    millis += nanos / 1000000
-    return millis
-  }
+  let [latestNow, setLatestNow] = useState((new Date()).valueOf())
+  let [data, setData] = useState(new Ring(300))
+  let [ref, checkedWidth] = useCheckedWidth()
+  let [started, setStarted] = useState(false)
+  let [position, setPosition] = useState('')
 
-  useEffect(() => {
-    let seriesData = {
-      name: 'readings',
-      columns: ['time', 's1', 's2', 's3', 's4'],
-      points: []
-    }
-    if (data.length > 0) {
-      let reversed = data.reverse()
-      for (var reading of reversed) {
-        let point = []
-        let time = makeUnixDate(reading.timestamp.seconds, reading.timestamp.nanos)
-        point.push(time)
-        point.push(reading.s1)
-        point.push(reading.s2)
-        point.push(reading.s3)
-        point.push(reading.s4)
-        seriesData.points.push(point)
-      }
-      let series = new TimeSeries(seriesData)
-      setSeries(series)
-    }
-  }, [data])
+  let bufferRef = useRef([])
+  let currentBuf = bufferRef.current
 
-  async function pollServerAndUpdate () {
-    try {
-      const response = await axios.get(props.url)
-      setData(response.data)
-      setLoading(false)
-    } catch (error) {
-      logger.error(error)
-    }
-  }
-
+  // Move new messages from buffer into data state and clear buffer
+  // Clearing is slightly unsafe, but in this application losing a reading
+  // or two is not a big deal
   useInterval(() => {
-    pollServerAndUpdate()
-  }, 250)
+    setData(dataref => {
+      currentBuf.map(reading => dataref.push(reading))
+      return dataref
+    })
+    setLatestNow((new Date()).valueOf())
+    currentBuf.length = 0 // javascript you so crazy
+  }, 100)
+
+  // Initializer. Should only run at mount, but contains a message handler
+  // that pushes all of the state updates into the buffer
+  useEffect(() => {
+    async function subscribe () {
+      const mqtt = AsyncClient.connect(address)
+      try {
+        await mqtt.subscribe('asOne/sensor/reading')
+        logger.log('subscribed sensormonitor')
+      } catch (e) {
+        logger.error('error connecting to mqtt')
+        logger.error(e)
+      }
+
+      mqtt.on('message', (_, message) => {
+        if (message == null) return
+        const msgString = message.toString()
+        if (!msgString.startsWith(name)) return
+        const reading = msgString.split(',')
+        const point = [parseInt(reading[5]), reading[1], reading[2], reading[3], reading[4]]
+        currentBuf.push(point)
+        setPosition(reading[6])
+      })
+
+      return () => {
+        if (mqtt.close) mqtt.close()
+      }
+    }
+
+    if (!started) {
+      subscribe()
+      setStarted(true)
+    }
+  }, [started, address, currentBuf, name, setPosition])
 
   const style = {
     s1: {
@@ -77,19 +91,27 @@ function SensorData (props) {
     }
   }
 
+  const timeSeries = new TimeSeries({
+    name: 'readings',
+    columns: ['time', 's1', 's2', 's3', 's4'],
+    points: data.toArray()
+  })
+
+  const lastFewSeconds = new TimeRange(latestNow - 5000, latestNow)
+
   return (
-    <>
-      { loading || (series == null) ? ('Loading ...') : (
-        <ChartContainer timeRange={series.timerange()} width={668}>
-          <ChartRow height='300' showGrid>
-            <YAxis id='axis1' min={300} max={650} width={28} type='linear' format='.0f' />
+    <div ref={ref}>
+      { (timeSeries == null) ? 'Loading ...' : (
+        <ChartContainer width={checkedWidth} timeRange={lastFewSeconds} title={position + ': ' + props.name}>
+          <ChartRow height={checkedWidth / 3} showGrid>
+            <YAxis id='axis1' min={400} max={600} width={28} type='linear' format='.0f' />
             <Charts>
-              <LineChart axis='axis1' series={series} columns={['s1', 's2', 's3', 's4']} style={style} />
+              <LineChart axis='axis1' series={timeSeries} columns={['s1', 's2', 's3', 's4']} style={style} />
             </Charts>
           </ChartRow>
         </ChartContainer>
       )}
-    </>
+    </div>
   )
 }
 
