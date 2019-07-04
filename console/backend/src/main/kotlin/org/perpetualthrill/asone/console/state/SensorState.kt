@@ -52,12 +52,17 @@ constructor(
     val activeSensorNames: List<String>
         get() = (simulators.keys + serialMonitor.sensors.map { it.name }).toList()
 
-    fun readingsForSensor(name: String): Array<out Any> {
+    private inline fun <reified T> fixArray(list: List<*>): Array<T> {
+        return (list as List<T>).toTypedArray()
+    }
+
+    fun readingsForSensor(name: String): Array<Sensor.Reading> {
+
         simulators[name]?.let {
-            return it.sensor.readings.toArray()
+            return fixArray(it.sensor.readings.toArray().asList())
         }
         serialMonitor.sensors.firstOrNull { it.name == name }?.let {
-            return it.readings.toArray()
+            return fixArray(it.readings.toArray().asList())
         }
         throw Exception("Sensor not found: name")
     }

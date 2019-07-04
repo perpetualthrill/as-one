@@ -83,6 +83,8 @@ class Sensor(val name: String) {
         fun toCSVString(): String {
             return "$sensorName,$s1,$s2,$s3,$s4,${timestamp.toEpochMilli()}"
         }
+
+        val asArray = arrayOf(s1, s2, s3, s4)
     }
 
     override fun toString(): String {
