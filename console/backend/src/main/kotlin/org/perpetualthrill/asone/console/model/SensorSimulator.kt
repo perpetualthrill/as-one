@@ -34,9 +34,8 @@ constructor() {
 
     lateinit var sensor: Sensor
 
-
-    val readingStream: Observable<Sensor.Reading> = Observable
-        .interval(20, TimeUnit.MILLISECONDS)
+    private val readingStream: Observable<Sensor.Reading> = Observable
+        .interval(SENSOR_UPDATE_INTERVAL.longValue, TimeUnit.MILLISECONDS)
         .takeWhile { !finished }
         .map { checkStateAndReturnReading() }
 
