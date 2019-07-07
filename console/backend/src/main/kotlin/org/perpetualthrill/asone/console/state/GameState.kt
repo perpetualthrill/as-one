@@ -127,7 +127,7 @@ constructor(
 
     private fun updateBPMs() {
         for (sensorName in gameSensors.keys) {
-            // pivot readings into int arrays. accumulate glitch list
+            // get readings. go to next if funny
             val readings = try {
                 sensorState.readingsForSensor(sensorName)
             } catch (e: Exception) {
@@ -135,6 +135,9 @@ constructor(
                 logError("error getting readings: $e")
                 continue
             }
+            if (readings.size < 10) continue
+
+            // pivot readings into int arrays. accumulate glitch list
             val pivotReadings = listOf(IntArray(readings.size), IntArray(readings.size), IntArray(readings.size), IntArray(readings.size))
             val glitches = listOf(BooleanArray(readings.size), BooleanArray(readings.size), BooleanArray(readings.size), BooleanArray(readings.size))
             for (sensorIndex in 0..3) {

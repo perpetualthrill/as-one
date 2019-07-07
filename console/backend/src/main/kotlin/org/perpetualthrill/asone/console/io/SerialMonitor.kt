@@ -25,9 +25,10 @@ constructor() {
     )
 
     private val sensorAddresses = listOf("/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2")
+    private val confirmedSensorMap = mutableMapOf<String, PortAndSensor>()
     private val sensorMap = mutableMapOf<String, PortAndSensor>()
     val sensors: List<Sensor>
-        get() = sensorMap.values.map { it.sensor }
+        get() = confirmedSensorMap.values.map { it.sensor }
 
     private val sensorStreamInternal = PublishSubject.create<Sensor.Reading>()
     val sensorStream: Observable<Sensor.Reading> = sensorStreamInternal
@@ -72,6 +73,7 @@ constructor() {
             val check = sensorMap[address]
             if (null != check && check.sensor.isDisconnected()) {
                 sensorMap.remove(address)
+                confirmedSensorMap.remove(address)
                 check.port.removeDataListener()
                 check.port.closePort()
                 check.sensor.finish()
@@ -94,7 +96,9 @@ constructor() {
                 if(it.openPort(100)) {
                     val listener = MessageListener(address)
                     it.addDataListener(listener)
-                    return PortAndSensor(it, listener.sensor)
+                    val gotOne = PortAndSensor(it, listener.sensor)
+                    confirmedSensorMap[address] = gotOne
+                    return gotOne
                 }
             }
         } catch (_: Exception) { }
