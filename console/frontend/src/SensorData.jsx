@@ -92,13 +92,12 @@ function SensorData (props) {
   }
 
   const dataArray = data.toArray()
-  const sum = (dataArray.length < 2) ? 1 : dataArray.map(function(value) {
+  const sum = (dataArray.length < 2) ? 1 : dataArray.map(function (value) {
     return parseInt(value[1]) + parseInt(value[2]) + parseInt(value[3]) + parseInt(value[4])
-  }).reduce(function(accumulator, value) {
+  }).reduce(function (accumulator, value) {
     return accumulator + value
   })
   const average = (dataArray.length < 2) ? 1 : (sum / dataArray.length) / 4
-
 
   const timeSeries = new TimeSeries({
     name: 'readings',
