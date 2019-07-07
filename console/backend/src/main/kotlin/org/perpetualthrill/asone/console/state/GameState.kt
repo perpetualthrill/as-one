@@ -151,8 +151,10 @@ constructor(
             // find IBI candidates
             val ibiCandidatesMS = mutableListOf<Long>()
             for (sensorIndex in 0..3) {
-                // calculate the lower bound of the upper quartile
+                // calculate the lower bound of the upper quartile. if there are no good ones,
+                // continue to the next
                 val sorted = pivotReadings[sensorIndex].filter { !readingIsGlitch(it) }.sorted()
+                if (sorted.size < 10) continue
                 val upperQuartile = sorted[(sorted.size * 3) / 4]
 
                 // walk the readings array looking for candidate beats, i.e. several top

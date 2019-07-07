@@ -74,27 +74,36 @@ function SensorData (props) {
 
   const style = {
     s1: {
-      stroke: '#a02c2c',
-      opacity: 0.5
+      stroke: '#ff0000',
+      opacity: 0.75
     },
     s2: {
-      stroke: '#b03c3c',
-      opacity: 0.5
+      stroke: '#bbffbb',
+      opacity: 0.75
     },
     s3: {
-      stroke: '#c04c4c',
-      opacity: 0.5
+      stroke: '#00bbff',
+      opacity: 0.75
     },
     s4: {
-      stroke: '#d05c5c',
-      opacity: 0.5
+      stroke: '#bbbbbb',
+      opacity: 0.75
     }
   }
+
+  const dataArray = data.toArray()
+  const sum = (dataArray.length < 2) ? 1 : dataArray.map(function(value) {
+    return parseInt(value[1]) + parseInt(value[2]) + parseInt(value[3]) + parseInt(value[4])
+  }).reduce(function(accumulator, value) {
+    return accumulator + value
+  })
+  const average = (dataArray.length < 2) ? 1 : (sum / dataArray.length) / 4
+
 
   const timeSeries = new TimeSeries({
     name: 'readings',
     columns: ['time', 's1', 's2', 's3', 's4'],
-    points: data.toArray()
+    points: dataArray
   })
 
   const lastFewSeconds = new TimeRange(latestNow - 5000, latestNow)
@@ -104,7 +113,7 @@ function SensorData (props) {
       { (timeSeries == null) ? 'Loading ...' : (
         <ChartContainer width={checkedWidth} timeRange={lastFewSeconds} title={position + ': ' + props.name}>
           <ChartRow height={checkedWidth / 3} showGrid>
-            <YAxis id='axis1' min={400} max={600} width={28} type='linear' format='.0f' />
+            <YAxis id='axis1' min={average - 100} max={average + 100} width={28} type='linear' format='.0f' />
             <Charts>
               <LineChart axis='axis1' series={timeSeries} columns={['s1', 's2', 's3', 's4']} style={style} />
             </Charts>
