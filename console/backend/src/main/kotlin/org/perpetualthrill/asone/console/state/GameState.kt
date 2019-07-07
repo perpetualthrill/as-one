@@ -33,8 +33,8 @@ constructor(
     private var leftBPM: Int = 199
     private var rightBPM: Int = 188
 
-    // Keep internal knowledge of which sensor is in which position
-    private val gameSensors = mutableMapOf<String, SensorPosition>()
+    // Keep knowledge of which sensor is in which position
+    val gameSensors = mutableMapOf<String, SensorPosition>()
 
     // Record start time and initialize other timing
     private val startTime = Calendar.getInstance()
@@ -154,7 +154,7 @@ constructor(
                 // calculate the lower bound of the upper quartile. if there are no good ones,
                 // continue to the next
                 val sorted = pivotReadings[sensorIndex].filter { !readingIsGlitch(it) }.sorted()
-                if (sorted.size < 10) continue
+                if (sorted.size < 10) continue // sometimes this is zero and crashes. here is a sane magic number limit
                 val upperQuartile = sorted[(sorted.size * 3) / 4]
 
                 // walk the readings array looking for candidate beats, i.e. several top

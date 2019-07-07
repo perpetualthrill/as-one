@@ -9,22 +9,22 @@
 			"name": "Sensors",
 			"item": [
 				{
-					"name": "List of Sensors",
+					"name": "Map of Sensors",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"id": "52a43160-8101-4b21-8628-49f37213eb98",
 								"exec": [
-									"pm.test(\"Expect successful response of a json array\", function () {",
+									"pm.test(\"Expect successful response of a map\", function () {",
 									"    pm.response.to.be.ok;",
 									"    pm.expect(pm.response.headers.get('Content-Type')).to.match(/^application\\/json/i);",
 									"    var check = JSON.parse(pm.response.text());",
-									"    pm.expect(Array.isArray(check));",
+									"    pm.expect(Object.isObject(check));",
 									"});",
 									"",
 									"var check = JSON.parse(pm.response.text());",
-									"pm.globals.set(\"first-sensor-name\", check[0]);",
+									"pm.globals.set(\"first-sensor-name\", Object.keys(check)[0]);",
 									""
 								],
 								"type": "text/javascript"
@@ -43,7 +43,7 @@
 								"sensors"
 							]
 						},
-						"description": "JSON array of readings, intended to be polled for a line chart or similar"
+						"description": "Map of sensor to position"
 					},
 					"response": []
 				},
@@ -132,7 +132,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "be5afa15-2eab-4040-b04a-26996ba85298",
+								"id": "2d5fd360-f7c9-4349-b49e-469068a1d8fb",
 								"exec": [
 									"// Make sure the creation was successful",
 									"pm.test(\"Expect simulator to have been created\", function () {",
@@ -143,7 +143,7 @@
 									"// neither pm.environment nor pm.variables will let this",
 									"// work -- it really seems to want a global :-/",
 									"pm.globals.set(\"simulator-path\", pm.response.text());",
-									""
+									"pm.globals.unset(\"variable_key\");"
 								],
 								"type": "text/javascript"
 							}
@@ -294,7 +294,7 @@
 	],
 	"variable": [
 		{
-			"id": "e7bef777-172e-47fc-a197-dbd55574a6cd",
+			"id": "58745466-be3b-4880-b805-fc0e0cbb085b",
 			"key": "host",
 			"value": "http://localhost:12345",
 			"type": "string"

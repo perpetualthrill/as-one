@@ -29,7 +29,7 @@ function SensorMonitor (props) {
 
   return (
     <Row>
-      { sensorList.map(sensorName =>
+      { Object.keys(sensorList).map(sensorName =>
         <Col lg={6} md key={sensorName}>
           <SensorData name={sensorName} address={address} />
         </Col>
