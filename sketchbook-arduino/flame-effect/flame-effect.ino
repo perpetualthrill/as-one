@@ -4,15 +4,17 @@
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-#define LONG_DELAY_MS 5000
+const int LONG_DELAY_MS = 5000;
 const int MS_PER_SECOND = 60000;
+const int HEARTBEAT_INTERVAL_MS = 1000;
 
 String testUpperTopic = String("asOne/fe/testUpper");
 String testLowerTopic = String("asOne/fe/testLower");
-String heartbeatTopic = String("asOne/fe/doHeartbeat");
+String heartbeatTopic = String("asOne/fe/heartbeat");
+String bpmTopic = String("asOne/fe/doBPM");
 
 const int upperPin = 12;
-const int lowerPin = 13;
+const int lowerPin = 16;
 
 int upperPinStartMillis = 0;
 int lowerPinStartMillis = 0;
@@ -23,6 +25,8 @@ bool lowerPinOn = false;
 int pauseTargetMillis = 0;
 int beatCountdown = 0;
 int beatLength = 0;
+
+int heartbeatTargetMillis = millis();
 
 void setup() {
 
@@ -72,7 +76,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print("do lower: ");
     Serial.println(checkPayload.toInt());
     doPoof(lowerPin, checkPayload.toInt());
-  } else if (checkTopic.equals(heartbeatTopic)) {
+  } else if (checkTopic.equals(bpmTopic)) {
     int bpm = checkPayload.toInt();
     if ((bpm < 50) || (bpm > 180)) {
       return;
@@ -129,7 +133,7 @@ void reconnect() {
       client.publish("asOne/hello", "hello from flame effect");
       client.subscribe(testUpperTopic.c_str());
       client.subscribe(testLowerTopic.c_str());
-      client.subscribe(heartbeatTopic.c_str());
+      client.subscribe(bpmTopic.c_str());
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -203,6 +207,11 @@ void loop() {
 
   if (beatCountdown > 0 && now > pauseTargetMillis) {
     enqueueNextBeat();
+  }
+
+  if (now > heartbeatTargetMillis) {
+    client.publish(heartbeatTopic.c_str(), "hello from flame effect");
+    heartbeatTargetMillis = now + HEARTBEAT_INTERVAL_MS;
   }
 
   client.loop();
