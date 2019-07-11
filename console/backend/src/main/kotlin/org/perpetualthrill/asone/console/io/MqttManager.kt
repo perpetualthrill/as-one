@@ -99,7 +99,7 @@ constructor() {
             // you know? i am not even going to mess with making an enum for QoS
             client?.publish(topic, byteArray, 0, false)
         } catch (e: MqttException) {
-            logError("Exception on publish: $e")
+            logInfo("Exception on publish: $e")
         }
     }
 
