@@ -31,7 +31,7 @@ class Console : CliktCommand() {
 
     // clikt args
     private val disableSerialArgument by option("--disable-serial", help = "turn off USB serial monitoring").flag()
-    private val hostArgument: String by option("--hostname", help = "hostname or ip address to bind services to. defaults to localhost").default("localhost")
+    private val hostArgument: String by option("--hostname", help = "hostname or ip address to bind services to. defaults to 192.168.12.1").default("192.168.12.1")
 
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
