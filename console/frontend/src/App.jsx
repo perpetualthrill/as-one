@@ -47,6 +47,21 @@ function App () {
           <Col>
             <div className='card' style={{ backgroundColor: GREYISH_BLACK }}>
               <h4 className='card-header'>
+                Fire
+              </h4>
+              <div className='card-body'>
+                <div className='card-text'><FireTest address={mqttAddress} /></div>
+              </div>
+            </div>
+          </Col>
+          <Col md={0} lg={1} />
+        </Row>
+        { spacer }
+        <Row>
+          <Col md={0} lg={1} />
+          <Col>
+            <div className='card' style={{ backgroundColor: GREYISH_BLACK }}>
+              <h4 className='card-header'>
                 <a href='#/' onClick={() => setSensorMonitorOpen(!sensorMonitorOpen)}>
                   Sensors
                   <span className='float-right'>▼</span>
@@ -85,20 +100,6 @@ function App () {
         </Row>
 
         { spacer }
-        <Row>
-          <Col md={0} lg={1} />
-          <Col>
-            <div className='card' style={{ backgroundColor: GREYISH_BLACK }}>
-              <h4 className='card-header'>
-                Fire
-              </h4>
-              <div className='card-body'>
-                <div className='card-text'><FireTest address={mqttAddress} /></div>
-              </div>
-            </div>
-          </Col>
-          <Col md={0} lg={1} />
-        </Row>
 
       </Container>
     </div>
