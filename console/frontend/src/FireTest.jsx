@@ -4,16 +4,33 @@ import Button from 'react-bootstrap/Button'
 import AsyncClient from 'async-mqtt'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import logger from './logger'
 
 function FireTest (props) {
   const address = props.address
 
   let [started, setStarted] = useState(false)
   let [mq, setMq] = useState(null)
+  let [lefty, setLefty] = useState('169')
 
   useEffect(() => {
     async function subscribe () {
       const client = AsyncClient.connect(address)
+      try {
+        await client.subscribe('asOne/console/leftBPM')
+      } catch (e) {
+        logger.error('error connecting to mqtt')
+        logger.error(e)
+      }
+
+      client.on('message', (_, message) => {
+        if (message == null) return
+        const msgString = message.toString()
+        if (msgString) {
+          setLefty(msgString)
+        }
+      })
+
       setMq(client)
     }
 
@@ -21,7 +38,7 @@ function FireTest (props) {
       subscribe()
       setStarted(true)
     }
-  }, [address, mq, started])
+  }, [address, mq, started, setLefty])
 
   function mqttPublish (topic, string) {
     const mqtt = mq
@@ -41,7 +58,7 @@ function FireTest (props) {
           }}
           onPointerUp={() => {
             mqttPublish('asOne/fe/testUpper', '500')
-          }}>Upper</Button>
+          }}>Upper ______</Button>
       </Col>
       <Col>
         <Button
@@ -49,7 +66,7 @@ function FireTest (props) {
           id='lower-button'
           onPointerUp={() => {
             mqttPublish('asOne/fe/testLower', '375')
-          }}>Lower</Button>
+          }}>Lower ______</Button>
       </Col>
       <Col>
         <Button
@@ -57,15 +74,15 @@ function FireTest (props) {
           id='80-bpm-button'
           onPointerUp={() => {
             mqttPublish('asOne/fe/doBPM', '80')
-          }}>80 BPM</Button>
+          }}>80 BPM ______</Button>
       </Col>
       <Col>
         <Button
           label='Left BPM'
           id='left-bpm-button'
           onPointerUp={() => {
-            mqttPublish('asOne/fe/doBPM', '80')
-          }}>Left BPM ({})</Button>
+            mqttPublish('asOne/fe/doBPM', lefty)
+          }}>Left BPM ({lefty})</Button>
       </Col>
       <Col />
       <Col />

@@ -104,6 +104,8 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
             val currentBPMs = gameState.bpms.take(1).blockingFirst()
             val frame = andBackgroundWithBPM(frameNumber, currentBPMs)
             mqtt.publishAtMostOnce("asOne/score/all/direct", frame.toAsOneScoreboard().toByteArray())
+            mqtt.publishAtMostOnce("asOne/console/leftBPM", "${currentBPMs.left}".toByteArray())
+            mqtt.publishAtMostOnce("asOne/console/rightBPM", "${currentBPMs.right}".toByteArray())
         }
     }
 
