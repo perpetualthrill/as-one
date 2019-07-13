@@ -27,6 +27,9 @@ function App () {
             <Navbar expand='lg' variant='dark' bg='dark'>
               <Navbar.Brand href='#'>As One</Navbar.Brand>
               <div className='d-flex ml-auto flex-nowrap'>
+                {/* flame effect heartbeat */}
+                <MqttIndicator address={mqttAddress} topic='asOne/fe/heartbeat' emoji='🔥' />
+                <div style={{ width: '10px' }} />
                 {/* scoreboard heartbeat */}
                 <MqttIndicator address={mqttAddress} topic='asOne/score/heartbeat' emoji='📺' />
                 <div style={{ width: '10px' }} />
