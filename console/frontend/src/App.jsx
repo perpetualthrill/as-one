@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { SensorMonitor } from './SensorMonitor'
 import { MqttIndicator } from './MqttIndicator'
+import { FireTest } from './FireTest'
 import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
 
 import Container from 'react-bootstrap/Container'
@@ -82,6 +83,23 @@ function App () {
           </Col>
           <Col md={0} lg={1} />
         </Row>
+
+        { spacer }
+        <Row>
+          <Col md={0} lg={1} />
+          <Col>
+            <div className='card' style={{ backgroundColor: GREYISH_BLACK }}>
+              <h4 className='card-header'>
+                Fire
+              </h4>
+              <div className='card-body'>
+                <div className='card-text'><FireTest address={mqttAddress} /></div>
+              </div>
+            </div>
+          </Col>
+          <Col md={0} lg={1} />
+        </Row>
+
       </Container>
     </div>
   )
