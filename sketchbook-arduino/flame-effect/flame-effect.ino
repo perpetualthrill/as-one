@@ -13,8 +13,8 @@ String testLowerTopic = String("asOne/fe/testLower");
 String heartbeatTopic = String("asOne/fe/heartbeat");
 String bpmTopic = String("asOne/fe/doBPM");
 
-const int upperPin = 12;
-const int lowerPin = 16;
+const int upperPin = 14;
+const int lowerPin = 27;
 
 int upperPinStartMillis = 0;
 int lowerPinStartMillis = 0;
@@ -128,9 +128,8 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("ESP8266Client_flame_effect")) {
+    if (client.connect("as_one_flame_effect")) {
       Serial.println("connected");
-      client.publish("asOne/hello", "hello from flame effect");
       client.subscribe(testUpperTopic.c_str());
       client.subscribe(testLowerTopic.c_str());
       client.subscribe(bpmTopic.c_str());
@@ -149,12 +148,14 @@ void internalDigitalWrite(int pin, int val) {
     if (val == HIGH) {
       if (!upperPinOn) {
         Serial.println("UPPER HIGH");
+        heartbeatPublish("upper high");
         digitalWrite(pin, val);
         upperPinOn = true;
       }
     } else if (val == LOW) {
       if (upperPinOn) {
         Serial.println("UPPER LOW");
+        heartbeatPublish("upper low");
         digitalWrite(pin, val);
         upperPinOn = false;
       }
@@ -163,17 +164,23 @@ void internalDigitalWrite(int pin, int val) {
     if (val == HIGH) {
       if (!lowerPinOn) {
         Serial.println("LOWER HIGH");
+        heartbeatPublish("lower high");
         digitalWrite(pin, val);
         lowerPinOn = true;
       }
     } else if (val == LOW) {
       if (lowerPinOn) {
         Serial.println("LOWER LOW");
+        heartbeatPublish("lower low");
         digitalWrite(pin, val);
         lowerPinOn = false;
       }
     }
   }
+}
+
+void heartbeatPublish(char *str) {
+  client.publish(heartbeatTopic.c_str(), str);
 }
 
 void loop() {
@@ -210,7 +217,7 @@ void loop() {
   }
 
   if (now > heartbeatTargetMillis) {
-    client.publish(heartbeatTopic.c_str(), "hello from flame effect");
+    heartbeatPublish("tick");
     heartbeatTargetMillis = now + HEARTBEAT_INTERVAL_MS;
   }
 
