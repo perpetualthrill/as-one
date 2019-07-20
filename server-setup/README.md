@@ -11,7 +11,7 @@ Presumes Ubuntu 18.04
 
 This should leave you in the state where the wifi nat is running and will run automatically when rebooted.
 
-If wifi has been turned off somehow, `rfkill unblock wifi` may fix it.
+If wifi has been turned off somehow, `rfkill unblock all` may fix it.
 
 If there are unknown errors, `systemctl status create_ap.service` and `systemctl status hostapd.service` may be of use.
 
@@ -25,4 +25,14 @@ Using sudo:
 1) Copy over the mosquitto.conf file to /etc/mosquitto/conf.d/ to enable one tcp packet per message.
 1) Copy the mosquitto.service file to /usr/lib/systemd/system/ -- not sure what the issue is, but start-on-boot does not work with whatever comes out of the box. At least with 1.6.2 which is the current as of this edit.
 1) Unload the service in case it is running, tell it to run at boot, and fire it up: `sudo systemctl stop mosquitto`, `sudo systemctl enable mosquitto`, `sudo systemctl start mosquitto`
+
+## Set up backend service
+
+1) Edit any scripts that might need your username in them. A good way to find these is to grep for chattj from the project directory. Definitely `console/backend/AsOne-Console` and `server-setup/as-one-systemd-service` will need edits.
+1) Make sure you have a systemd user daemon directory: `mkdir -p ~/.config/systemd/user/`
+1) Establish the service with e.g. `cp ~/as-one/server-setup/as-one-systemd-service ~/.config/systemd/user/as-one.service`. For whatever reason systemd hates symlinks, unfortunately.
+1) Enable it for boot: `systemctl --user enable as-one`
+1) Switch it on for current boot: `systemctl --user start as-one`
+
+To view logs at any time, issue `journalctl --user -u as-one`
 
