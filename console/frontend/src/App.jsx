@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { SensorMonitor } from './SensorMonitor'
 import { MqttIndicator } from './MqttIndicator'
+import { FireTest } from './FireTest'
 import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
 
 import Container from 'react-bootstrap/Container'
@@ -27,6 +28,9 @@ function App () {
             <Navbar expand='lg' variant='dark' bg='dark'>
               <Navbar.Brand href='#'>As One</Navbar.Brand>
               <div className='d-flex ml-auto flex-nowrap'>
+                {/* flame effect heartbeat */}
+                <MqttIndicator address={mqttAddress} topic='asOne/fe/heartbeat' emoji='🔥' />
+                <div style={{ width: '10px' }} />
                 {/* scoreboard heartbeat */}
                 <MqttIndicator address={mqttAddress} topic='asOne/score/heartbeat' emoji='📺' />
                 <div style={{ width: '10px' }} />
@@ -34,6 +38,21 @@ function App () {
                 <MqttIndicator address={mqttAddress} topic='asOne/#' emoji='📢' />
               </div>
             </Navbar>
+          </Col>
+          <Col md={0} lg={1} />
+        </Row>
+        { spacer }
+        <Row>
+          <Col md={0} lg={1} />
+          <Col>
+            <div className='card' style={{ backgroundColor: GREYISH_BLACK }}>
+              <h4 className='card-header'>
+                Fire
+              </h4>
+              <div className='card-body'>
+                <div className='card-text'><FireTest address={mqttAddress} /></div>
+              </div>
+            </div>
           </Col>
           <Col md={0} lg={1} />
         </Row>
@@ -79,6 +98,9 @@ function App () {
           </Col>
           <Col md={0} lg={1} />
         </Row>
+
+        { spacer }
+
       </Container>
     </div>
   )

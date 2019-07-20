@@ -26,7 +26,7 @@ class GameState
 @Inject
 constructor(
     private val sensorState: SensorState,
-    mqttManager: MqttManager
+    private val mqttManager: MqttManager
 ) {
 
     // Bogus start values. Frozen on these indicates an error
@@ -94,6 +94,7 @@ constructor(
 
     val bpms = Observable.create<CurrentBPMs> { emitter ->
         // update these values from time to time
+        // ugh this is a getter with side effects :-0
         if (lastSensorReading > (lastBPMUpdate + BPM_UPDATE_INTERVAL)) {
             updateBPMs()
         }

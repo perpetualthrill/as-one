@@ -1,0 +1,14 @@
+[Unit]
+AssertPathExists=/home/chattj/as-one/console/backend/AsOne-Console
+Description=As One Console
+After=network.target create_ap.service
+
+[Service]
+WorkingDirectory=/home/chattj/as-one/console/backend
+ExecStart=/home/chattj/as-one/console/backend/AsOne-Console
+Restart=always
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

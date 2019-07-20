@@ -4,15 +4,17 @@
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-#define LONG_DELAY_MS 5000
+const int LONG_DELAY_MS = 5000;
 const int MS_PER_SECOND = 60000;
+const int HEARTBEAT_INTERVAL_MS = 1000;
 
 String testUpperTopic = String("asOne/fe/testUpper");
 String testLowerTopic = String("asOne/fe/testLower");
-String heartbeatTopic = String("asOne/fe/doHeartbeat");
+String heartbeatTopic = String("asOne/fe/heartbeat");
+String bpmTopic = String("asOne/fe/doBPM");
 
-const int upperPin = 12;
-const int lowerPin = 13;
+const int upperPin = 14;
+const int lowerPin = 27;
 
 int upperPinStartMillis = 0;
 int lowerPinStartMillis = 0;
@@ -23,6 +25,8 @@ bool lowerPinOn = false;
 int pauseTargetMillis = 0;
 int beatCountdown = 0;
 int beatLength = 0;
+
+int heartbeatTargetMillis = millis();
 
 void setup() {
 
@@ -72,9 +76,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print("do lower: ");
     Serial.println(checkPayload.toInt());
     doPoof(lowerPin, checkPayload.toInt());
-  } else if (checkTopic.equals(heartbeatTopic)) {
+  } else if (checkTopic.equals(bpmTopic)) {
     int bpm = checkPayload.toInt();
-    if ((bpm < 50) || (bpm > 180)) {
+    if ((bpm < 60) || (bpm > 130)) {
       return;
     }
     Serial.print("do heartbeat at bpm = ");
@@ -124,12 +128,11 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("ESP8266Client_flame_effect")) {
+    if (client.connect("as_one_flame_effect")) {
       Serial.println("connected");
-      client.publish("asOne/hello", "hello from flame effect");
       client.subscribe(testUpperTopic.c_str());
       client.subscribe(testLowerTopic.c_str());
-      client.subscribe(heartbeatTopic.c_str());
+      client.subscribe(bpmTopic.c_str());
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -145,12 +148,14 @@ void internalDigitalWrite(int pin, int val) {
     if (val == HIGH) {
       if (!upperPinOn) {
         Serial.println("UPPER HIGH");
+        heartbeatPublish("upper high");
         digitalWrite(pin, val);
         upperPinOn = true;
       }
     } else if (val == LOW) {
       if (upperPinOn) {
         Serial.println("UPPER LOW");
+        heartbeatPublish("upper low");
         digitalWrite(pin, val);
         upperPinOn = false;
       }
@@ -159,17 +164,23 @@ void internalDigitalWrite(int pin, int val) {
     if (val == HIGH) {
       if (!lowerPinOn) {
         Serial.println("LOWER HIGH");
+        heartbeatPublish("lower high");
         digitalWrite(pin, val);
         lowerPinOn = true;
       }
     } else if (val == LOW) {
       if (lowerPinOn) {
         Serial.println("LOWER LOW");
+        heartbeatPublish("lower low");
         digitalWrite(pin, val);
         lowerPinOn = false;
       }
     }
   }
+}
+
+void heartbeatPublish(char *str) {
+  client.publish(heartbeatTopic.c_str(), str);
 }
 
 void loop() {
@@ -203,6 +214,11 @@ void loop() {
 
   if (beatCountdown > 0 && now > pauseTargetMillis) {
     enqueueNextBeat();
+  }
+
+  if (now > heartbeatTargetMillis) {
+    heartbeatPublish("tick");
+    heartbeatTargetMillis = now + HEARTBEAT_INTERVAL_MS;
   }
 
   client.loop();
