@@ -50,7 +50,7 @@ void setup() {
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-  client.setServer("asone-console.local", 1883);
+  client.setServer("192.168.12.1", 1883);
   client.setCallback(callback);
 }
 
