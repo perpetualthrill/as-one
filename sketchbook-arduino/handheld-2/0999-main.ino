@@ -56,6 +56,7 @@ void loop() {
     int inBeatCount = 0;
     for (int i = 0; i < SENSOR_COUNT; i++) {
       int sample = pulseSensor.getLatestSample(i);
+      if (sample < 0) sample = 0;
       int bpm = pulseSensor.getBeatsPerMinute(i);
       if (bpm > MAX_BPM) bpm /= 2; // sensors often report double
       if (bpm < MIN_BPM) bpm *= 2; // ... or half
@@ -106,7 +107,7 @@ void loop() {
 
     // Turn motor on or off as necessary
     if ((now >= nextMotor) && (now <= (nextMotor + MOTOR_PERIOD_MS))) {
-      digitalWrite(MOTOR_PIN, HIGH);
+ //     digitalWrite(MOTOR_PIN, HIGH);
     } else {
       digitalWrite(MOTOR_PIN, LOW);
     }
