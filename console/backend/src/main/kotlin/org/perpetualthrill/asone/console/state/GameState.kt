@@ -126,81 +126,95 @@ constructor(
         return (reading < 200 || reading > 800)
     }
 
-    private fun updateBPMs() {
-        for (sensorName in gameSensors.keys) {
-            // get readings. go to next if funny
-            val readings = try {
-                sensorState.readingsForSensor(sensorName)
-            } catch (e: Exception) {
-                // probably the sensor was removed but is still in our array
-                logError("error getting readings: $e")
-                continue
-            }
-            if (readings.size < 10) continue
+    private fun getBPM(sensorName: String): Double? {
+        // get readings. go to next if funny
+        val readings = try {
+            sensorState.readingsForSensor(sensorName)
+        } catch (e: Exception) {
+            // probably the sensor was removed but is still in our array
+            logError("error getting readings: $e")
+            return null
+        }
+        if (readings.size < 10) return null
 
-            // pivot readings into int arrays. accumulate glitch list
-            val pivotReadings = listOf(IntArray(readings.size), IntArray(readings.size), IntArray(readings.size), IntArray(readings.size))
-            val glitches = listOf(BooleanArray(readings.size), BooleanArray(readings.size), BooleanArray(readings.size), BooleanArray(readings.size))
-            for (sensorIndex in 0..3) {
-                for (readingIndex in readings.indices) {
+        // pivot readings into int arrays. accumulate glitch list
+        val pivotReadings = listOf(IntArray(readings.size), IntArray(readings.size), IntArray(readings.size), IntArray(readings.size))
+        val glitches = listOf(BooleanArray(readings.size), BooleanArray(readings.size), BooleanArray(readings.size), BooleanArray(readings.size))
+        for (sensorIndex in 0..3) {
+            for (readingIndex in readings.indices) {
+                // NOTE: there is a transient NPE here with the simulator data. which does not
+                // seem possible because it loops and the readings manipulation above is
+                // safety checked? but yeah, i dunno
+                try {
                     val reading = readings[readingIndex].asArray[sensorIndex]
                     pivotReadings[sensorIndex][readingIndex] = reading
                     glitches[sensorIndex][readingIndex] = readingIsGlitch(reading)
+                } catch (_: NullPointerException) {
+                    return null
                 }
             }
+        }
 
-            // find IBI candidates
-            val ibiCandidatesMS = mutableListOf<Long>()
-            for (sensorIndex in 0..3) {
-                // calculate the lower bound of the upper quartile. if there are no good ones,
-                // continue to the next
-                val sorted = pivotReadings[sensorIndex].filter { !readingIsGlitch(it) }.sorted()
-                if (sorted.size < 10) continue // sometimes this is zero and crashes. here is a sane magic number limit
-                val upperQuartile = sorted[(sorted.size * 3) / 4]
+        // find IBI candidates
+        val ibiCandidatesMS = mutableListOf<Long>()
+        for (sensorIndex in 0..3) {
+            // calculate the lower bound of the upper quartile. if there are no good ones,
+            // continue to the next
+            val sorted = pivotReadings[sensorIndex].filter { !readingIsGlitch(it) }.sorted()
+            if (sorted.size < 10) continue // sometimes this is zero and crashes. here is a sane magic number limit
+            val upperQuartile = sorted[(sorted.size * 3) / 4]
 
-                // walk the readings array looking for candidate beats, i.e. several top
-                // quartile readings in a row
-                val beatCandidates = BooleanArray(readings.size)
-                for (readingIndex in 0..(readings.size - 3)) {
-                    if (!glitches[sensorIndex][readingIndex]
-                        && pivotReadings[sensorIndex][readingIndex] >= upperQuartile
-                        && pivotReadings[sensorIndex][readingIndex+1] >= upperQuartile
-                        && pivotReadings[sensorIndex][readingIndex+2] >= upperQuartile) beatCandidates[readingIndex] = true
-                }
+            // walk the readings array looking for candidate beats, i.e. several top
+            // quartile readings in a row
+            val beatCandidates = BooleanArray(readings.size)
+            for (readingIndex in 0..(readings.size - 3)) {
+                if (!glitches[sensorIndex][readingIndex]
+                    && pivotReadings[sensorIndex][readingIndex] >= upperQuartile
+                    && pivotReadings[sensorIndex][readingIndex+1] >= upperQuartile
+                    && pivotReadings[sensorIndex][readingIndex+2] >= upperQuartile) beatCandidates[readingIndex] = true
+            }
 
-                // now, walk the candidates array and accumulate
-                var foundFirst = false
-                var accumulator = 0.milliseconds
-                for (beatIndex in beatCandidates.indices) {
-                    if (beatCandidates[beatIndex]) {
-                        // notably, this avoids the case of multiple candidates in a row, because those
-                        // will necessarily have accumulator == 0
-                        if (foundFirst && accumulator > MAX_BPM_INTERVAL && accumulator < MIN_BPM_INTERVAL) {
-                            ibiCandidatesMS.add(accumulator.longValue)
-                        }
-
-                        // zero accumulator so next non-candidate can accumulate into it
-                        accumulator = 0.milliseconds
-
-                        // set flag for valid accumulations henceforth
-                        if (!foundFirst) foundFirst = true
-                    } else {
-                        // for non-beats, add their interval to the ibi accumulator
-                        accumulator += SENSOR_UPDATE_INTERVAL
+            // now, walk the candidates array and accumulate
+            var foundFirst = false
+            var accumulator = 0.milliseconds
+            for (beatIndex in beatCandidates.indices) {
+                if (beatCandidates[beatIndex]) {
+                    // notably, this avoids the case of multiple candidates in a row, because those
+                    // will necessarily have accumulator == 0
+                    if (foundFirst && accumulator > MAX_BPM_INTERVAL && accumulator < MIN_BPM_INTERVAL) {
+                        ibiCandidatesMS.add(accumulator.longValue)
                     }
+
+                    // zero accumulator so next non-candidate can accumulate into it
+                    accumulator = 0.milliseconds
+
+                    // set flag for valid accumulations henceforth
+                    if (!foundFirst) foundFirst = true
+                } else {
+                    // for non-beats, add their interval to the ibi accumulator
+                    accumulator += SENSOR_UPDATE_INTERVAL
                 }
             }
+        }
 
-            // sort IBIs and determine BPM. skip if low IBI count -- guarantees
-            // the sensor is just seeing noise
-            if (ibiCandidatesMS.size < 8) continue
-            ibiCandidatesMS.sort()
-            val bpm = 1.minutes.inMilliseconds / ibiCandidatesMS[ibiCandidatesMS.size / 2]
+        // sort IBIs and determine BPM. skip if low IBI count -- guarantees
+        // the sensor is just seeing noise
+        // this needs a little love -- what if one of the sensors is
+        // disabled, or we otherwise don't have a full count? this should
+        // be a state transition rather than a hard-coded number
+        if (ibiCandidatesMS.size < 8) return null
+        ibiCandidatesMS.sort()
+        return (1.minutes.inMilliseconds.longValue.toDouble()) / (ibiCandidatesMS[ibiCandidatesMS.size / 2].toDouble())
+    }
+
+    private fun updateBPMs() {
+        for (sensorName in gameSensors.keys) {
+            val bpm = getBPM(sensorName)
+            val fixBPM = bpm?.toInt() ?: -1
             when (gameSensors[sensorName]) {
-                SensorPosition.LEFT -> leftBPM = bpm.longValue.toInt()
-                SensorPosition.RIGHT -> rightBPM = bpm.longValue.toInt()
+                SensorPosition.LEFT -> leftBPM = fixBPM
+                SensorPosition.RIGHT -> rightBPM = fixBPM
             }
-
         }
 
         lastBPMUpdate = Calendar.getInstance()

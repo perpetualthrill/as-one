@@ -81,6 +81,11 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         return Screen(newScreen.toTypedArray())
     }
 
+    private fun renderBPM(bpm: Int): Array<UByteArray> {
+        val bpmString = if (bpm == -1) "___" else bpm.toString()
+        return Screen.renderBPMCharacters(bpmString)
+    }
+
     // Use utility function to bitwise AND the scoreboard characters onto
     // whatever the current background is
     private fun andBackgroundWithBPM(frameNumber: Long, bpms: GameState.CurrentBPMs): Screen {
@@ -90,9 +95,9 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         background.fill(timerRect, Color.BLACK)
 
         // fill in digits
-        val leftBPMArray = Screen.renderBPMCharacters(bpms.left.toString())
+        val leftBPMArray = renderBPM(bpms.left)
         background.andWithBytes(leftBPMArray, leftBPMRect.location.x, leftBPMRect.location.y)
-        val rightBPMArray = Screen.renderBPMCharacters(bpms.right.toString())
+        val rightBPMArray = renderBPM(bpms.right)
         background.andWithBytes(rightBPMArray, rightBPMRect.location.x, rightBPMRect.location.y)
 
         return background

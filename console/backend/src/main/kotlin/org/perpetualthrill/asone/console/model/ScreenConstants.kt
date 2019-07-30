@@ -512,6 +512,24 @@ object ScreenConstants {
             arrayOf(0, 0, 0, 0),
             arrayOf(0, 0, 1, 0)
         ),
+        '-' to arrayOf(
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(1, 1, 1, 1),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0)
+        ),
+        '_' to arrayOf(
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(0, 0, 0, 0),
+            arrayOf(1, 1, 1, 1)
+        ),
         '!' to arrayOf(
             arrayOf(0, 0, 0, 1),
             arrayOf(0, 0, 0, 1),
