@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ffd01a58-8bee-4c83-a1fd-435d329ca484",
+		"_postman_id": "a54600e1-2e94-4c1c-bb7a-c48da73eef62",
 		"name": "AsOne-Console",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -239,6 +239,47 @@
 							"raw": "{{host}}{{simulator-path}}",
 							"host": [
 								"{{host}}{{simulator-path}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Simple Simulator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2d5fd360-f7c9-4349-b49e-469068a1d8fb",
+								"exec": [
+									"// Make sure the creation was successful",
+									"pm.test(\"Expect simulator to have been created\", function () {",
+									"    pm.response.to.have.status(\"Created\");",
+									"});",
+									"",
+									"// Save the path for use in later requests. Not sure why",
+									"// neither pm.environment nor pm.variables will let this",
+									"// work -- it really seems to want a global :-/",
+									"pm.globals.set(\"simulator-path\", pm.response.text());",
+									"pm.globals.unset(\"variable_key\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/sensors/simulated/addSimple/2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sensors",
+								"simulated",
+								"addSimple",
+								"2"
 							]
 						}
 					},
