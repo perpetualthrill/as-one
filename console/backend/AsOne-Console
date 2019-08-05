@@ -21,7 +21,7 @@ while [ -h "$PRG" ] ; do
 done
 SAVED="`pwd`"
 cd "`dirname \"$PRG\"`/.." >/dev/null
-APP_HOME="/home/chattj/as-one/console/backend/build"
+APP_HOME="/home/chattj/as-one/console/backend"
 cd "$SAVED" >/dev/null
 
 APP_NAME="AsOne-Console"
@@ -64,7 +64,7 @@ case "`uname`" in
     ;;
 esac
 
-CLASSPATH=$APP_HOME/libs/AsOne-Console-f5c97af-0.1-all.jar
+CLASSPATH=$APP_HOME/build/libs/AsOne-Console-e5225b7-0.1-all.jar
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
@@ -156,7 +156,7 @@ fi
 
 # Escape application args
 save() {
-    for i do printf %s\n "$i" | sed "s/'/'\\''/g;1s/^/'/;$s/$/' \\/" ; done
+    for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
     echo " "
 }
 APP_ARGS=$(save "$@")
