@@ -8,11 +8,10 @@ import logger from './logger'
 const SENSOR_FLIP_PATH = '/game/flipSensors'
 
 function SensorFlipper () {
-
-  async function postToFlip() {
+  async function postToFlip () {
     try {
       const response = await axios.post(SENSOR_FLIP_PATH)
-      logger.log("flipped sensor: "+response)
+      logger.log('flipped sensor: ' + response)
     } catch (error) {
       logger.error(error)
     }
@@ -21,19 +20,19 @@ function SensorFlipper () {
   /* eslint-disable jsx-a11y/accessible-emoji */
   return (
     <Row>
-        <Col md={5} sm={0} />
-        <Col sm={2}>
-          <Button
-            className="btn-block"
-            onPointerUp={() => {
-              postToFlip()
-            }}>↖️ FLIP ↗️</Button>
-        </Col>
-        <Col md={5} sm={0} />
+      <Col md={5} sm={0} />
+      <Col sm={2}>
+        <Button
+          className='btn-block'
+          style={{ whiteSpace: 'nowrap' }}
+          onPointerUp={() => {
+            postToFlip()
+          }}>↖️ FLIP ↗️</Button>
+      </Col>
+      <Col md={5} sm={0} />
     </Row>
   )
   /* eslint-enable jsx-a11y/accessible-emoji */
-
 }
 
 export { SensorFlipper }
