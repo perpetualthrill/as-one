@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import 'pepjs'
 
 import { SensorMonitor } from './SensorMonitor'
 import { SensorFlipper } from './SensorFlipper'
