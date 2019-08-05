@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.model.SENSOR_UPDATE_INTERVAL
 import org.perpetualthrill.asone.console.model.Sensor
+import org.perpetualthrill.asone.console.util.CircularArray
 import org.perpetualthrill.asone.console.util.logError
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.util.*
@@ -20,6 +21,8 @@ private const val MAX_BPM = 133
 private val MAX_BPM_INTERVAL = (60.seconds / MAX_BPM).inMilliseconds
 private const val MIN_BPM = 60
 private val MIN_BPM_INTERVAL = (60.seconds / MIN_BPM).inMilliseconds
+
+private const val BPM_BUFFER_SIZE = 10
 
 @Singleton
 class GameState
@@ -40,6 +43,10 @@ constructor(
     private val startTime = Calendar.getInstance()
     private var lastSensorReading = Calendar.getInstance()
     private var lastBPMUpdate = Calendar.getInstance()
+
+    // Average across the last few BPM readings
+    private val leftBuffer = CircularArray<Int>(BPM_BUFFER_SIZE)
+    private val rightBuffer = CircularArray<Int>(BPM_BUFFER_SIZE)
 
     enum class SensorPosition {
         LEFT, RIGHT
@@ -207,13 +214,36 @@ constructor(
         return (1.minutes.inMilliseconds.longValue.toDouble()) / (ibiCandidatesMS[ibiCandidatesMS.size / 2].toDouble())
     }
 
+    // average bpm readings, but if there are too many misses, return
+    // a miss
+    private fun averageBuffer(buffer: CircularArray<Int>): Int {
+        if (buffer.size < BPM_BUFFER_SIZE) return -1
+        var misses = 0
+        var accumulator = 0
+        for (value in buffer) {
+            if (value == -1) {
+                misses++
+            } else {
+                accumulator += value
+            }
+        }
+        if (misses > (BPM_BUFFER_SIZE / 2)) return -1
+        return (accumulator / (BPM_BUFFER_SIZE - misses))
+    }
+
     private fun updateBPMs() {
         for (sensorName in gameSensors.keys) {
             val bpm = getBPM(sensorName)
             val fixBPM = bpm?.toInt() ?: -1
             when (gameSensors[sensorName]) {
-                SensorPosition.LEFT -> leftBPM = fixBPM
-                SensorPosition.RIGHT -> rightBPM = fixBPM
+                SensorPosition.LEFT -> {
+                    leftBuffer.add(fixBPM)
+                    leftBPM = averageBuffer(leftBuffer)
+                }
+                SensorPosition.RIGHT -> {
+                    rightBuffer.add(fixBPM)
+                    rightBPM = averageBuffer(rightBuffer)
+                }
             }
         }
 
