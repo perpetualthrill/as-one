@@ -174,43 +174,90 @@ constructor(
             // walk the readings array looking for candidate beats, i.e. several top
             // quartile readings in a row
             val beatCandidates = BooleanArray(readings.size)
+            var inBeat = false
             for (readingIndex in 0..(readings.size - 3)) {
                 if (!glitches[sensorIndex][readingIndex]
                     && pivotReadings[sensorIndex][readingIndex] >= upperQuartile
                     && pivotReadings[sensorIndex][readingIndex+1] >= upperQuartile
-                    && pivotReadings[sensorIndex][readingIndex+2] >= upperQuartile) beatCandidates[readingIndex] = true
+                    && pivotReadings[sensorIndex][readingIndex+2] >= upperQuartile) {
+                    // only record a hit for the first of these -- use onset as a substitute
+                    // for calculating IBI peak-to-peak
+                    if (!inBeat) {
+                        beatCandidates[readingIndex] = true
+                        inBeat = true
+                    }
+                } else {
+                    inBeat = false
+                }
             }
 
             // now, walk the candidates array and accumulate
             var foundFirst = false
             var accumulator = 0.milliseconds
             for (beatIndex in beatCandidates.indices) {
+                accumulator += SENSOR_UPDATE_INTERVAL
                 if (beatCandidates[beatIndex]) {
-                    // notably, this avoids the case of multiple candidates in a row, because those
-                    // will necessarily have accumulator == 0
+                    // if accumulator is within valid range, save it as a candidate
                     if (foundFirst && accumulator > MAX_BPM_INTERVAL && accumulator < MIN_BPM_INTERVAL) {
                         ibiCandidatesMS.add(accumulator.longValue)
                     }
 
-                    // zero accumulator so next non-candidate can accumulate into it
-                    accumulator = 0.milliseconds
+                    // zero accumulator so next non-candidate can accumulate into it. only do this
+                    // if it has exceeded the minimum -- otherwise it's glitch and should be ignored
+                    if (accumulator > MAX_BPM_INTERVAL) {
+                        accumulator = 0.milliseconds
+                    }
 
-                    // set flag for valid accumulations henceforth
+                    // set flag for valid accumulations henceforth. avoids garbage initial interval
                     if (!foundFirst) foundFirst = true
-                } else {
-                    // for non-beats, add their interval to the ibi accumulator
-                    accumulator += SENSOR_UPDATE_INTERVAL
                 }
             }
         }
 
-        // sort IBIs and determine BPM. skip if low IBI count -- guarantees
-        // the sensor is just seeing noise
+
+        // skip if low IBI count -- guarantees the sensor is just seeing noise
         // this needs a little love -- what if one of the sensors is
         // disabled, or we otherwise don't have a full count? this should
         // be a state transition rather than a hard-coded number
         if (ibiCandidatesMS.size < 8) return null
+
+        // sort candidates to determine median
         ibiCandidatesMS.sort()
+
+        // cheat: whack the lowest two. something in this algo is running warm, and
+        // this cools it down. bleh :-/
+        ibiCandidatesMS.removeAt(0)
+        ibiCandidatesMS.removeAt(0)
+
+        /*
+        // Logging stuff
+        println("handset name $sensorName")
+
+        val modeMap = mutableMapOf<Int, Int>()
+        print("IBIs: ")
+        for (candidate in ibiCandidatesMS) {
+            val fred = (1.minutes.inMilliseconds.longValue.toDouble() / candidate.toDouble()).toInt()
+            print("$fred ")
+            val barney = modeMap[fred]
+            if (null != barney) {
+                modeMap[fred] = barney + 1
+            } else {
+                modeMap[fred] = 1
+            }
+        }
+        var highestValue = 0
+        var highestCount = 0
+        for (pair in modeMap.entries) {
+            if (pair.value > highestValue) {
+                highestValue = pair.value
+                highestCount = pair.key
+            }
+        }
+        println()
+        println("median: ${(1.minutes.inMilliseconds.longValue.toDouble()) / (ibiCandidatesMS[ibiCandidatesMS.size / 2].toDouble())} mode: $highestCount ")
+        println()
+        */
+
         return (1.minutes.inMilliseconds.longValue.toDouble()) / (ibiCandidatesMS[ibiCandidatesMS.size / 2].toDouble())
     }
 
