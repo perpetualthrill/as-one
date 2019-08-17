@@ -17,7 +17,7 @@ import javax.inject.Singleton
 
 private val BPM_UPDATE_INTERVAL = 500.milliseconds
 
-private const val MAX_BPM = 133
+private const val MAX_BPM = 125
 private val MAX_BPM_INTERVAL = (60.seconds / MAX_BPM).inMilliseconds
 private const val MIN_BPM = 60
 private val MIN_BPM_INTERVAL = (60.seconds / MIN_BPM).inMilliseconds
