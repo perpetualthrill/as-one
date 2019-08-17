@@ -37,6 +37,11 @@ constructor(
 
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
+    @Location("/sensors/simulated/addSimple/{magicNumber}")
+    data class AddSimpleLocation(
+        val magicNumber: Int
+    )
+
     @Location("/sensors/simulated/{name}")
     data class SimulatorLocation(
         val name: String
@@ -107,6 +112,11 @@ constructor(
                     } else {
                         call.respondText("Not found: ${simulator.name}", status = HttpStatusCode.NotFound)
                     }
+                }
+                post<AddSimpleLocation> { addSimple ->
+                    val name = sensorState.addSimpleSimulator(addSimple.magicNumber)
+                    val href = locations.href(SimulatorLocation(name = name))
+                    call.respondText(text = href, status = HttpStatusCode.Created)
                 }
 
                 // Game and flame state

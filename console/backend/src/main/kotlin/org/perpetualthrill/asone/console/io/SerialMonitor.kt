@@ -25,6 +25,7 @@ constructor() {
     )
 
     private val sensorAddresses = listOf("/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2")
+    private val userSensorAddresses = mutableListOf<String>()
     private val confirmedSensorMap = mutableMapOf<String, PortAndSensor>()
     private val sensorMap = mutableMapOf<String, PortAndSensor>()
     val sensors: List<Sensor>
@@ -67,8 +68,13 @@ constructor() {
             }
     }
 
+    fun addSensorAddress(address: String) {
+        userSensorAddresses.add(address)
+    }
+
     private fun attemptConnectAll() {
-        for (address in sensorAddresses) {
+        val allSensorAddresses = sensorAddresses + userSensorAddresses
+        for (address in allSensorAddresses) {
             // First, check for disconnects and remove
             val check = sensorMap[address]
             if (null != check && check.sensor.isDisconnected()) {

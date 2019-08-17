@@ -76,6 +76,15 @@ constructor(
         return name
     }
 
+    fun addSimpleSimulator(magicNumber: Int): String {
+        val simulator = Injector.get().sensorSimulator()
+        val name = "simpleSimulator-$magicNumber-${simulator.hashCode()}"
+        simulator.startSimple(name, magicNumber)
+        simulators[name] = simulator
+        simulator.subscribeObserver(internalReadingStream)
+        return name
+    }
+
     fun removeSimulator(name: String): Boolean {
         val simulator = simulators[name]
         if (null != simulator) {

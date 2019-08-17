@@ -32,6 +32,7 @@ class Console : CliktCommand() {
     // clikt args
     private val disableSerialArgument by option("--disable-serial", help = "turn off USB serial monitoring").flag()
     private val hostArgument: String by option("--hostname", help = "hostname or ip address to bind services to. defaults to 192.168.12.1").default("192.168.12.1")
+    private val usbArgument: String by option("--usb", help = "additional usb filesystem location to check for a handset").default("")
 
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.builder().build()
@@ -45,6 +46,9 @@ class Console : CliktCommand() {
     override fun run() {
         if (!disableSerialArgument) {
             serialMonitor.start()
+            if (!usbArgument.isNullOrBlank()) {
+                serialMonitor.addSensorAddress(usbArgument)
+            }
         }
         webServer.start(hostName = hostArgument)
         sensorState.start()

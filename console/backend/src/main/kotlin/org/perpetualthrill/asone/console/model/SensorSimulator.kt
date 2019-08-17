@@ -45,6 +45,12 @@ constructor() {
         sensor = Sensor(sensorName)
     }
 
+    fun startSimple(sensorName: String, magicNumber: Int) {
+        currentState = SimulatorState.SIMPLE
+        allResults[SimulatorState.SIMPLE] = makeSimpleResults(magicNumber)
+        start(sensorName)
+    }
+
     fun updateState(newState: SimulatorState) {
         logger.debug("Updating simulator ${sensor.name} from $currentState to $newState ")
         currentState = newState
@@ -110,7 +116,19 @@ constructor() {
         return Results(resultSet)
     }
 
+    private fun makeSimpleResults(magicNumber: Int): Results {
+        val tableName = "ctrlr-$magicNumber-log-80bpm"
+        val statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)
+        val resultSet = statement.executeQuery("select s1, s2, s3, s4, 'whatever' as state from $tableName")
+        return Results(resultSet)
+    }
+
     enum class SimulatorState {
+
+        SIMPLE {
+            override val nextState = SIMPLE
+            override val stateColumnValue = "simple"
+        },
 
         QUIESCENT {
             override val nextState = QUIESCENT
@@ -142,6 +160,7 @@ constructor() {
                     HEARTBEAT.name.toLowerCase() -> HEARTBEAT
                     PICKUP.name.toLowerCase() -> PICKUP
                     SETDOWN.name.toLowerCase() -> SETDOWN
+                    SIMPLE.name.toLowerCase() -> SIMPLE
                     else -> throw RuntimeException("Yikes! Asked simulator for unknown state: $value")
                 }
             }
@@ -178,6 +197,8 @@ constructor() {
         override fun getTableNames(connection: Connection): List<String> {
             val v = Vector<String>()
             v.add("log-data-20190512")
+            v.add("ctrlr-1-log-80bpm")
+            v.add("ctrlr-2-log-80bpm")
             return v
         }
     }

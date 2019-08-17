@@ -13,8 +13,11 @@ private const val RETAIN_PERIOD_MS = 5000L
 private const val PRUNE_READINGS_INTERVAL_MS = 500L
 
 // Ideally this constant would be shared centrally within the project.
-// Current firmware updates at 50hz, i.e. a 20ms interval
-val SENSOR_UPDATE_INTERVAL = 20.milliseconds
+// Current firmware updates at 50hz, i.e. a 20ms interval. But like, the
+// measured value is more like 21ms -- very close in fact. I think the
+// firmware needs to be looked at closely for where this extra delay is
+// getting in
+val SENSOR_UPDATE_INTERVAL = 21.milliseconds
 
 class Sensor(val name: String) {
 
