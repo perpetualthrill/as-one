@@ -10,4 +10,5 @@
 
 // 25 ms => 40 hz
 // 20 ms => 50 hz
-const int REPORT_PERIOD_MS = 20;
+const int REPORT_FREQUENCY_HZ = 50;
+const int REPORT_PERIOD_MS = 1000 / REPORT_FREQUENCY_HZ;
