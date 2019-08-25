@@ -125,6 +125,10 @@ constructor(
                         gameState.flipSensors()
                         call.respondText("OK")
                     }
+                    post("fire") {
+                        val fireBPM = gameState.fire()
+                        call.respondText("fire at $fireBPM bpm")
+                    }
                 }
 
             }
