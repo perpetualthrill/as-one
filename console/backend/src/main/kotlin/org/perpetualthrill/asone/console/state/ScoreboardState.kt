@@ -29,6 +29,8 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
 
     private var lastHeartbeat: Calendar? = null
 
+    private var scoreboardMode: GameState.ScoreboardMode = GameState.ScoreboardMode.STANDARD
+
     val connected: Boolean
         get() {
             val last = lastHeartbeat ?: return false
@@ -86,10 +88,32 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         return Screen.renderBPMCharacters(bpmString)
     }
 
+    private fun makeFireBackground(): Screen {
+        val newScreen = mutableListOf<Array<Color>>()
+        for (i in 0..screenRect.width) {
+            val newColumn = mutableListOf<Color>()
+            for (j in 0..screenRect.height) {
+                val rando = ((Math.random() * 10) - 5).toInt()
+                val color = Color(
+                    245 + rando,
+                    155 + rando,
+                    64 + rando
+                )
+                newColumn.add(color)
+            }
+            newScreen.add(newColumn.toTypedArray())
+        }
+        return Screen(newScreen.toTypedArray())
+    }
+
     // Use utility function to bitwise AND the scoreboard characters onto
     // whatever the current background is
     private fun andBackgroundWithBPM(frameNumber: Long, bpms: GameState.CurrentBPMs): Screen {
-        val background = makeCurrentBackground(frameNumber)
+        val background = if (scoreboardMode == GameState.ScoreboardMode.STANDARD) {
+            makeCurrentBackground(frameNumber)
+        } else {
+            makeFireBackground()
+        }
 
         // clear timer area
         background.fill(timerRect, Color.BLACK)
@@ -111,6 +135,10 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
             mqtt.publishAtMostOnce("asOne/score/all/direct", frame.toAsOneScoreboard().toByteArray())
             mqtt.publishAtMostOnce("asOne/console/leftBPM", "${currentBPMs.left}".toByteArray())
             mqtt.publishAtMostOnce("asOne/console/rightBPM", "${currentBPMs.right}".toByteArray())
+        }
+
+        gameState.readingStream.subscribeWithErrorLogging(this) {
+            this.scoreboardMode = it
         }
     }
 

@@ -5,6 +5,7 @@ import com.kizitonwose.time.minutes
 import com.kizitonwose.time.plus
 import com.kizitonwose.time.seconds
 import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.model.SENSOR_UPDATE_INTERVAL
 import org.perpetualthrill.asone.console.model.Sensor
@@ -17,6 +18,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private val BPM_UPDATE_INTERVAL = 500.milliseconds
+private val FIRE_SCOREBOARD_INTERVAL = 5.seconds
 
 private const val MAX_BPM = 125
 private val MAX_BPM_INTERVAL = (60.seconds / MAX_BPM).inMilliseconds
@@ -53,7 +55,19 @@ constructor(
     private val rightBuffer = CircularArray<Int>(BPM_BUFFER_SIZE)
 
     enum class SensorPosition {
-        LEFT, RIGHT
+        LEFT,
+        RIGHT
+    }
+
+    // Firing state stuff
+    private var endFireModeTime = Calendar.getInstance()
+    private val internalScoreboardMode = PublishSubject.create<ScoreboardMode>()
+    val readingStream: Observable<ScoreboardMode> = internalScoreboardMode
+    private var fireBPMString = "777"
+
+    enum class ScoreboardMode {
+        STANDARD,
+        FIRE
     }
 
     data class CurrentBPMs(
@@ -107,10 +121,13 @@ constructor(
         // update these values from time to time
         // ugh this is a getter with side effects :-0
         if (lastSensorReading > (lastBPMUpdate + BPM_UPDATE_INTERVAL)) {
-            updateBPMs()
+            updateState()
         }
 
         // then return them
+        if (endFireModeTime > Calendar.getInstance()) {
+            emitter.onNext(CurrentBPMs(fireBPMString.toInt(), fireBPMString.toInt()))
+        }
         emitter.onNext(CurrentBPMs(leftBPM, rightBPM))
     }
 
@@ -156,12 +173,19 @@ constructor(
                 80.toString()
             }
             logInfo("firing at $bpm bpm")
-            mqttManager.publishAtMostOnce("asOne/fe/doBPM", bpm.toByteArray())
+            fireState(bpm)
             return bpm
         } catch (e: java.lang.Exception) {
             logError(e.message ?: "exception in fire routine")
         }
         return "xxx"
+    }
+
+    private fun fireState(bpm: String) {
+        fireBPMString = bpm
+        endFireModeTime = Calendar.getInstance() + FIRE_SCOREBOARD_INTERVAL
+        internalScoreboardMode.onNext(ScoreboardMode.FIRE)
+        mqttManager.publishAtMostOnce("asOne/fe/doBPM", bpm.toByteArray())
     }
 
     // magic numbers! any reading outside this range is pretty much guaranteed to be bogus
@@ -314,7 +338,7 @@ constructor(
         return (accumulator / (BPM_BUFFER_SIZE - misses))
     }
 
-    private fun updateBPMs() {
+    private fun updateState() {
         for (sensorName in gameSensors.keys) {
             val bpm = getBPM(sensorName)
             val fixBPM = bpm?.toInt() ?: -1
@@ -328,6 +352,13 @@ constructor(
                     rightBPM = averageBuffer(rightBuffer)
                 }
             }
+        }
+
+        // dig on the fire modez
+        if (Calendar.getInstance() > endFireModeTime) {
+            internalScoreboardMode.onNext(ScoreboardMode.STANDARD)
+        } else {
+            internalScoreboardMode.onNext(ScoreboardMode.FIRE)
         }
 
         lastBPMUpdate = Calendar.getInstance()
