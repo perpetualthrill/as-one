@@ -134,7 +134,7 @@ void loop() {
 
     // Turn motor on or off as necessary
     if ((now >= nextMotor) && (now <= (nextMotor + MOTOR_PERIOD_MS))) {
-      digitalWrite(MOTOR_PIN, HIGH);
+   //    digitalWrite(MOTOR_PIN, HIGH);
     } else {
       digitalWrite(MOTOR_PIN, LOW);
     }
