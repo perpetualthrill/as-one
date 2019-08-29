@@ -13,6 +13,8 @@ SensorData.propTypes = {
   address: PropTypes.string.isRequired
 }
 
+const GRAPH_AREA_PX = 125
+
 function SensorData (props) {
   const address = props.address
   const name = props.name
@@ -112,7 +114,7 @@ function SensorData (props) {
       { (timeSeries == null) ? 'Loading ...' : (
         <ChartContainer width={checkedWidth} timeRange={lastFewSeconds} title={position + ': ' + props.name}>
           <ChartRow height={checkedWidth / 3} showGrid>
-            <YAxis id='axis1' min={average - 100} max={average + 100} width={28} type='linear' format='.0f' />
+            <YAxis id='axis1' min={average - GRAPH_AREA_PX} max={average + GRAPH_AREA_PX} width={28} type='linear' format='.0f' />
             <Charts>
               <LineChart axis='axis1' series={timeSeries} columns={['s1', 's2', 's3', 's4']} style={style} />
             </Charts>
