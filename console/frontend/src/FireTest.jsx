@@ -5,6 +5,7 @@ import AsyncClient from 'async-mqtt'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import logger from './logger'
+import { Reset } from './Reset'
 
 function FireTest (props) {
   const address = props.address
@@ -84,7 +85,7 @@ function FireTest (props) {
             mqttPublish('asOne/fe/doBPM', lefty)
           }}>Left BPM ({lefty})</Button>
       </Col>
-      <Col />
+      <Col><Reset /></Col>
       <Col />
     </Row>
   )

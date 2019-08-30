@@ -25,6 +25,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.system.exitProcess
 
 @KtorExperimentalLocationsAPI
 @Singleton
@@ -128,6 +129,9 @@ constructor(
                     post("fire") {
                         val fireBPM = gameState.fire()
                         call.respondText("fire at $fireBPM bpm")
+                    }
+                    post("reset") {
+                        exitProcess(0)
                     }
                 }
 
