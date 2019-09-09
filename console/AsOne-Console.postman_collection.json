@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a54600e1-2e94-4c1c-bb7a-c48da73eef62",
+		"_postman_id": "10ecac76-ec44-413e-81ea-394e5ebd8865",
 		"name": "AsOne-Console",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -307,6 +307,24 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Fire",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/game/fire",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"game",
+								"fire"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -335,9 +353,9 @@
 	],
 	"variable": [
 		{
-			"id": "58745466-be3b-4880-b805-fc0e0cbb085b",
+			"id": "7efa1493-b132-4f2f-b384-0b5261c6b84b",
 			"key": "host",
-			"value": "http://localhost:12345",
+			"value": "http://192.168.12.1:12345",
 			"type": "string"
 		}
 	]

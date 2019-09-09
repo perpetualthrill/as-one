@@ -6,6 +6,7 @@ import { SensorFlipper } from './SensorFlipper'
 import { MqttIndicator } from './MqttIndicator'
 import { FireTest } from './FireTest'
 import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
+import { Fire } from './Fire'
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -40,6 +41,14 @@ function App () {
                 <MqttIndicator address={mqttAddress} topic='asOne/#' emoji='📢' />
               </div>
             </Navbar>
+          </Col>
+          <Col md={0} lg={1} />
+        </Row>
+        { spacer }
+        <Row>
+          <Col md={0} lg={1} />
+          <Col md={12} lg={10}>
+            <Fire />
           </Col>
           <Col md={0} lg={1} />
         </Row>

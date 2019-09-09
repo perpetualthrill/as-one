@@ -5,17 +5,20 @@ import com.kizitonwose.time.minutes
 import com.kizitonwose.time.plus
 import com.kizitonwose.time.seconds
 import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import org.perpetualthrill.asone.console.io.MqttManager
 import org.perpetualthrill.asone.console.model.SENSOR_UPDATE_INTERVAL
 import org.perpetualthrill.asone.console.model.Sensor
 import org.perpetualthrill.asone.console.util.CircularArray
 import org.perpetualthrill.asone.console.util.logError
+import org.perpetualthrill.asone.console.util.logInfo
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private val BPM_UPDATE_INTERVAL = 500.milliseconds
+private val FIRE_SCOREBOARD_INTERVAL = 5.seconds
 
 private const val MAX_BPM = 125
 private val MAX_BPM_INTERVAL = (60.seconds / MAX_BPM).inMilliseconds
@@ -23,6 +26,9 @@ private const val MIN_BPM = 60
 private val MIN_BPM_INTERVAL = (60.seconds / MIN_BPM).inMilliseconds
 
 private const val BPM_BUFFER_SIZE = 10
+
+private const val BOGUS_LEFT = 199
+private const val BOGUS_RIGHT = 188
 
 @Singleton
 class GameState
@@ -33,8 +39,8 @@ constructor(
 ) {
 
     // Bogus start values. Frozen on these indicates an error
-    private var leftBPM: Int = 199
-    private var rightBPM: Int = 188
+    private var leftBPM: Int = BOGUS_LEFT
+    private var rightBPM: Int = BOGUS_RIGHT
 
     // Keep knowledge of which sensor is in which position
     val gameSensors = mutableMapOf<String, SensorPosition>()
@@ -49,7 +55,19 @@ constructor(
     private val rightBuffer = CircularArray<Int>(BPM_BUFFER_SIZE)
 
     enum class SensorPosition {
-        LEFT, RIGHT
+        LEFT,
+        RIGHT
+    }
+
+    // Firing state stuff
+    private var endFireModeTime = Calendar.getInstance()
+    private val internalScoreboardMode = PublishSubject.create<ScoreboardMode>()
+    val readingStream: Observable<ScoreboardMode> = internalScoreboardMode
+    private var fireBPMString = "777"
+
+    enum class ScoreboardMode {
+        STANDARD,
+        FIRE
     }
 
     data class CurrentBPMs(
@@ -103,10 +121,13 @@ constructor(
         // update these values from time to time
         // ugh this is a getter with side effects :-0
         if (lastSensorReading > (lastBPMUpdate + BPM_UPDATE_INTERVAL)) {
-            updateBPMs()
+            updateState()
         }
 
         // then return them
+        if (endFireModeTime > Calendar.getInstance()) {
+            emitter.onNext(CurrentBPMs(fireBPMString.toInt(), fireBPMString.toInt()))
+        }
         emitter.onNext(CurrentBPMs(leftBPM, rightBPM))
     }
 
@@ -128,9 +149,48 @@ constructor(
         }
     }
 
+    fun fire(): String {
+        try {
+            val bpmReading = bpms.take(1).blockingFirst()
+            val lefty = if (bpmReading.left == BOGUS_LEFT) {
+                -69
+            } else {
+                bpmReading.left
+            }
+            val righty = if (bpmReading.right == BOGUS_RIGHT) {
+                -68
+            } else {
+                bpmReading.right
+            }
+            val bpm = if (lefty > 0 && righty > 0) {
+                // omg
+                ((lefty + righty) / 2).toString()
+            } else if (lefty > 0) {
+                lefty.toString()
+            } else if (righty > 0) {
+                righty.toString()
+            } else {
+                80.toString()
+            }
+            logInfo("firing at $bpm bpm")
+            fireState(bpm)
+            return bpm
+        } catch (e: java.lang.Exception) {
+            logError(e.message ?: "exception in fire routine")
+        }
+        return "xxx"
+    }
+
+    private fun fireState(bpm: String) {
+        fireBPMString = bpm
+        endFireModeTime = Calendar.getInstance() + FIRE_SCOREBOARD_INTERVAL
+        internalScoreboardMode.onNext(ScoreboardMode.FIRE)
+        mqttManager.publishAtMostOnce("asOne/fe/doBPM", bpm.toByteArray())
+    }
+
     // magic numbers! any reading outside this range is pretty much guaranteed to be bogus
     private fun readingIsGlitch(reading: Int): Boolean {
-        return (reading < 200 || reading > 800)
+        return (reading < 200 || reading > 900)
     }
 
     private fun getBPM(sensorName: String): Double? {
@@ -278,7 +338,7 @@ constructor(
         return (accumulator / (BPM_BUFFER_SIZE - misses))
     }
 
-    private fun updateBPMs() {
+    private fun updateState() {
         for (sensorName in gameSensors.keys) {
             val bpm = getBPM(sensorName)
             val fixBPM = bpm?.toInt() ?: -1
@@ -292,6 +352,13 @@ constructor(
                     rightBPM = averageBuffer(rightBuffer)
                 }
             }
+        }
+
+        // dig on the fire modez
+        if (Calendar.getInstance() > endFireModeTime) {
+            internalScoreboardMode.onNext(ScoreboardMode.STANDARD)
+        } else {
+            internalScoreboardMode.onNext(ScoreboardMode.FIRE)
         }
 
         lastBPMUpdate = Calendar.getInstance()

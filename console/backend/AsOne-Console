@@ -64,7 +64,7 @@ case "`uname`" in
     ;;
 esac
 
-CLASSPATH=$APP_HOME/build/libs/AsOne-Console-e5225b7-0.1-all.jar
+CLASSPATH=$APP_HOME/build/libs/AsOne-Console-7caa361-0.1-all.jar
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
