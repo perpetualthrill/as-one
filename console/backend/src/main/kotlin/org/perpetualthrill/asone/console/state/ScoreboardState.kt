@@ -127,8 +127,7 @@ constructor(private val mqtt: MqttManager, private val gameState: GameState) {
         return background
     }
 
-    // temporary start function for testing
-    fun coloriffic() {
+    fun start() {
         frameClock.subscribeWithErrorLogging(this) { frameNumber ->
             val currentBPMs = gameState.bpms.take(1).blockingFirst()
             val frame = andBackgroundWithBPM(frameNumber, currentBPMs)

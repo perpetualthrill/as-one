@@ -3,7 +3,6 @@ package org.perpetualthrill.asone.console.io
 import io.reactivex.Observable
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions.MQTT_VERSION_3_1_1
-import org.perpetualthrill.asone.console.util.logError
 import org.perpetualthrill.asone.console.util.logInfo
 import org.perpetualthrill.asone.console.util.subscribeWithErrorLogging
 import java.util.concurrent.TimeUnit
@@ -67,8 +66,12 @@ constructor() {
             .interval(500, TimeUnit.MILLISECONDS)
             .subscribeWithErrorLogging(this) {
                 val c = client
-                if (null != c && !c.isConnected) {
-                    c.connect(options, asyncActionListener)
+                if (null != c) {
+                    if (!c.isConnected) {
+                        c.connect(options, asyncActionListener)
+                    } else {
+                        publishAtMostOnce("asOne/console/heartbeat", "hello".toByteArray())
+                    }
                 }
             }
 

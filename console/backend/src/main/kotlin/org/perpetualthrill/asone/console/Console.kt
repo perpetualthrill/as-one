@@ -56,10 +56,10 @@ class Console : CliktCommand() {
 
         Single
             .just(true)
-            .delay(3000, TimeUnit.MILLISECONDS)
+            .delay(1000, TimeUnit.MILLISECONDS)
             .subscribeWithErrorLogging(this) {
                 logInfo("Scoreboard connection status: " + scoreboardState.connected)
-                scoreboardState.coloriffic()
+                scoreboardState.start()
             }
 
     }

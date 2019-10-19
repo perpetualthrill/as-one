@@ -37,8 +37,8 @@ function App () {
                 {/* scoreboard heartbeat */}
                 <MqttIndicator address={mqttAddress} topic='asOne/score/heartbeat' emoji='📺' />
                 <div style={{ width: '10px' }} />
-                {/* all messages, all topics */}
-                <MqttIndicator address={mqttAddress} topic='asOne/#' emoji='📢' />
+                {/* console heartbeat */}
+                <MqttIndicator address={mqttAddress} topic='asOne/console/heartbeat' emoji='📢' />
               </div>
             </Navbar>
           </Col>
