@@ -4,7 +4,7 @@ import 'pepjs'
 import { SensorMonitor } from './SensorMonitor'
 import { MqttIndicator } from './MqttIndicator'
 import { FireTest } from './FireTest'
-//import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
+// import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
 import { GREYISH_BLACK } from './ScoreboardEmulator'
 import { Fire } from './Fire'
 
