@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import './Indicators.scss'
+import './MqttIndicator.scss'
 import logger from './logger'
 import PropTypes from 'prop-types'
 import useInterval from '@restart/hooks/useInterval'

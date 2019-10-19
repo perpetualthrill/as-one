@@ -5,10 +5,11 @@
     text-align: center;
     font-size: 30px;
     margin-top: -5px; /* defeat bootstrap nav padding */
-    color: rgba(255, 255, 255, 1.0) /* defeat bootstrap alpha channel */
+    color: rgba(255, 255, 255, 1.0); /* defeat bootstrap alpha channel */
+    opacity: 1.0; /* defeat ios safari ignoring alpha channel */
 }
 
 .indicator-blink {
     @extend .indicator;
-    color: rgba(255, 255, 255, 0.33)
+    opacity: 0.33;
 }
