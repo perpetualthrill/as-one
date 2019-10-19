@@ -33,6 +33,7 @@ Using sudo:
 1) Establish the service with e.g. `cp ~/as-one/server-setup/as-one-systemd-service ~/.config/systemd/user/as-one.service`. For whatever reason systemd hates symlinks, unfortunately.
 1) Enable it for boot: `systemctl --user enable as-one`
 1) Switch it on for current boot: `systemctl --user start as-one`
+1) Enable linger for the user you're running the service as, so that it starts at boot rather than at first login: `loginctl enable-linger chattj`
 
 To view logs at any time, issue `journalctl --user -u as-one`
 
