@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import 'pepjs'
 
 import { SensorMonitor } from './SensorMonitor'
-import { SensorFlipper } from './SensorFlipper'
 import { MqttIndicator } from './MqttIndicator'
 import { FireTest } from './FireTest'
-import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
+//import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
+import { GREYISH_BLACK } from './ScoreboardEmulator'
 import { Fire } from './Fire'
 
 import Container from 'react-bootstrap/Container'
@@ -17,7 +17,7 @@ import Collapse from 'react-bootstrap/Collapse'
 const mqttAddress = 'ws://' + window.location.hostname + ':8181'
 
 function App () {
-  let [scoreboardOpen, setScoreboardOpen] = useState(true)
+  let [scoreboardOpen, setScoreboardOpen] = useState(false)
   let [sensorMonitorOpen, setSensorMonitorOpen] = useState(true)
 
   let spacer = <Row style={{ height: '40px' }} />
@@ -67,8 +67,6 @@ function App () {
                 <div className='card-body'>
                   <div className='card-text'>
                     <SensorMonitor address={mqttAddress} />
-                    { spacer }
-                    <SensorFlipper />
                   </div>
                 </div>
               </Collapse>
@@ -89,7 +87,8 @@ function App () {
               </h4>
               <Collapse in={scoreboardOpen}>
                 <div className='card-body'>
-                  <div className='card-text'><ScoreboardEmulator address={mqttAddress} /></div>
+                  {/* <div className='card-text'><ScoreboardEmulator address={mqttAddress} /></div> */}
+                  <div className='card-text'>Scoreboard currently commented out for mobile performance <span role='img' aria-label='oh noes!'>😮</span></div>
                 </div>
               </Collapse>
             </div>
