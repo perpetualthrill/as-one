@@ -54,10 +54,7 @@ function FireTest (props) {
         <Button
           label='Upper'
           id='upper-button'
-          onPointerDown={() => {
-          // mqttPublish
-          }}
-          onPointerUp={() => {
+          onClick={() => {
             mqttPublish('asOne/fe/testUpper', '500')
           }}>Upper ______</Button>
       </Col>
@@ -65,7 +62,7 @@ function FireTest (props) {
         <Button
           label='Lower'
           id='lower-button'
-          onPointerUp={() => {
+          onClick={() => {
             mqttPublish('asOne/fe/testLower', '375')
           }}>Lower ______</Button>
       </Col>
@@ -73,7 +70,7 @@ function FireTest (props) {
         <Button
           label='80 BPM'
           id='80-bpm-button'
-          onPointerUp={() => {
+          onClick={() => {
             mqttPublish('asOne/fe/doBPM', '80')
           }}>80 BPM ______</Button>
       </Col>
@@ -81,7 +78,7 @@ function FireTest (props) {
         <Button
           label='Left BPM'
           id='left-bpm-button'
-          onPointerUp={() => {
+          onClick={() => {
             mqttPublish('asOne/fe/doBPM', lefty)
           }}>Left BPM ({lefty})</Button>
       </Col>

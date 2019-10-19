@@ -19,7 +19,7 @@ function Reset () {
     <Button
       label='reset'
       id='reset-button'
-      onPointerUp={() => {
+      onClick={() => {
         postToReset()
       }}>reset</Button>
   )

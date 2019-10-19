@@ -20,7 +20,7 @@ function Fire () {
       label='fire'
       style={{ width: '200px' }}
       id='fire-button'
-      onPointerUp={() => {
+      onClick={() => {
         postToFire()
       }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;f&nbsp;i&nbsp;r&nbsp;e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Button>
   )

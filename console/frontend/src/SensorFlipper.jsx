@@ -25,7 +25,7 @@ function SensorFlipper () {
         <Button
           className='btn-block'
           style={{ whiteSpace: 'nowrap' }}
-          onPointerUp={() => {
+          onClick={() => {
             postToFlip()
           }}>↖️ FLIP ↗️</Button>
       </Col>
