@@ -1,0 +1,334 @@
+-- Reboot --
+Oct 19 20:03:01 asone-console systemd[945]: Started As One Console.
+Oct 19 20:03:02 asone-console AsOne-Console[1068]: 2019-10-19 20:03:02,806 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 20:03:03 asone-console AsOne-Console[1068]: 2019-10-19 20:03:03,356 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 20:03:03 asone-console AsOne-Console[1068]: 2019-10-19 20:03:03,481 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 20:03:03 asone-console AsOne-Console[1068]: WARNING: An illegal reflective access operation has occurred
+Oct 19 20:03:03 asone-console AsOne-Console[1068]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 20:03:03 asone-console AsOne-Console[1068]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 20:03:03 asone-console AsOne-Console[1068]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 20:03:03 asone-console AsOne-Console[1068]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 20:03:03 asone-console AsOne-Console[1068]: 2019-10-19 20:03:03,563 INFO [MQTT Con: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt failure: Unable to connect to server (32103) - java.net.ConnectException: Connection refused (Connection refused)
+Oct 19 20:03:04 asone-console AsOne-Console[1068]: 2019-10-19 20:03:04,055 INFO [MQTT Con: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt failure: Unable to connect to server (32103) - java.net.ConnectException: Connection refused (Connection refused)
+Oct 19 20:03:04 asone-console AsOne-Console[1068]: 2019-10-19 20:03:04,570 INFO [MQTT Con: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt failure: Unable to connect to server (32103) - java.net.ConnectException: Connection refused (Connection refused)
+Oct 19 20:03:04 asone-console AsOne-Console[1068]: 2019-10-19 20:03:04,571 INFO [RxComputationThreadPool-3] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 20:03:05 asone-console AsOne-Console[1068]: 2019-10-19 20:03:05,054 INFO [MQTT Con: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt failure: Unable to connect to server (32103) - java.net.ConnectException: Connection refused (Connection refused)
+Oct 19 20:03:05 asone-console AsOne-Console[1068]: 2019-10-19 20:03:05,554 INFO [MQTT Con: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt failure: Unable to connect to server (32103) - java.net.ConnectException: Connection refused (Connection refused)
+Oct 19 20:03:06 asone-console AsOne-Console[1068]: 2019-10-19 20:03:06,055 INFO [MQTT Con: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt failure: Unable to connect to server (32103) - java.net.ConnectException: Connection refused (Connection refused)
+Oct 19 20:03:06 asone-console AsOne-Console[1068]: 2019-10-19 20:03:06,555 INFO [MQTT Con: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt failure: Unable to connect to server (32103) - java.net.ConnectException: Connection refused (Connection refused)
+Oct 19 20:03:07 asone-console AsOne-Console[1068]: 2019-10-19 20:03:07,062 INFO [MQTT Con: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt failure: Unable to connect to server (32103) - java.net.ConnectException: Connection refused (Connection refused)
+Oct 19 20:03:07 asone-console AsOne-Console[1068]: 2019-10-19 20:03:07,869 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@738926d3
+Oct 19 20:08:03 asone-console AsOne-Console[1068]: 2019-10-19 20:08:03,919 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 102 bpm
+Oct 19 20:09:30 asone-console AsOne-Console[1068]: 2019-10-19 20:09:30,082 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 87 bpm
+Oct 19 20:12:57 asone-console AsOne-Console[1068]: 2019-10-19 20:12:57,425 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 89 bpm
+Oct 19 20:12:57 asone-console AsOne-Console[1068]: 2019-10-19 20:12:57,770 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 89 bpm
+Oct 19 20:17:22 asone-console AsOne-Console[1068]: 2019-10-19 20:17:22,104 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 96 bpm
+Oct 19 20:18:16 asone-console AsOne-Console[1068]: 2019-10-19 20:18:16,905 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 71 bpm
+Oct 19 20:19:32 asone-console AsOne-Console[1068]: 2019-10-19 20:19:32,233 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 99 bpm
+Oct 19 20:19:59 asone-console AsOne-Console[1068]: 2019-10-19 20:19:59,239 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 93 bpm
+Oct 19 20:21:55 asone-console AsOne-Console[1068]: 2019-10-19 20:21:55,911 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 69 bpm
+Oct 19 20:23:27 asone-console AsOne-Console[1068]: 2019-10-19 20:23:27,404 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 101 bpm
+Oct 19 20:24:04 asone-console AsOne-Console[1068]: 2019-10-19 20:24:04,722 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 109 bpm
+Oct 19 20:26:14 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 20:26:14 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 1.
+Oct 19 20:26:14 asone-console systemd[945]: Stopped As One Console.
+Oct 19 20:26:14 asone-console systemd[945]: Started As One Console.
+Oct 19 20:26:15 asone-console AsOne-Console[11575]: 2019-10-19 20:26:15,691 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 20:26:16 asone-console AsOne-Console[11575]: 2019-10-19 20:26:16,037 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 20:26:16 asone-console AsOne-Console[11575]: 2019-10-19 20:26:16,107 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 20:26:16 asone-console AsOne-Console[11575]: WARNING: An illegal reflective access operation has occurred
+Oct 19 20:26:16 asone-console AsOne-Console[11575]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 20:26:16 asone-console AsOne-Console[11575]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 20:26:16 asone-console AsOne-Console[11575]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 20:26:16 asone-console AsOne-Console[11575]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 20:26:16 asone-console AsOne-Console[11575]: 2019-10-19 20:26:16,468 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@11f143e9
+Oct 19 20:26:17 asone-console AsOne-Console[11575]: 2019-10-19 20:26:17,163 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 20:28:14 asone-console AsOne-Console[11575]: 2019-10-19 20:28:14,481 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 87 bpm
+Oct 19 20:29:41 asone-console AsOne-Console[11575]: 2019-10-19 20:29:41,405 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 86 bpm
+Oct 19 20:33:10 asone-console AsOne-Console[11575]: 2019-10-19 20:33:10,333 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 73 bpm
+Oct 19 20:33:49 asone-console AsOne-Console[11575]: 2019-10-19 20:33:49,545 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 97 bpm
+Oct 19 20:34:41 asone-console AsOne-Console[11575]: 2019-10-19 20:34:41,070 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 102 bpm
+Oct 19 20:35:51 asone-console AsOne-Console[11575]: 2019-10-19 20:35:51,673 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 99 bpm
+Oct 19 20:36:43 asone-console AsOne-Console[11575]: 2019-10-19 20:36:43,966 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 20:37:22 asone-console AsOne-Console[11575]: 2019-10-19 20:37:22,297 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 96 bpm
+Oct 19 20:38:06 asone-console AsOne-Console[11575]: 2019-10-19 20:38:06,655 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 20:38:33 asone-console AsOne-Console[11575]: 2019-10-19 20:38:33,778 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 97 bpm
+Oct 19 20:39:35 asone-console AsOne-Console[11575]: 2019-10-19 20:39:35,323 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 98 bpm
+Oct 19 20:40:20 asone-console AsOne-Console[11575]: 2019-10-19 20:40:20,973 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 96 bpm
+Oct 19 20:40:57 asone-console AsOne-Console[11575]: 2019-10-19 20:40:57,905 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 96 bpm
+Oct 19 20:42:10 asone-console AsOne-Console[11575]: 2019-10-19 20:42:10,099 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 93 bpm
+Oct 19 20:42:20 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 20:42:20 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 2.
+Oct 19 20:42:20 asone-console systemd[945]: Stopped As One Console.
+Oct 19 20:42:20 asone-console systemd[945]: Started As One Console.
+Oct 19 20:42:21 asone-console AsOne-Console[18348]: 2019-10-19 20:42:21,927 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 20:42:22 asone-console AsOne-Console[18348]: 2019-10-19 20:42:22,276 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 20:42:22 asone-console AsOne-Console[18348]: 2019-10-19 20:42:22,357 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 20:42:22 asone-console AsOne-Console[18348]: WARNING: An illegal reflective access operation has occurred
+Oct 19 20:42:22 asone-console AsOne-Console[18348]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 20:42:22 asone-console AsOne-Console[18348]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 20:42:22 asone-console AsOne-Console[18348]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 20:42:22 asone-console AsOne-Console[18348]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 20:42:22 asone-console AsOne-Console[18348]: 2019-10-19 20:42:22,723 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@60bbc71c
+Oct 19 20:42:23 asone-console AsOne-Console[18348]: 2019-10-19 20:42:23,432 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Oct 19 20:45:06 asone-console AsOne-Console[18348]: 2019-10-19 20:45:06,418 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 86 bpm
+Oct 19 20:45:57 asone-console AsOne-Console[18348]: 2019-10-19 20:45:57,152 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 97 bpm
+Oct 19 20:46:15 asone-console AsOne-Console[18348]: 2019-10-19 20:46:15,313 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 87 bpm
+Oct 19 20:46:59 asone-console AsOne-Console[18348]: 2019-10-19 20:46:59,085 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 92 bpm
+Oct 19 20:48:45 asone-console AsOne-Console[18348]: 2019-10-19 20:48:45,193 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 20:51:08 asone-console AsOne-Console[18348]: 2019-10-19 20:51:08,932 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 97 bpm
+Oct 19 20:52:09 asone-console AsOne-Console[18348]: 2019-10-19 20:52:09,223 INFO [nioEventLoopGroup-4-7] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 20:53:22 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 20:53:22 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 3.
+Oct 19 20:53:22 asone-console systemd[945]: Stopped As One Console.
+Oct 19 20:53:22 asone-console systemd[945]: Started As One Console.
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: 2019-10-19 20:53:23,181 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: 2019-10-19 20:53:23,539 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: 2019-10-19 20:53:23,613 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: WARNING: An illegal reflective access operation has occurred
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 20:53:23 asone-console AsOne-Console[23006]: 2019-10-19 20:53:23,973 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@1bc5f077
+Oct 19 20:53:24 asone-console AsOne-Console[23006]: 2019-10-19 20:53:24,670 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 20:54:17 asone-console AsOne-Console[23006]: 2019-10-19 20:54:17,353 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 94 bpm
+Oct 19 20:56:35 asone-console AsOne-Console[23006]: 2019-10-19 20:56:35,565 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 93 bpm
+Oct 19 20:56:35 asone-console AsOne-Console[23006]: 2019-10-19 20:56:35,997 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 93 bpm
+Oct 19 20:58:00 asone-console AsOne-Console[23006]: 2019-10-19 20:58:00,513 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 89 bpm
+Oct 19 20:58:01 asone-console AsOne-Console[23006]: 2019-10-19 20:58:01,136 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 89 bpm
+Oct 19 20:59:28 asone-console AsOne-Console[23006]: 2019-10-19 20:59:28,033 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 93 bpm
+Oct 19 21:04:12 asone-console AsOne-Console[23006]: 2019-10-19 21:04:12,126 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 21:05:23 asone-console AsOne-Console[23006]: 2019-10-19 21:05:23,518 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 104 bpm
+Oct 19 21:06:08 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 21:06:08 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 4.
+Oct 19 21:06:08 asone-console systemd[945]: Stopped As One Console.
+Oct 19 21:06:08 asone-console systemd[945]: Started As One Console.
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: 2019-10-19 21:06:09,175 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: 2019-10-19 21:06:09,522 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: 2019-10-19 21:06:09,594 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: WARNING: An illegal reflective access operation has occurred
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 21:06:09 asone-console AsOne-Console[28375]: 2019-10-19 21:06:09,953 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@33f9632
+Oct 19 21:06:10 asone-console AsOne-Console[28375]: 2019-10-19 21:06:10,652 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Oct 19 21:06:12 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 21:06:12 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 5.
+Oct 19 21:06:12 asone-console systemd[945]: Stopped As One Console.
+Oct 19 21:06:12 asone-console systemd[945]: Started As One Console.
+Oct 19 21:06:13 asone-console AsOne-Console[28475]: 2019-10-19 21:06:13,675 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: 2019-10-19 21:06:14,023 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: 2019-10-19 21:06:14,093 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: 2019-10-19 21:06:14,116 ERROR [Thread-0] o.p.a.c.s.SensorState Subscription error!
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: java.lang.ArrayIndexOutOfBoundsException: Index 4 out of bounds for length 4
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at java.base/java.util.ArrayDeque.grow(ArrayDeque.java:159)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at java.base/java.util.ArrayDeque.addFirst(ArrayDeque.java:291)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at org.perpetualthrill.asone.console.state.SensorState$start$1.invoke(SensorState.kt:39)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at org.perpetualthrill.asone.console.state.SensorState$start$1.invoke(SensorState.kt:20)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at org.perpetualthrill.asone.console.util.ReactiveExtensionsKt$sam$io_reactivex_functions_Consumer$0.accept(ReactiveExtensions.kt)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at io.reactivex.internal.observers.LambdaObserver.onNext(LambdaObserver.java:63)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at io.reactivex.subjects.PublishSubject$PublishDisposable.onNext(PublishSubject.java:308)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at io.reactivex.subjects.PublishSubject.onNext(PublishSubject.java:228)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at io.reactivex.subjects.PublishSubject$PublishDisposable.onNext(PublishSubject.java:308)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at io.reactivex.subjects.PublishSubject.onNext(PublishSubject.java:228)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at org.perpetualthrill.asone.console.io.SerialMonitor$MessageListener.serialEvent(SerialMonitor.kt:57)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at com.fazecast.jSerialComm.SerialPort$SerialPortEventListener.waitForSerialEvent(SerialPort.java:1217)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at com.fazecast.jSerialComm.SerialPort$SerialPortEventListener$1.run(SerialPort.java:1170)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]:         at java.base/java.lang.Thread.run(Thread.java:834)
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: WARNING: An illegal reflective access operation has occurred
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 21:06:14 asone-console AsOne-Console[28475]: 2019-10-19 21:06:14,452 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@1ada716d
+Oct 19 21:06:15 asone-console AsOne-Console[28475]: 2019-10-19 21:06:15,155 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Oct 19 21:06:18 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 21:06:18 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 6.
+Oct 19 21:06:18 asone-console systemd[945]: Stopped As One Console.
+Oct 19 21:06:18 asone-console systemd[945]: Started As One Console.
+Oct 19 21:06:19 asone-console AsOne-Console[28561]: 2019-10-19 21:06:19,435 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 21:06:19 asone-console AsOne-Console[28561]: 2019-10-19 21:06:19,784 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 21:06:19 asone-console AsOne-Console[28561]: 2019-10-19 21:06:19,856 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 21:06:19 asone-console AsOne-Console[28561]: WARNING: An illegal reflective access operation has occurred
+Oct 19 21:06:19 asone-console AsOne-Console[28561]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 21:06:19 asone-console AsOne-Console[28561]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 21:06:19 asone-console AsOne-Console[28561]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 21:06:19 asone-console AsOne-Console[28561]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 21:06:20 asone-console AsOne-Console[28561]: 2019-10-19 21:06:20,224 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@65b726f4
+Oct 19 21:06:20 asone-console AsOne-Console[28561]: 2019-10-19 21:06:20,934 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Oct 19 21:06:48 asone-console AsOne-Console[28561]: 2019-10-19 21:06:48,112 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 98 bpm
+Oct 19 21:07:53 asone-console AsOne-Console[28561]: 2019-10-19 21:07:53,000 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 96 bpm
+Oct 19 21:08:43 asone-console AsOne-Console[28561]: 2019-10-19 21:08:43,316 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 94 bpm
+Oct 19 21:10:33 asone-console AsOne-Console[28561]: 2019-10-19 21:10:33,740 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 100 bpm
+Oct 19 21:14:27 asone-console AsOne-Console[28561]: 2019-10-19 21:14:27,258 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 94 bpm
+Oct 19 21:15:50 asone-console AsOne-Console[28561]: 2019-10-19 21:15:50,761 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 96 bpm
+Oct 19 21:17:13 asone-console AsOne-Console[28561]: 2019-10-19 21:17:13,347 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 102 bpm
+Oct 19 21:18:52 asone-console AsOne-Console[28561]: 2019-10-19 21:18:52,092 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 93 bpm
+Oct 19 21:23:11 asone-console AsOne-Console[28561]: 2019-10-19 21:23:11,642 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 89 bpm
+Oct 19 21:28:56 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 21:28:56 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 7.
+Oct 19 21:28:56 asone-console systemd[945]: Stopped As One Console.
+Oct 19 21:28:56 asone-console systemd[945]: Started As One Console.
+Oct 19 21:28:57 asone-console AsOne-Console[5894]: 2019-10-19 21:28:57,665 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 21:28:58 asone-console AsOne-Console[5894]: 2019-10-19 21:28:58,030 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 21:28:58 asone-console AsOne-Console[5894]: 2019-10-19 21:28:58,102 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 21:28:58 asone-console AsOne-Console[5894]: WARNING: An illegal reflective access operation has occurred
+Oct 19 21:28:58 asone-console AsOne-Console[5894]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 21:28:58 asone-console AsOne-Console[5894]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 21:28:58 asone-console AsOne-Console[5894]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 21:28:58 asone-console AsOne-Console[5894]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 21:28:58 asone-console AsOne-Console[5894]: 2019-10-19 21:28:58,469 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@85ed5f5
+Oct 19 21:28:59 asone-console AsOne-Console[5894]: 2019-10-19 21:28:59,159 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 21:30:46 asone-console AsOne-Console[5894]: 2019-10-19 21:30:46,932 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 93 bpm
+Oct 19 21:31:47 asone-console AsOne-Console[5894]: 2019-10-19 21:31:47,379 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 94 bpm
+Oct 19 21:33:30 asone-console AsOne-Console[5894]: 2019-10-19 21:33:30,825 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 21:34:51 asone-console AsOne-Console[5894]: 2019-10-19 21:34:51,450 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 91 bpm
+Oct 19 21:39:23 asone-console AsOne-Console[5894]: 2019-10-19 21:39:23,550 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 97 bpm
+Oct 19 21:42:43 asone-console AsOne-Console[5894]: 2019-10-19 21:42:43,138 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 98 bpm
+Oct 19 21:45:41 asone-console AsOne-Console[5894]: 2019-10-19 21:45:41,328 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 99 bpm
+Oct 19 21:55:03 asone-console AsOne-Console[5894]: 2019-10-19 21:55:03,455 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 98 bpm
+Oct 19 22:02:21 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 22:02:21 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 8.
+Oct 19 22:02:21 asone-console systemd[945]: Stopped As One Console.
+Oct 19 22:02:21 asone-console systemd[945]: Started As One Console.
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: 2019-10-19 22:02:22,166 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: 2019-10-19 22:02:22,512 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: 2019-10-19 22:02:22,586 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: WARNING: An illegal reflective access operation has occurred
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 22:02:22 asone-console AsOne-Console[19869]: 2019-10-19 22:02:22,945 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@56d6c4ff
+Oct 19 22:02:23 asone-console AsOne-Console[19869]: 2019-10-19 22:02:23,642 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 22:03:47 asone-console AsOne-Console[19869]: 2019-10-19 22:03:47,945 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 102 bpm
+Oct 19 22:29:02 asone-console AsOne-Console[19869]: 2019-10-19 22:29:02,374 INFO [nioEventLoopGroup-4-8] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 22:30:13 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 22:30:13 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 9.
+Oct 19 22:30:13 asone-console systemd[945]: Stopped As One Console.
+Oct 19 22:30:13 asone-console systemd[945]: Started As One Console.
+Oct 19 22:30:14 asone-console AsOne-Console[31542]: 2019-10-19 22:30:14,676 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 22:30:15 asone-console AsOne-Console[31542]: 2019-10-19 22:30:15,021 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 22:30:15 asone-console AsOne-Console[31542]: 2019-10-19 22:30:15,093 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 22:30:15 asone-console AsOne-Console[31542]: WARNING: An illegal reflective access operation has occurred
+Oct 19 22:30:15 asone-console AsOne-Console[31542]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 22:30:15 asone-console AsOne-Console[31542]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 22:30:15 asone-console AsOne-Console[31542]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 22:30:15 asone-console AsOne-Console[31542]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 22:30:15 asone-console AsOne-Console[31542]: 2019-10-19 22:30:15,450 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@248c848b
+Oct 19 22:30:16 asone-console AsOne-Console[31542]: 2019-10-19 22:30:16,153 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 22:31:17 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 22:31:17 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 10.
+Oct 19 22:31:17 asone-console systemd[945]: Stopped As One Console.
+Oct 19 22:31:17 asone-console systemd[945]: Started As One Console.
+Oct 19 22:31:18 asone-console AsOne-Console[32070]: 2019-10-19 22:31:18,672 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 22:31:19 asone-console AsOne-Console[32070]: 2019-10-19 22:31:19,018 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 22:31:19 asone-console AsOne-Console[32070]: 2019-10-19 22:31:19,088 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 22:31:19 asone-console AsOne-Console[32070]: WARNING: An illegal reflective access operation has occurred
+Oct 19 22:31:19 asone-console AsOne-Console[32070]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 22:31:19 asone-console AsOne-Console[32070]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 22:31:19 asone-console AsOne-Console[32070]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 22:31:19 asone-console AsOne-Console[32070]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 22:31:19 asone-console AsOne-Console[32070]: 2019-10-19 22:31:19,448 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@2fa60329
+Oct 19 22:31:20 asone-console AsOne-Console[32070]: 2019-10-19 22:31:20,149 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 23:00:48 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 23:00:48 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 11.
+Oct 19 23:00:48 asone-console systemd[945]: Stopped As One Console.
+Oct 19 23:00:48 asone-console systemd[945]: Started As One Console.
+Oct 19 23:00:49 asone-console AsOne-Console[12224]: 2019-10-19 23:00:49,376 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 23:00:49 asone-console AsOne-Console[12224]: 2019-10-19 23:00:49,843 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 23:00:49 asone-console AsOne-Console[12224]: 2019-10-19 23:00:49,936 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 23:00:49 asone-console AsOne-Console[12224]: WARNING: An illegal reflective access operation has occurred
+Oct 19 23:00:49 asone-console AsOne-Console[12224]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 23:00:49 asone-console AsOne-Console[12224]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 23:00:49 asone-console AsOne-Console[12224]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 23:00:49 asone-console AsOne-Console[12224]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 23:00:50 asone-console AsOne-Console[12224]: 2019-10-19 23:00:50,309 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@70c861f0
+Oct 19 23:00:51 asone-console AsOne-Console[12224]: 2019-10-19 23:00:51,011 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Oct 19 23:03:33 asone-console AsOne-Console[12224]: 2019-10-19 23:03:33,688 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 92 bpm
+Oct 19 23:04:04 asone-console AsOne-Console[12224]: 2019-10-19 23:04:04,526 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 73 bpm
+Oct 19 23:06:56 asone-console AsOne-Console[12224]: 2019-10-19 23:06:56,952 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 92 bpm
+Oct 19 23:07:29 asone-console AsOne-Console[12224]: 2019-10-19 23:07:29,032 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 91 bpm
+Oct 19 23:08:47 asone-console AsOne-Console[12224]: 2019-10-19 23:08:47,759 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 70 bpm
+Oct 19 23:09:56 asone-console AsOne-Console[12224]: 2019-10-19 23:09:56,469 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 23:09:56 asone-console AsOne-Console[12224]: 2019-10-19 23:09:56,949 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 23:27:02 asone-console AsOne-Console[12224]: 2019-10-19 23:27:02,263 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 100 bpm
+Oct 19 23:27:02 asone-console AsOne-Console[12224]: 2019-10-19 23:27:02,812 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 100 bpm
+Oct 19 23:34:26 asone-console AsOne-Console[12224]: 2019-10-19 23:34:26,767 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 97 bpm
+Oct 19 23:35:42 asone-console AsOne-Console[12224]: 2019-10-19 23:35:42,291 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 93 bpm
+Oct 19 23:36:25 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 23:36:25 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 12.
+Oct 19 23:36:25 asone-console systemd[945]: Stopped As One Console.
+Oct 19 23:36:25 asone-console systemd[945]: Started As One Console.
+Oct 19 23:36:26 asone-console AsOne-Console[27139]: 2019-10-19 23:36:26,922 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 23:36:27 asone-console AsOne-Console[27139]: 2019-10-19 23:36:27,271 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 23:36:27 asone-console AsOne-Console[27139]: 2019-10-19 23:36:27,343 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 23:36:27 asone-console AsOne-Console[27139]: WARNING: An illegal reflective access operation has occurred
+Oct 19 23:36:27 asone-console AsOne-Console[27139]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 23:36:27 asone-console AsOne-Console[27139]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 23:36:27 asone-console AsOne-Console[27139]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 23:36:27 asone-console AsOne-Console[27139]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 23:36:27 asone-console AsOne-Console[27139]: 2019-10-19 23:36:27,698 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@4cfea0c4
+Oct 19 23:36:28 asone-console AsOne-Console[27139]: 2019-10-19 23:36:28,398 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 23:37:24 asone-console AsOne-Console[27139]: 2019-10-19 23:37:24,479 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 99 bpm
+Oct 19 23:43:05 asone-console AsOne-Console[27139]: 2019-10-19 23:43:05,006 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Oct 19 23:43:07 asone-console AsOne-Console[27139]: 2019-10-19 23:43:07,022 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Oct 19 23:43:09 asone-console AsOne-Console[27139]: 2019-10-19 23:43:09,038 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Oct 19 23:44:11 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 19 23:44:11 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 13.
+Oct 19 23:44:11 asone-console systemd[945]: Stopped As One Console.
+Oct 19 23:44:11 asone-console systemd[945]: Started As One Console.
+Oct 19 23:44:12 asone-console AsOne-Console[30447]: 2019-10-19 23:44:12,385 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 19 23:44:12 asone-console AsOne-Console[30447]: 2019-10-19 23:44:12,847 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 19 23:44:12 asone-console AsOne-Console[30447]: 2019-10-19 23:44:12,941 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 19 23:44:12 asone-console AsOne-Console[30447]: WARNING: An illegal reflective access operation has occurred
+Oct 19 23:44:12 asone-console AsOne-Console[30447]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 19 23:44:12 asone-console AsOne-Console[30447]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 19 23:44:12 asone-console AsOne-Console[30447]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 19 23:44:12 asone-console AsOne-Console[30447]: WARNING: All illegal access operations will be denied in a future release
+Oct 19 23:44:13 asone-console AsOne-Console[30447]: 2019-10-19 23:44:13,313 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@11f143e9
+Oct 19 23:44:14 asone-console AsOne-Console[30447]: 2019-10-19 23:44:14,015 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 19 23:47:41 asone-console AsOne-Console[30447]: 2019-10-19 23:47:41,935 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 103 bpm
+Oct 19 23:49:13 asone-console AsOne-Console[30447]: 2019-10-19 23:49:13,059 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 94 bpm
+Oct 19 23:50:51 asone-console AsOne-Console[30447]: 2019-10-19 23:50:51,045 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 95 bpm
+Oct 19 23:52:49 asone-console AsOne-Console[30447]: 2019-10-19 23:52:49,511 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 103 bpm
+Oct 19 23:55:18 asone-console AsOne-Console[30447]: 2019-10-19 23:55:18,872 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 100 bpm
+Oct 19 23:55:50 asone-console AsOne-Console[30447]: 2019-10-19 23:55:50,055 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 99 bpm
+Oct 19 23:57:35 asone-console AsOne-Console[30447]: 2019-10-19 23:57:35,772 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 94 bpm
+Oct 20 00:00:44 asone-console AsOne-Console[30447]: 2019-10-20 00:00:44,691 INFO [nioEventLoopGroup-4-7] o.p.a.c.s.GameState firing at 101 bpm
+Oct 20 00:00:49 asone-console AsOne-Console[30447]: 2019-10-20 00:00:49,093 INFO [nioEventLoopGroup-4-7] o.p.a.c.s.GameState firing at 101 bpm
+Oct 20 00:00:58 asone-console AsOne-Console[30447]: 2019-10-20 00:00:58,025 INFO [nioEventLoopGroup-4-7] o.p.a.c.s.GameState firing at 101 bpm
+Oct 20 00:01:45 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 20 00:01:45 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 14.
+Oct 20 00:01:45 asone-console systemd[945]: Stopped As One Console.
+Oct 20 00:01:45 asone-console systemd[945]: Started As One Console.
+Oct 20 00:01:46 asone-console AsOne-Console[5638]: 2019-10-20 00:01:46,596 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 20 00:01:47 asone-console AsOne-Console[5638]: 2019-10-20 00:01:47,054 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 20 00:01:47 asone-console AsOne-Console[5638]: 2019-10-20 00:01:47,149 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 20 00:01:47 asone-console AsOne-Console[5638]: WARNING: An illegal reflective access operation has occurred
+Oct 20 00:01:47 asone-console AsOne-Console[5638]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 20 00:01:47 asone-console AsOne-Console[5638]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 20 00:01:47 asone-console AsOne-Console[5638]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 20 00:01:47 asone-console AsOne-Console[5638]: WARNING: All illegal access operations will be denied in a future release
+Oct 20 00:01:47 asone-console AsOne-Console[5638]: 2019-10-20 00:01:47,520 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@70c861f0
+Oct 20 00:01:48 asone-console AsOne-Console[5638]: 2019-10-20 00:01:48,222 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Oct 20 00:03:00 asone-console AsOne-Console[5638]: 2019-10-20 00:03:00,791 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 98 bpm
+Oct 20 00:04:16 asone-console AsOne-Console[5638]: 2019-10-20 00:04:16,826 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 88 bpm
+Oct 20 00:17:27 asone-console systemd[945]: as-one.service: Service hold-off time over, scheduling restart.
+Oct 20 00:17:27 asone-console systemd[945]: as-one.service: Scheduled restart job, restart counter is at 15.
+Oct 20 00:17:27 asone-console systemd[945]: Stopped As One Console.
+Oct 20 00:17:27 asone-console systemd[945]: Started As One Console.
+Oct 20 00:17:28 asone-console AsOne-Console[12372]: 2019-10-20 00:17:28,337 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Oct 20 00:17:28 asone-console AsOne-Console[12372]: 2019-10-20 00:17:28,799 INFO [main] k.application Responding at http://192.168.12.1:12345
+Oct 20 00:17:28 asone-console AsOne-Console[12372]: 2019-10-20 00:17:28,893 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Oct 20 00:17:28 asone-console AsOne-Console[12372]: WARNING: An illegal reflective access operation has occurred
+Oct 20 00:17:28 asone-console AsOne-Console[12372]: WARNING: Illegal reflective access by org.eclipse.paho.client.mqttv3.internal.FileLock (file:/home/chattj/as-one/console/backend/build/libs/AsOne-Console-4bf923e-0.1-all.jar) to method sun.nio.ch.FileLockImpl.release()
+Oct 20 00:17:28 asone-console AsOne-Console[12372]: WARNING: Please consider reporting this to the maintainers of org.eclipse.paho.client.mqttv3.internal.FileLock
+Oct 20 00:17:28 asone-console AsOne-Console[12372]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Oct 20 00:17:28 asone-console AsOne-Console[12372]: WARNING: All illegal access operations will be denied in a future release
+Oct 20 00:17:29 asone-console AsOne-Console[12372]: 2019-10-20 00:17:29,262 INFO [MQTT Call: console] o.p.a.c.i.MqttManager$asyncActionListener$1 mqtt success: org.eclipse.paho.client.mqttv3.MqttToken@65c99dfd
+Oct 20 00:17:29 asone-console AsOne-Console[12372]: 2019-10-20 00:17:29,965 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Oct 20 00:19:31 asone-console AsOne-Console[12372]: 2019-10-20 00:19:31,550 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 93 bpm
+-- Reboot --
