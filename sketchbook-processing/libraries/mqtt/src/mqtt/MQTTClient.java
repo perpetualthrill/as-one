@@ -21,8 +21,8 @@
  * Boston, MA  02111-1307  USA
  * 
  * @author      Joel Gaehwiler https://github.com/256dpi
- * @modified    07/21/2016
- * @version     1.6.1 (14)
+ * @modified    12/27/2017
+ * @version     1.6.3 (16)
  */
 
 package mqtt;
@@ -103,7 +103,7 @@ public class MQTTClient implements MqttCallback {
     parent.registerMethod("dispose", this);
     parent.registerMethod("draw", this);
     messageReceivedMethod = findCallback("messageReceived");
-    System.out.println("MQTT 1.6.1 by Joel Gaehwiler https://github.com/256dpi");
+    System.out.println("MQTT 1.6.3 by Joel Gaehwiler https://github.com/256dpi");
   }
 
   /**
@@ -173,11 +173,11 @@ public class MQTTClient implements MqttCallback {
       uri = new URI(brokerURI);
     } catch(URISyntaxException e) {
       System.out.println("[MQTT] failed to parse URI: " + e.getMessage());
+      return;
     }
 
     try {
       MqttConnectOptions options = new MqttConnectOptions();
-
       options.setCleanSession(cleanSession);
 
       if(will != null) {
@@ -196,16 +196,23 @@ public class MQTTClient implements MqttCallback {
         }
       }
 
-      if (uri.getPort()!=-1){
-        client = new MqttClient("tcp://" + uri.getHost() + ":" + uri.getPort(), clientId, new MemoryPersistence());
-      } else {
-        client = new MqttClient("tcp://" + uri.getHost(), clientId, new MemoryPersistence());
+      String scheme = uri.getScheme();
+      if (scheme.equals("mqtt")) {
+        scheme = "tcp";
+      } else if(scheme.equals("mqtts")) {
+        scheme = "ssl";
       }
 
+      String loc = scheme + "://" + uri.getHost();
+      if (uri.getPort()!=-1){
+        loc = loc + ":" + uri.getPort();
+      }
+
+      client = new MqttClient(loc, clientId, new MemoryPersistence());
       client.setCallback(this);
       client.connect(options);
 
-      System.out.println("[MQTT] connected to: " + uri.getHost());
+      System.out.println("[MQTT] connected to: " + loc);
     } catch (MqttException e) {
       System.out.println("[MQTT] failed to connect: " + e.getMessage());
     }
