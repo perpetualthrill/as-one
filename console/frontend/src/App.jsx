@@ -4,8 +4,8 @@ import 'pepjs'
 import { SensorMonitor } from './SensorMonitor'
 import { MqttIndicator } from './MqttIndicator'
 import { FireTest } from './FireTest'
-// import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
-import { GREYISH_BLACK } from './ScoreboardEmulator'
+import { ScoreboardEmulator, GREYISH_BLACK } from './ScoreboardEmulator'
+// import { GREYISH_BLACK } from './ScoreboardEmulator'
 import { Fire } from './Fire'
 
 import Container from 'react-bootstrap/Container'
@@ -87,8 +87,8 @@ function App () {
               </h4>
               <Collapse in={scoreboardOpen}>
                 <div className='card-body'>
-                  {/* <div className='card-text'><ScoreboardEmulator address={mqttAddress} /></div> */}
-                  <div className='card-text'>Scoreboard currently commented out for mobile performance <span role='img' aria-label='oh noes!'>😮</span></div>
+                  <div className='card-text'><ScoreboardEmulator address={mqttAddress} /></div>
+                  {/* <div className='card-text'>Scoreboard currently commented out for mobile performance <span role='img' aria-label='oh noes!'>😮</span></div> */}
                 </div>
               </Collapse>
             </div>
