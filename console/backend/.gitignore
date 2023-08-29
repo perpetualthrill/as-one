@@ -66,3 +66,6 @@ obj/
 
 ## Apparently mosquitto generates these while running
 .lck
+
+## No more including frontend build output in the repo
+src/main/resources/web-static
