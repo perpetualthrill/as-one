@@ -8,6 +8,7 @@
     "axios": "^0.27.2",
     "bootstrap": "^4.6.2",
     "es6-promise": "^4.2.8",
+    "http-proxy-middleware": "^2.0.6",
     "konva": "^3.4.1",
     "pepjs": "^0.5.3",
     "pondjs": "^0.8.10",
@@ -54,7 +55,5 @@
     "env": {
       "mocha": true
     }
-  },
-  "_comment": "specify ip address when running with As One access point / local network. otherwise localhost",
-  "proxy": "http://192.168.12.1:12345/"
+  }
 }
