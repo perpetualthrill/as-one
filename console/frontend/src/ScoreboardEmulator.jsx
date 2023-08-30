@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Stage, Layer, Rect } from 'react-konva'
 import { useCheckedWidth } from './hooks'
 import scoreboardAddressTable from './scoreboard-lookup.json'
-import AsyncClient from 'async-mqtt'
+import MQTT from 'mqtt'
 
 const SCOREBOARD_WIDTH = 31
 const SCOREBOARD_HEIGHT = 10
@@ -33,9 +33,9 @@ function ScoreboardEmulator (props) {
   // Should run only at mount time
   useEffect(() => {
     async function subscribe () {
-      const mqtt = AsyncClient.connect(address)
+      const mqtt = MQTT.connect(address)
       try {
-        await mqtt.subscribe('asOne/score/all/direct')
+        await mqtt.subscribeAsync('asOne/score/all/direct')
         logger.log('subscribed scoreboardemulator')
       } catch (e) {
         logger.error('error connecting to mqtt')
