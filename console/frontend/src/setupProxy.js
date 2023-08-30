@@ -5,13 +5,16 @@ module.exports = function(app) {
   const SERVER = 'http://192.168.12.1:12345'
   // for mac, use this one
   // const SERVER = 'http://localhost:12345'
+
+  // I have no idea why matching a path that does not exist makes this
+  // work, but it totally does. If set to "/" it serves static files
+  // from the actual server, which is not helpful
   app.use(
-    '/',
+    '/nomatcheshere',
     createProxyMiddleware({
-      target: 'http://192.168.12.1:12345',
+      target: SERVER,
       changeOrigin: true,
     }),
   )
-  app.listen(3001)
 }
 
