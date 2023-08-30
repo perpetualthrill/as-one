@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Button from 'react-bootstrap/Button'
-import AsyncClient from 'async-mqtt'
+import MQTT from 'mqtt'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import logger from './logger'
@@ -16,9 +16,9 @@ function FireTest (props) {
 
   useEffect(() => {
     async function subscribe () {
-      const client = AsyncClient.connect(address)
+      const client = MQTT.connect(address)
       try {
-        await client.subscribe('asOne/console/leftBPM')
+        await client.subscribeAsync('asOne/console/leftBPM')
       } catch (e) {
         logger.error('error connecting to mqtt')
         logger.error(e)
