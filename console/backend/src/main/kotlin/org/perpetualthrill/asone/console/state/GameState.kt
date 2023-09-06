@@ -351,6 +351,7 @@ constructor(
                     rightBuffer.add(fixBPM)
                     rightBPM = averageBuffer(rightBuffer)
                 }
+                else -> { /* should not happen */ }
             }
         }
 

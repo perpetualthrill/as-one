@@ -155,12 +155,12 @@ constructor() {
 
         companion object {
             fun forString(value: String): SimulatorState {
-                return when (value.toLowerCase()) {
-                    QUIESCENT.name.toLowerCase() -> QUIESCENT
-                    HEARTBEAT.name.toLowerCase() -> HEARTBEAT
-                    PICKUP.name.toLowerCase() -> PICKUP
-                    SETDOWN.name.toLowerCase() -> SETDOWN
-                    SIMPLE.name.toLowerCase() -> SIMPLE
+                return when (value.lowercase()) {
+                    QUIESCENT.name.lowercase() -> QUIESCENT
+                    HEARTBEAT.name.lowercase() -> HEARTBEAT
+                    PICKUP.name.lowercase() -> PICKUP
+                    SETDOWN.name.lowercase() -> SETDOWN
+                    SIMPLE.name.lowercase() -> SIMPLE
                     else -> throw RuntimeException("Yikes! Asked simulator for unknown state: $value")
                 }
             }
