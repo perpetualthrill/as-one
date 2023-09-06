@@ -1,0 +1,741 @@
+-- Logs begin at Thu 2022-06-02 11:20:26 PDT, end at Mon 2022-09-12 14:01:04 PDT. --
+Aug 23 22:19:44 asone-console systemd[759]: Started As One Console.
+Aug 23 22:19:55 asone-console AsOne-Console[4001629]: 2022-08-23 22:19:55,442 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]: 2022-08-23 22:19:56,046 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]: 2022-08-23 22:19:56,151 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at org.perpetualthrill.asone.console.util.ReactiveExtensionsKt$sam$io_reactivex_functions_Consumer$0.accept(ReactiveExtensions.kt)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at io.reactivex.internal.observers.LambdaObserver.onNext(LambdaObserver.java:63)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at io.reactivex.internal.operators.observable.ObservableInterval$IntervalObserver.run(ObservableInterval.java:82)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at io.reactivex.internal.schedulers.ScheduledDirectPeriodicTask.run(ScheduledDirectPeriodicTask.java:38)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+Aug 23 22:19:56 asone-console AsOne-Console[4001629]:         at java.lang.Thread.run(Thread.java:748)
+Aug 23 22:19:57 asone-console AsOne-Console[4001629]: 2022-08-23 22:19:57,212 INFO [RxComputationThreadPool-4] o.p.a.c.Console Scoreboard connection status: false
+Aug 23 22:23:47 asone-console systemd[759]: Stopping As One Console...
+Aug 23 22:23:48 asone-console systemd[759]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 23 22:23:48 asone-console systemd[759]: as-one.service: Failed with result 'exit-code'.
+Aug 23 22:23:48 asone-console systemd[759]: Stopped As One Console.
+Aug 23 23:39:44 asone-console systemd[759]: Started As One Console.
+Aug 23 23:39:45 asone-console AsOne-Console[4056359]: 2022-08-23 23:39:45,760 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 23 23:39:46 asone-console AsOne-Console[4056359]: 2022-08-23 23:39:46,223 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 23 23:39:46 asone-console AsOne-Console[4056359]: 2022-08-23 23:39:46,299 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Aug 23 23:39:47 asone-console AsOne-Console[4056359]: 2022-08-23 23:39:47,345 INFO [RxComputationThreadPool-4] o.p.a.c.Console Scoreboard connection status: false
+Aug 23 23:43:14 asone-console systemd[759]: Stopping As One Console...
+Aug 23 23:43:14 asone-console systemd[759]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 23 23:43:14 asone-console systemd[759]: as-one.service: Failed with result 'exit-code'.
+Aug 23 23:43:14 asone-console systemd[759]: Stopped As One Console.
+-- Reboot --
+Aug 23 23:43:43 asone-console systemd[714]: Started As One Console.
+Aug 23 23:43:45 asone-console AsOne-Console[757]: 2022-08-23 23:43:45,428 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 23 23:43:45 asone-console AsOne-Console[757]: 2022-08-23 23:43:45,982 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 23 23:43:46 asone-console AsOne-Console[757]: 2022-08-23 23:43:46,026 WARN [main] i.n.u.i.MacAddressUtil Failed to find a usable hardware address from the network interfaces; using random bytes: 71:c8:ec:30:b4:c7:5c:69
+Aug 23 23:43:46 asone-console AsOne-Console[757]: Exception in thread "main" java.net.BindException: Cannot assign requested address
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at java.base/sun.nio.ch.Net.bind0(Native Method)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at java.base/sun.nio.ch.Net.bind(Net.java:459)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at java.base/sun.nio.ch.Net.bind(Net.java:448)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:227)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.channel.socket.nio.NioServerSocketChannel.doBind(NioServerSocketChannel.java:132)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.channel.AbstractChannel$AbstractUnsafe.bind(AbstractChannel.java:551)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.channel.DefaultChannelPipeline$HeadContext.bind(DefaultChannelPipeline.java:1332)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.channel.AbstractChannelHandlerContext.invokeBind(AbstractChannelHandlerContext.java:503)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.channel.AbstractChannelHandlerContext.bind(AbstractChannelHandlerContext.java:488)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.channel.DefaultChannelPipeline.bind(DefaultChannelPipeline.java:984)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.channel.AbstractChannel.bind(AbstractChannel.java:247)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.bootstrap.AbstractBootstrap$2.run(AbstractBootstrap.java:355)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:416)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:515)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:918)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+Aug 23 23:43:46 asone-console AsOne-Console[757]:         at java.base/java.lang.Thread.run(Thread.java:829)
+Aug 23 23:50:45 asone-console systemd[714]: Stopping As One Console...
+Aug 23 23:50:45 asone-console systemd[714]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 23 23:50:45 asone-console systemd[714]: as-one.service: Failed with result 'exit-code'.
+Aug 23 23:50:45 asone-console systemd[714]: Stopped As One Console.
+Aug 23 23:50:50 asone-console systemd[714]: Started As One Console.
+Aug 23 23:50:51 asone-console AsOne-Console[7320]: 2022-08-23 23:50:51,789 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 23 23:50:52 asone-console AsOne-Console[7320]: 2022-08-23 23:50:52,199 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 23 23:50:52 asone-console AsOne-Console[7320]: 2022-08-23 23:50:52,273 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Aug 23 23:50:53 asone-console AsOne-Console[7320]: 2022-08-23 23:50:53,326 INFO [RxComputationThreadPool-4] o.p.a.c.Console Scoreboard connection status: false
+Aug 24 12:15:10 asone-console systemd[714]: Stopping As One Console...
+Aug 24 12:15:11 asone-console systemd[714]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 24 12:15:11 asone-console systemd[714]: as-one.service: Failed with result 'exit-code'.
+Aug 24 12:15:11 asone-console systemd[714]: Stopped As One Console.
+-- Reboot --
+Aug 30 15:14:17 asone-console systemd[764]: Started As One Console.
+Aug 30 15:14:20 asone-console AsOne-Console[806]: 2022-08-30 15:14:20,102 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 30 15:14:20 asone-console AsOne-Console[806]: 2022-08-30 15:14:20,678 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 30 15:14:20 asone-console AsOne-Console[806]: 2022-08-30 15:14:20,725 WARN [main] i.n.u.i.MacAddressUtil Failed to find a usable hardware address from the network interfaces; using random bytes: 1b:d2:b2:d7:54:64:86:4c
+Aug 30 15:14:20 asone-console AsOne-Console[806]: Exception in thread "main" java.net.BindException: Cannot assign requested address
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at java.base/sun.nio.ch.Net.bind0(Native Method)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at java.base/sun.nio.ch.Net.bind(Net.java:459)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at java.base/sun.nio.ch.Net.bind(Net.java:448)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:227)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.channel.socket.nio.NioServerSocketChannel.doBind(NioServerSocketChannel.java:132)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.channel.AbstractChannel$AbstractUnsafe.bind(AbstractChannel.java:551)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.channel.DefaultChannelPipeline$HeadContext.bind(DefaultChannelPipeline.java:1332)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.channel.AbstractChannelHandlerContext.invokeBind(AbstractChannelHandlerContext.java:503)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.channel.AbstractChannelHandlerContext.bind(AbstractChannelHandlerContext.java:488)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.channel.DefaultChannelPipeline.bind(DefaultChannelPipeline.java:984)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.channel.AbstractChannel.bind(AbstractChannel.java:247)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.bootstrap.AbstractBootstrap$2.run(AbstractBootstrap.java:355)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:416)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:515)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:918)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+Aug 30 15:14:20 asone-console AsOne-Console[806]:         at java.base/java.lang.Thread.run(Thread.java:829)
+Aug 30 16:03:08 asone-console systemd[764]: Stopping As One Console...
+Aug 30 16:03:08 asone-console systemd[764]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 30 16:03:08 asone-console systemd[764]: as-one.service: Failed with result 'exit-code'.
+Aug 30 16:03:08 asone-console systemd[764]: Stopped As One Console.
+-- Reboot --
+Aug 30 16:03:35 asone-console systemd[687]: Started As One Console.
+Aug 30 16:03:36 asone-console AsOne-Console[775]: 2022-08-30 16:03:36,945 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 30 16:03:37 asone-console AsOne-Console[775]: 2022-08-30 16:03:37,552 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 30 16:03:37 asone-console AsOne-Console[775]: 2022-08-30 16:03:37,598 WARN [main] i.n.u.i.MacAddressUtil Failed to find a usable hardware address from the network interfaces; using random bytes: ec:95:e0:56:6d:92:3e:e7
+Aug 30 16:03:37 asone-console AsOne-Console[775]: Exception in thread "main" java.net.BindException: Cannot assign requested address
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at java.base/sun.nio.ch.Net.bind0(Native Method)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at java.base/sun.nio.ch.Net.bind(Net.java:459)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at java.base/sun.nio.ch.Net.bind(Net.java:448)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:227)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.channel.socket.nio.NioServerSocketChannel.doBind(NioServerSocketChannel.java:132)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.channel.AbstractChannel$AbstractUnsafe.bind(AbstractChannel.java:551)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.channel.DefaultChannelPipeline$HeadContext.bind(DefaultChannelPipeline.java:1332)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.channel.AbstractChannelHandlerContext.invokeBind(AbstractChannelHandlerContext.java:503)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.channel.AbstractChannelHandlerContext.bind(AbstractChannelHandlerContext.java:488)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.channel.DefaultChannelPipeline.bind(DefaultChannelPipeline.java:984)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.channel.AbstractChannel.bind(AbstractChannel.java:247)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.bootstrap.AbstractBootstrap$2.run(AbstractBootstrap.java:355)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:416)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:515)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:918)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+Aug 30 16:03:37 asone-console AsOne-Console[775]:         at java.base/java.lang.Thread.run(Thread.java:829)
+Aug 30 16:24:03 asone-console systemd[687]: Stopping As One Console...
+Aug 30 16:24:04 asone-console systemd[687]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 30 16:24:04 asone-console systemd[687]: as-one.service: Failed with result 'exit-code'.
+Aug 30 16:24:04 asone-console systemd[687]: Stopped As One Console.
+Aug 30 16:24:07 asone-console systemd[687]: Started As One Console.
+Aug 30 16:24:08 asone-console AsOne-Console[14125]: 2022-08-30 16:24:08,086 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 30 16:24:08 asone-console AsOne-Console[14125]: 2022-08-30 16:24:08,513 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 30 16:24:08 asone-console AsOne-Console[14125]: 2022-08-30 16:24:08,586 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Aug 30 16:24:09 asone-console AsOne-Console[14125]: 2022-08-30 16:24:09,640 INFO [RxComputationThreadPool-3] o.p.a.c.Console Scoreboard connection status: false
+Aug 30 16:24:24 asone-console AsOne-Console[14125]: 2022-08-30 16:24:24,269 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 80 bpm
+Aug 30 16:24:46 asone-console AsOne-Console[14125]: 2022-08-30 16:24:46,350 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 80 bpm
+Aug 30 16:25:55 asone-console systemd[687]: Stopping As One Console...
+Aug 30 16:25:56 asone-console systemd[687]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 30 16:25:56 asone-console systemd[687]: as-one.service: Failed with result 'exit-code'.
+Aug 30 16:25:56 asone-console systemd[687]: Stopped As One Console.
+Aug 30 16:25:56 asone-console systemd[687]: Started As One Console.
+Aug 30 16:25:57 asone-console AsOne-Console[15066]: 2022-08-30 16:25:57,160 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 30 16:25:57 asone-console AsOne-Console[15066]: 2022-08-30 16:25:57,552 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 30 16:25:57 asone-console AsOne-Console[15066]: 2022-08-30 16:25:57,617 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Aug 30 16:25:58 asone-console AsOne-Console[15066]: 2022-08-30 16:25:58,664 INFO [RxComputationThreadPool-3] o.p.a.c.Console Scoreboard connection status: false
+Aug 30 17:39:23 asone-console systemd[687]: Stopping As One Console...
+Aug 30 17:39:24 asone-console systemd[687]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 30 17:39:24 asone-console systemd[687]: as-one.service: Failed with result 'exit-code'.
+Aug 30 17:39:24 asone-console systemd[687]: Stopped As One Console.
+-- Reboot --
+Aug 30 17:39:46 asone-console systemd[726]: Started As One Console.
+Aug 30 17:39:48 asone-console AsOne-Console[763]: 2022-08-30 17:39:48,010 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 30 17:39:48 asone-console AsOne-Console[763]: 2022-08-30 17:39:48,581 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 30 17:39:48 asone-console AsOne-Console[763]: 2022-08-30 17:39:48,633 WARN [main] i.n.u.i.MacAddressUtil Failed to find a usable hardware address from the network interfaces; using random bytes: c6:6e:16:fd:d9:e2:f6:dc
+Aug 30 17:39:48 asone-console AsOne-Console[763]: Exception in thread "main" java.net.BindException: Cannot assign requested address
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at java.base/sun.nio.ch.Net.bind0(Native Method)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at java.base/sun.nio.ch.Net.bind(Net.java:459)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at java.base/sun.nio.ch.Net.bind(Net.java:448)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:227)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.channel.socket.nio.NioServerSocketChannel.doBind(NioServerSocketChannel.java:132)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.channel.AbstractChannel$AbstractUnsafe.bind(AbstractChannel.java:551)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.channel.DefaultChannelPipeline$HeadContext.bind(DefaultChannelPipeline.java:1332)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.channel.AbstractChannelHandlerContext.invokeBind(AbstractChannelHandlerContext.java:503)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.channel.AbstractChannelHandlerContext.bind(AbstractChannelHandlerContext.java:488)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.channel.DefaultChannelPipeline.bind(DefaultChannelPipeline.java:984)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.channel.AbstractChannel.bind(AbstractChannel.java:247)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.bootstrap.AbstractBootstrap$2.run(AbstractBootstrap.java:355)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:416)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:515)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:918)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+Aug 30 17:39:48 asone-console AsOne-Console[763]:         at java.base/java.lang.Thread.run(Thread.java:829)
+Aug 30 17:40:44 asone-console systemd[726]: Stopping As One Console...
+Aug 30 17:40:45 asone-console systemd[726]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 30 17:40:45 asone-console systemd[726]: as-one.service: Failed with result 'exit-code'.
+Aug 30 17:40:45 asone-console systemd[726]: Stopped As One Console.
+Aug 30 17:40:45 asone-console systemd[726]: Started As One Console.
+Aug 30 17:40:46 asone-console AsOne-Console[3743]: 2022-08-30 17:40:46,347 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 30 17:40:46 asone-console AsOne-Console[3743]: 2022-08-30 17:40:46,760 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 30 17:40:46 asone-console AsOne-Console[3743]: 2022-08-30 17:40:46,834 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Aug 30 17:40:47 asone-console AsOne-Console[3743]: 2022-08-30 17:40:47,889 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Aug 30 17:41:21 asone-console AsOne-Console[3743]: 2022-08-30 17:41:21,239 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:21 asone-console AsOne-Console[3743]: 2022-08-30 17:41:21,785 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:35 asone-console AsOne-Console[3743]: 2022-08-30 17:41:35,603 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:38 asone-console AsOne-Console[3743]: 2022-08-30 17:41:38,333 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:38 asone-console AsOne-Console[3743]: 2022-08-30 17:41:38,879 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:39 asone-console AsOne-Console[3743]: 2022-08-30 17:41:39,425 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:39 asone-console AsOne-Console[3743]: 2022-08-30 17:41:39,971 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:40 asone-console AsOne-Console[3743]: 2022-08-30 17:41:40,517 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:41 asone-console AsOne-Console[3743]: 2022-08-30 17:41:41,063 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:41 asone-console AsOne-Console[3743]: 2022-08-30 17:41:41,609 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:42 asone-console AsOne-Console[3743]: 2022-08-30 17:41:42,155 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:42 asone-console AsOne-Console[3743]: 2022-08-30 17:41:42,701 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:43 asone-console AsOne-Console[3743]: 2022-08-30 17:41:43,247 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:43 asone-console AsOne-Console[3743]: 2022-08-30 17:41:43,793 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:44 asone-console AsOne-Console[3743]: 2022-08-30 17:41:44,339 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:44 asone-console AsOne-Console[3743]: 2022-08-30 17:41:44,885 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:45 asone-console AsOne-Console[3743]: 2022-08-30 17:41:45,431 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:45 asone-console AsOne-Console[3743]: 2022-08-30 17:41:45,977 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:46 asone-console AsOne-Console[3743]: 2022-08-30 17:41:46,523 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:47 asone-console AsOne-Console[3743]: 2022-08-30 17:41:47,069 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:47 asone-console AsOne-Console[3743]: 2022-08-30 17:41:47,615 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:48 asone-console AsOne-Console[3743]: 2022-08-30 17:41:48,161 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:41:54 asone-console AsOne-Console[3743]: 2022-08-30 17:41:54,713 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Aug 30 17:42:01 asone-console systemd[726]: as-one.service: Succeeded.
+Aug 30 17:42:01 asone-console systemd[726]: as-one.service: Scheduled restart job, restart counter is at 1.
+Aug 30 17:42:01 asone-console systemd[726]: Stopped As One Console.
+Aug 30 17:42:01 asone-console systemd[726]: Started As One Console.
+Aug 30 17:42:02 asone-console AsOne-Console[4810]: 2022-08-30 17:42:02,625 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Aug 30 17:42:03 asone-console AsOne-Console[4810]: 2022-08-30 17:42:03,170 INFO [main] k.application Responding at http://192.168.12.1:12345
+Aug 30 17:42:03 asone-console AsOne-Console[4810]: 2022-08-30 17:42:03,263 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Aug 30 17:42:04 asone-console AsOne-Console[4810]: 2022-08-30 17:42:04,323 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Aug 30 17:42:27 asone-console systemd[726]: Stopping As One Console...
+Aug 30 17:42:28 asone-console systemd[726]: as-one.service: Main process exited, code=exited, status=143/n/a
+Aug 30 17:42:28 asone-console systemd[726]: as-one.service: Failed with result 'exit-code'.
+Aug 30 17:42:28 asone-console systemd[726]: Stopped As One Console.
+-- Reboot --
+Sep 01 21:12:54 asone-console systemd[751]: Started As One Console.
+Sep 01 21:12:57 asone-console AsOne-Console[866]: 2022-09-01 21:12:57,612 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 21:12:58 asone-console AsOne-Console[866]: 2022-09-01 21:12:58,153 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 21:12:58 asone-console AsOne-Console[866]: 2022-09-01 21:12:58,256 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 21:12:58 asone-console AsOne-Console[866]: WARNING: An illegal reflective access operation has occurred
+Sep 01 21:12:58 asone-console AsOne-Console[866]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Sep 01 21:12:58 asone-console AsOne-Console[866]: WARNING: All illegal access operations will be denied in a future release
+Sep 01 21:12:59 asone-console AsOne-Console[866]: 2022-09-01 21:12:59,335 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 01 21:28:00 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 21:28:00 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 1.
+Sep 01 21:28:00 asone-console systemd[751]: Stopped As One Console.
+Sep 01 21:28:00 asone-console systemd[751]: Started As One Console.
+Sep 01 21:28:01 asone-console AsOne-Console[9675]: 2022-09-01 21:28:01,898 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 21:28:02 asone-console AsOne-Console[9675]: 2022-09-01 21:28:02,444 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 21:28:02 asone-console AsOne-Console[9675]: 2022-09-01 21:28:02,533 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 21:28:03 asone-console AsOne-Console[9675]: 2022-09-01 21:28:03,592 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 01 21:30:40 asone-console AsOne-Console[9675]: 2022-09-01 21:30:40,241 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 96 bpm
+Sep 01 21:37:28 asone-console AsOne-Console[9675]: 2022-09-01 21:37:28,039 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 97 bpm
+Sep 01 21:40:56 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 21:40:56 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 2.
+Sep 01 21:40:56 asone-console systemd[751]: Stopped As One Console.
+Sep 01 21:40:56 asone-console systemd[751]: Started As One Console.
+Sep 01 21:40:57 asone-console AsOne-Console[14509]: 2022-09-01 21:40:57,705 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 21:40:58 asone-console AsOne-Console[14509]: 2022-09-01 21:40:58,226 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 21:40:58 asone-console AsOne-Console[14509]: 2022-09-01 21:40:58,313 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 21:40:59 asone-console AsOne-Console[14509]: 2022-09-01 21:40:59,370 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 01 21:44:15 asone-console AsOne-Console[14509]: 2022-09-01 21:44:15,530 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 83 bpm
+Sep 01 21:45:21 asone-console AsOne-Console[14509]: 2022-09-01 21:45:21,361 INFO [nioEventLoopGroup-4-7] o.p.a.c.s.GameState firing at 74 bpm
+Sep 01 21:49:20 asone-console AsOne-Console[14509]: 2022-09-01 21:49:20,007 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 90 bpm
+Sep 01 21:59:07 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 21:59:07 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 3.
+Sep 01 21:59:07 asone-console systemd[751]: Stopped As One Console.
+Sep 01 21:59:07 asone-console systemd[751]: Started As One Console.
+Sep 01 21:59:08 asone-console AsOne-Console[21145]: 2022-09-01 21:59:08,435 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 21:59:08 asone-console AsOne-Console[21145]: 2022-09-01 21:59:08,949 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 21:59:09 asone-console AsOne-Console[21145]: 2022-09-01 21:59:09,034 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 21:59:10 asone-console AsOne-Console[21145]: 2022-09-01 21:59:10,092 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 01 21:59:54 asone-console AsOne-Console[21145]: 2022-09-01 21:59:54,944 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 92 bpm
+Sep 01 22:10:50 asone-console AsOne-Console[21145]: 2022-09-01 22:10:50,609 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 93 bpm
+Sep 01 22:30:51 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 22:30:51 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 4.
+Sep 01 22:30:51 asone-console systemd[751]: Stopped As One Console.
+Sep 01 22:30:51 asone-console systemd[751]: Started As One Console.
+Sep 01 22:30:52 asone-console AsOne-Console[32786]: 2022-09-01 22:30:52,466 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 22:30:53 asone-console AsOne-Console[32786]: 2022-09-01 22:30:53,021 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 22:30:53 asone-console AsOne-Console[32786]: 2022-09-01 22:30:53,111 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 22:30:54 asone-console AsOne-Console[32786]: 2022-09-01 22:30:54,169 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 01 22:36:30 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 22:36:30 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 5.
+Sep 01 22:36:30 asone-console systemd[751]: Stopped As One Console.
+Sep 01 22:36:30 asone-console systemd[751]: Started As One Console.
+Sep 01 22:36:31 asone-console AsOne-Console[34907]: 2022-09-01 22:36:31,430 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 22:36:31 asone-console AsOne-Console[34907]: 2022-09-01 22:36:31,967 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 22:36:32 asone-console AsOne-Console[34907]: 2022-09-01 22:36:32,059 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 22:36:33 asone-console AsOne-Console[34907]: 2022-09-01 22:36:33,120 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 01 22:57:39 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 22:57:40 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 6.
+Sep 01 22:57:40 asone-console systemd[751]: Stopped As One Console.
+Sep 01 22:57:40 asone-console systemd[751]: Started As One Console.
+Sep 01 22:57:41 asone-console AsOne-Console[42632]: 2022-09-01 22:57:41,166 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 22:57:41 asone-console AsOne-Console[42632]: 2022-09-01 22:57:41,686 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 22:57:41 asone-console AsOne-Console[42632]: 2022-09-01 22:57:41,770 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 22:57:42 asone-console AsOne-Console[42632]: 2022-09-01 22:57:42,830 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 01 23:01:14 asone-console AsOne-Console[42632]: 2022-09-01 23:01:14,074 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 91 bpm
+Sep 01 23:01:14 asone-console AsOne-Console[42632]: 2022-09-01 23:01:14,240 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 91 bpm
+Sep 01 23:13:26 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 23:13:26 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 7.
+Sep 01 23:13:26 asone-console systemd[751]: Stopped As One Console.
+Sep 01 23:13:26 asone-console systemd[751]: Started As One Console.
+Sep 01 23:13:27 asone-console AsOne-Console[48387]: 2022-09-01 23:13:27,969 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 23:13:28 asone-console AsOne-Console[48387]: 2022-09-01 23:13:28,505 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 23:13:28 asone-console AsOne-Console[48387]: 2022-09-01 23:13:28,588 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 23:13:29 asone-console AsOne-Console[48387]: 2022-09-01 23:13:29,676 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 01 23:15:36 asone-console AsOne-Console[48387]: 2022-09-01 23:15:36,107 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 91 bpm
+Sep 01 23:16:05 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 23:16:05 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 8.
+Sep 01 23:16:05 asone-console systemd[751]: Stopped As One Console.
+Sep 01 23:16:05 asone-console systemd[751]: Started As One Console.
+Sep 01 23:16:06 asone-console AsOne-Console[49409]: 2022-09-01 23:16:06,420 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 23:16:06 asone-console AsOne-Console[49409]: 2022-09-01 23:16:06,957 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 23:16:07 asone-console AsOne-Console[49409]: 2022-09-01 23:16:07,042 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 23:16:08 asone-console AsOne-Console[49409]: 2022-09-01 23:16:08,100 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 01 23:19:31 asone-console AsOne-Console[49409]: 2022-09-01 23:19:31,263 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 93 bpm
+Sep 01 23:19:31 asone-console AsOne-Console[49409]: 2022-09-01 23:19:31,728 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 93 bpm
+Sep 01 23:22:19 asone-console AsOne-Console[49409]: 2022-09-01 23:22:19,943 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 89 bpm
+Sep 01 23:25:03 asone-console AsOne-Console[49409]: 2022-09-01 23:25:03,641 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 88 bpm
+Sep 01 23:25:04 asone-console AsOne-Console[49409]: 2022-09-01 23:25:04,150 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 88 bpm
+Sep 01 23:28:53 asone-console AsOne-Console[49409]: 2022-09-01 23:28:53,548 INFO [nioEventLoopGroup-4-7] o.p.a.c.s.GameState firing at 86 bpm
+Sep 01 23:34:40 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 23:34:40 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 9.
+Sep 01 23:34:40 asone-console systemd[751]: Stopped As One Console.
+Sep 01 23:34:40 asone-console systemd[751]: Started As One Console.
+Sep 01 23:34:41 asone-console AsOne-Console[56202]: 2022-09-01 23:34:41,474 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 23:34:42 asone-console AsOne-Console[56202]: 2022-09-01 23:34:42,051 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 23:34:42 asone-console AsOne-Console[56202]: 2022-09-01 23:34:42,142 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 23:34:43 asone-console AsOne-Console[56202]: 2022-09-01 23:34:43,205 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 01 23:36:33 asone-console AsOne-Console[56202]: 2022-09-01 23:36:33,254 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 82 bpm
+Sep 01 23:40:56 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 01 23:40:56 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 10.
+Sep 01 23:40:56 asone-console systemd[751]: Stopped As One Console.
+Sep 01 23:40:56 asone-console systemd[751]: Started As One Console.
+Sep 01 23:40:57 asone-console AsOne-Console[58549]: 2022-09-01 23:40:57,718 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 01 23:40:58 asone-console AsOne-Console[58549]: 2022-09-01 23:40:58,266 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 01 23:40:58 asone-console AsOne-Console[58549]: 2022-09-01 23:40:58,358 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 01 23:40:59 asone-console AsOne-Console[58549]: 2022-09-01 23:40:59,414 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 01 23:42:43 asone-console AsOne-Console[58549]: 2022-09-01 23:42:43,429 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 87 bpm
+Sep 01 23:44:21 asone-console AsOne-Console[58549]: 2022-09-01 23:44:21,676 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 90 bpm
+Sep 01 23:52:35 asone-console AsOne-Console[58549]: 2022-09-01 23:52:35,686 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 76 bpm
+Sep 02 00:09:12 asone-console AsOne-Console[58549]: 2022-09-02 00:09:12,462 INFO [nioEventLoopGroup-4-8] o.p.a.c.s.GameState firing at 72 bpm
+Sep 02 00:09:28 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 02 00:09:28 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 11.
+Sep 02 00:09:28 asone-console systemd[751]: Stopped As One Console.
+Sep 02 00:09:28 asone-console systemd[751]: Started As One Console.
+Sep 02 00:09:29 asone-console AsOne-Console[68965]: 2022-09-02 00:09:29,929 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 02 00:09:30 asone-console AsOne-Console[68965]: 2022-09-02 00:09:30,472 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 02 00:09:30 asone-console AsOne-Console[68965]: 2022-09-02 00:09:30,562 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 02 00:09:31 asone-console AsOne-Console[68965]: 2022-09-02 00:09:31,621 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 02 00:28:55 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 02 00:28:55 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 12.
+Sep 02 00:28:55 asone-console systemd[751]: Stopped As One Console.
+Sep 02 00:28:55 asone-console systemd[751]: Started As One Console.
+Sep 02 00:28:56 asone-console AsOne-Console[76051]: 2022-09-02 00:28:56,690 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 02 00:28:57 asone-console AsOne-Console[76051]: 2022-09-02 00:28:57,248 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 02 00:28:57 asone-console AsOne-Console[76051]: 2022-09-02 00:28:57,331 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 02 00:28:58 asone-console AsOne-Console[76051]: 2022-09-02 00:28:58,388 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 02 00:31:02 asone-console AsOne-Console[76051]: 2022-09-02 00:31:02,074 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 84 bpm
+Sep 02 00:42:05 asone-console AsOne-Console[76051]: 2022-09-02 00:42:05,997 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 93 bpm
+Sep 02 00:48:32 asone-console systemd[751]: as-one.service: Succeeded.
+Sep 02 00:48:32 asone-console systemd[751]: as-one.service: Scheduled restart job, restart counter is at 13.
+Sep 02 00:48:32 asone-console systemd[751]: Stopped As One Console.
+Sep 02 00:48:32 asone-console systemd[751]: Started As One Console.
+Sep 02 00:48:33 asone-console AsOne-Console[83183]: 2022-09-02 00:48:33,447 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 02 00:48:33 asone-console AsOne-Console[83183]: 2022-09-02 00:48:33,971 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 02 00:48:34 asone-console AsOne-Console[83183]: 2022-09-02 00:48:34,056 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 02 00:48:35 asone-console AsOne-Console[83183]: 2022-09-02 00:48:35,115 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 02 00:51:01 asone-console AsOne-Console[83183]: 2022-09-02 00:51:01,414 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 98 bpm
+Sep 02 00:57:38 asone-console AsOne-Console[83183]: 2022-09-02 00:57:38,029 INFO [nioEventLoopGroup-4-8] o.p.a.c.s.GameState firing at 85 bpm
+Sep 02 01:04:30 asone-console systemd[751]: Stopping As One Console...
+Sep 02 01:04:31 asone-console systemd[751]: as-one.service: Main process exited, code=exited, status=143/n/a
+Sep 02 01:04:31 asone-console systemd[751]: as-one.service: Failed with result 'exit-code'.
+Sep 02 01:04:31 asone-console systemd[751]: Stopped As One Console.
+-- Reboot --
+Sep 03 00:24:02 asone-console systemd[778]: Started As One Console.
+Sep 03 00:24:05 asone-console AsOne-Console[880]: 2022-09-03 00:24:05,303 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 00:24:05 asone-console AsOne-Console[880]: 2022-09-03 00:24:05,859 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 00:24:05 asone-console AsOne-Console[880]: 2022-09-03 00:24:05,966 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 00:24:06 asone-console AsOne-Console[880]: WARNING: An illegal reflective access operation has occurred
+Sep 03 00:24:06 asone-console AsOne-Console[880]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Sep 03 00:24:06 asone-console AsOne-Console[880]: WARNING: All illegal access operations will be denied in a future release
+Sep 03 00:24:07 asone-console AsOne-Console[880]: 2022-09-03 00:24:07,047 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 00:28:00 asone-console AsOne-Console[880]: 2022-09-03 00:28:00,568 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.Exception: Sensor not found: name
+Sep 03 00:28:46 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 00:28:47 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 1.
+Sep 03 00:28:47 asone-console systemd[778]: Stopped As One Console.
+Sep 03 00:28:47 asone-console systemd[778]: Started As One Console.
+Sep 03 00:28:48 asone-console AsOne-Console[5880]: 2022-09-03 00:28:48,533 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 00:28:49 asone-console AsOne-Console[5880]: 2022-09-03 00:28:49,060 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 00:28:49 asone-console AsOne-Console[5880]: 2022-09-03 00:28:49,153 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 00:28:50 asone-console AsOne-Console[5880]: 2022-09-03 00:28:50,214 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 00:29:10 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 00:29:11 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 2.
+Sep 03 00:29:11 asone-console systemd[778]: Stopped As One Console.
+Sep 03 00:29:11 asone-console systemd[778]: Started As One Console.
+Sep 03 00:29:12 asone-console AsOne-Console[6156]: 2022-09-03 00:29:12,332 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 00:29:12 asone-console AsOne-Console[6156]: 2022-09-03 00:29:12,881 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 00:29:12 asone-console AsOne-Console[6156]: 2022-09-03 00:29:12,965 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 00:29:14 asone-console AsOne-Console[6156]: 2022-09-03 00:29:14,024 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 00:45:09 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 00:45:09 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 3.
+Sep 03 00:45:09 asone-console systemd[778]: Stopped As One Console.
+Sep 03 00:45:09 asone-console systemd[778]: Started As One Console.
+Sep 03 00:45:10 asone-console AsOne-Console[12161]: 2022-09-03 00:45:10,899 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 00:45:11 asone-console AsOne-Console[12161]: 2022-09-03 00:45:11,427 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 00:45:11 asone-console AsOne-Console[12161]: 2022-09-03 00:45:11,511 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 00:45:12 asone-console AsOne-Console[12161]: 2022-09-03 00:45:12,569 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 00:47:34 asone-console AsOne-Console[12161]: 2022-09-03 00:47:34,404 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 88 bpm
+Sep 03 00:48:37 asone-console AsOne-Console[12161]: 2022-09-03 00:48:37,337 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 90 bpm
+Sep 03 00:49:33 asone-console AsOne-Console[12161]: 2022-09-03 00:49:33,971 INFO [nioEventLoopGroup-4-8] o.p.a.c.s.GameState firing at 87 bpm
+Sep 03 00:49:37 asone-console AsOne-Console[12161]: 2022-09-03 00:49:37,068 INFO [nioEventLoopGroup-4-8] o.p.a.c.s.GameState firing at 87 bpm
+Sep 03 00:50:22 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 00:50:22 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 4.
+Sep 03 00:50:22 asone-console systemd[778]: Stopped As One Console.
+Sep 03 00:50:22 asone-console systemd[778]: Started As One Console.
+Sep 03 00:50:23 asone-console AsOne-Console[14113]: 2022-09-03 00:50:23,908 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 00:50:24 asone-console AsOne-Console[14113]: 2022-09-03 00:50:24,454 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 00:50:24 asone-console AsOne-Console[14113]: 2022-09-03 00:50:24,543 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 00:50:25 asone-console AsOne-Console[14113]: 2022-09-03 00:50:25,601 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 00:50:45 asone-console AsOne-Console[14113]: 2022-09-03 00:50:45,802 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 80 bpm
+Sep 03 00:50:46 asone-console AsOne-Console[14113]: 2022-09-03 00:50:46,299 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 80 bpm
+Sep 03 00:50:46 asone-console AsOne-Console[14113]: 2022-09-03 00:50:46,616 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 80 bpm
+Sep 03 00:54:01 asone-console AsOne-Console[14113]: 2022-09-03 00:54:01,305 INFO [nioEventLoopGroup-4-4] o.p.a.c.s.GameState firing at 84 bpm
+Sep 03 00:56:13 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 00:56:13 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 5.
+Sep 03 00:56:13 asone-console systemd[778]: Stopped As One Console.
+Sep 03 00:56:13 asone-console systemd[778]: Started As One Console.
+Sep 03 00:56:14 asone-console AsOne-Console[16285]: 2022-09-03 00:56:14,867 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 00:56:15 asone-console AsOne-Console[16285]: 2022-09-03 00:56:15,390 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 00:56:15 asone-console AsOne-Console[16285]: 2022-09-03 00:56:15,477 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 00:56:16 asone-console AsOne-Console[16285]: 2022-09-03 00:56:16,534 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 00:56:16 asone-console AsOne-Console[16285]: 2022-09-03 00:56:16,630 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 80 bpm
+Sep 03 01:02:15 asone-console AsOne-Console[16285]: 2022-09-03 01:02:15,003 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 77 bpm
+Sep 03 01:04:29 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:04:30 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 6.
+Sep 03 01:04:30 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:04:30 asone-console systemd[778]: Started As One Console.
+Sep 03 01:04:31 asone-console AsOne-Console[19340]: 2022-09-03 01:04:31,322 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:04:31 asone-console AsOne-Console[19340]: 2022-09-03 01:04:31,855 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:04:31 asone-console AsOne-Console[19340]: 2022-09-03 01:04:31,938 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:04:33 asone-console AsOne-Console[19340]: 2022-09-03 01:04:33,002 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 01:05:13 asone-console AsOne-Console[19340]: 2022-09-03 01:05:13,584 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 90 bpm
+Sep 03 01:05:14 asone-console AsOne-Console[19340]: 2022-09-03 01:05:14,030 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 90 bpm
+Sep 03 01:09:05 asone-console AsOne-Console[19340]: 2022-09-03 01:09:05,265 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 83 bpm
+Sep 03 01:14:18 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:14:18 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 7.
+Sep 03 01:14:18 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:14:18 asone-console systemd[778]: Started As One Console.
+Sep 03 01:14:19 asone-console AsOne-Console[22945]: 2022-09-03 01:14:19,614 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:14:20 asone-console AsOne-Console[22945]: 2022-09-03 01:14:20,166 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:14:20 asone-console AsOne-Console[22945]: 2022-09-03 01:14:20,251 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:14:21 asone-console AsOne-Console[22945]: 2022-09-03 01:14:21,323 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 01:14:59 asone-console AsOne-Console[22945]: 2022-09-03 01:14:59,458 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 90 bpm
+Sep 03 01:19:59 asone-console AsOne-Console[22945]: 2022-09-03 01:19:59,348 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 89 bpm
+Sep 03 01:21:26 asone-console AsOne-Console[22945]: 2022-09-03 01:21:26,153 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 73 bpm
+Sep 03 01:21:36 asone-console AsOne-Console[22945]: 2022-09-03 01:21:36,756 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 75 bpm
+Sep 03 01:22:29 asone-console AsOne-Console[22945]: 2022-09-03 01:22:29,440 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 73 bpm
+Sep 03 01:24:08 asone-console AsOne-Console[22945]: 2022-09-03 01:24:08,035 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 93 bpm
+Sep 03 01:24:51 asone-console AsOne-Console[22945]: 2022-09-03 01:24:51,772 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 76 bpm
+Sep 03 01:26:46 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:26:47 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 8.
+Sep 03 01:26:47 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:26:47 asone-console systemd[778]: Started As One Console.
+Sep 03 01:26:48 asone-console AsOne-Console[27540]: 2022-09-03 01:26:48,154 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:26:48 asone-console AsOne-Console[27540]: 2022-09-03 01:26:48,722 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:26:48 asone-console AsOne-Console[27540]: 2022-09-03 01:26:48,807 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:26:49 asone-console AsOne-Console[27540]: 2022-09-03 01:26:49,870 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 01:27:38 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:27:38 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 9.
+Sep 03 01:27:38 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:27:38 asone-console systemd[778]: Started As One Console.
+Sep 03 01:27:39 asone-console AsOne-Console[27896]: 2022-09-03 01:27:39,613 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:27:40 asone-console AsOne-Console[27896]: 2022-09-03 01:27:40,184 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:27:40 asone-console AsOne-Console[27896]: 2022-09-03 01:27:40,266 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:27:41 asone-console AsOne-Console[27896]: 2022-09-03 01:27:41,329 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 01:27:43 asone-console AsOne-Console[27896]: 2022-09-03 01:27:43,465 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 80 bpm
+Sep 03 01:31:09 asone-console AsOne-Console[27896]: 2022-09-03 01:31:09,546 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 94 bpm
+Sep 03 01:35:46 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:35:46 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 10.
+Sep 03 01:35:46 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:35:46 asone-console systemd[778]: Started As One Console.
+Sep 03 01:35:47 asone-console AsOne-Console[30890]: 2022-09-03 01:35:47,867 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:35:48 asone-console AsOne-Console[30890]: 2022-09-03 01:35:48,396 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:35:48 asone-console AsOne-Console[30890]: 2022-09-03 01:35:48,481 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:35:49 asone-console AsOne-Console[30890]: 2022-09-03 01:35:49,539 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 01:36:21 asone-console AsOne-Console[30890]: 2022-09-03 01:36:21,964 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 93 bpm
+Sep 03 01:38:03 asone-console AsOne-Console[30890]: 2022-09-03 01:38:03,357 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 74 bpm
+Sep 03 01:41:12 asone-console AsOne-Console[30890]: 2022-09-03 01:41:12,934 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 91 bpm
+Sep 03 01:42:24 asone-console AsOne-Console[30890]: 2022-09-03 01:42:24,224 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 88 bpm
+Sep 03 01:43:31 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:43:31 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 11.
+Sep 03 01:43:31 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:43:31 asone-console systemd[778]: Started As One Console.
+Sep 03 01:43:32 asone-console AsOne-Console[33877]: 2022-09-03 01:43:32,864 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:43:33 asone-console AsOne-Console[33877]: 2022-09-03 01:43:33,417 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:43:33 asone-console AsOne-Console[33877]: 2022-09-03 01:43:33,504 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:43:34 asone-console AsOne-Console[33877]: 2022-09-03 01:43:34,562 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 01:43:43 asone-console AsOne-Console[33877]: 2022-09-03 01:43:43,446 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 86 bpm
+Sep 03 01:44:45 asone-console AsOne-Console[33877]: 2022-09-03 01:44:45,098 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 78 bpm
+Sep 03 01:47:59 asone-console AsOne-Console[33877]: 2022-09-03 01:47:59,432 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 90 bpm
+Sep 03 01:48:35 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:48:36 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 12.
+Sep 03 01:48:36 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:48:36 asone-console systemd[778]: Started As One Console.
+Sep 03 01:48:37 asone-console AsOne-Console[35751]: 2022-09-03 01:48:37,132 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:48:37 asone-console AsOne-Console[35751]: 2022-09-03 01:48:37,708 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:48:37 asone-console AsOne-Console[35751]: 2022-09-03 01:48:37,794 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:48:38 asone-console AsOne-Console[35751]: 2022-09-03 01:48:38,857 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 01:48:51 asone-console AsOne-Console[35751]: 2022-09-03 01:48:51,555 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 85 bpm
+Sep 03 01:49:21 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:49:21 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 13.
+Sep 03 01:49:21 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:49:21 asone-console systemd[778]: Started As One Console.
+Sep 03 01:49:22 asone-console AsOne-Console[36078]: 2022-09-03 01:49:22,882 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:49:23 asone-console AsOne-Console[36078]: 2022-09-03 01:49:23,443 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:49:23 asone-console AsOne-Console[36078]: 2022-09-03 01:49:23,531 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:49:24 asone-console AsOne-Console[36078]: 2022-09-03 01:49:24,604 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 01:50:14 asone-console AsOne-Console[36078]: 2022-09-03 01:50:14,341 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 86 bpm
+Sep 03 01:50:31 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:50:31 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 14.
+Sep 03 01:50:31 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:50:31 asone-console systemd[778]: Started As One Console.
+Sep 03 01:50:32 asone-console AsOne-Console[36552]: 2022-09-03 01:50:32,360 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:50:32 asone-console AsOne-Console[36552]: 2022-09-03 01:50:32,895 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:50:32 asone-console AsOne-Console[36552]: 2022-09-03 01:50:32,978 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:50:34 asone-console AsOne-Console[36552]: 2022-09-03 01:50:34,035 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 01:51:01 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 01:51:02 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 15.
+Sep 03 01:51:02 asone-console systemd[778]: Stopped As One Console.
+Sep 03 01:51:02 asone-console systemd[778]: Started As One Console.
+Sep 03 01:51:03 asone-console AsOne-Console[36784]: 2022-09-03 01:51:03,115 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 01:51:03 asone-console AsOne-Console[36784]: 2022-09-03 01:51:03,709 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 01:51:03 asone-console AsOne-Console[36784]: 2022-09-03 01:51:03,795 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 01:51:04 asone-console AsOne-Console[36784]: 2022-09-03 01:51:04,856 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 01:51:21 asone-console AsOne-Console[36784]: 2022-09-03 01:51:21,112 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 89 bpm
+Sep 03 01:52:08 asone-console AsOne-Console[36784]: 2022-09-03 01:52:08,212 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 83 bpm
+Sep 03 01:55:39 asone-console AsOne-Console[36784]: 2022-09-03 01:55:39,245 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 98 bpm
+Sep 03 01:55:57 asone-console AsOne-Console[36784]: 2022-09-03 01:55:57,125 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 92 bpm
+Sep 03 01:56:15 asone-console AsOne-Console[36784]: 2022-09-03 01:56:15,321 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 96 bpm
+Sep 03 01:56:55 asone-console AsOne-Console[36784]: 2022-09-03 01:56:55,003 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 96 bpm
+Sep 03 01:57:49 asone-console AsOne-Console[36784]: 2022-09-03 01:57:49,264 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 86 bpm
+Sep 03 02:01:59 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:01:59 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 16.
+Sep 03 02:01:59 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:01:59 asone-console systemd[778]: Started As One Console.
+Sep 03 02:02:00 asone-console AsOne-Console[40801]: 2022-09-03 02:02:00,365 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:02:00 asone-console AsOne-Console[40801]: 2022-09-03 02:02:00,893 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:02:00 asone-console AsOne-Console[40801]: 2022-09-03 02:02:00,977 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:02:02 asone-console AsOne-Console[40801]: 2022-09-03 02:02:02,035 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 02:02:40 asone-console AsOne-Console[40801]: 2022-09-03 02:02:40,388 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 84 bpm
+Sep 03 02:07:07 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:07:08 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 17.
+Sep 03 02:07:08 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:07:08 asone-console systemd[778]: Started As One Console.
+Sep 03 02:07:09 asone-console AsOne-Console[42709]: 2022-09-03 02:07:09,155 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:07:09 asone-console AsOne-Console[42709]: 2022-09-03 02:07:09,705 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:07:09 asone-console AsOne-Console[42709]: 2022-09-03 02:07:09,795 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:07:10 asone-console AsOne-Console[42709]: 2022-09-03 02:07:10,865 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 02:08:50 asone-console AsOne-Console[42709]: 2022-09-03 02:08:50,344 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 81 bpm
+Sep 03 02:09:38 asone-console AsOne-Console[42709]: 2022-09-03 02:09:38,802 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 78 bpm
+Sep 03 02:10:28 asone-console AsOne-Console[42709]: 2022-09-03 02:10:28,266 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 79 bpm
+Sep 03 02:11:28 asone-console AsOne-Console[42709]: 2022-09-03 02:11:28,086 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 83 bpm
+Sep 03 02:15:09 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:15:09 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 18.
+Sep 03 02:15:09 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:15:09 asone-console systemd[778]: Started As One Console.
+Sep 03 02:15:10 asone-console AsOne-Console[45673]: 2022-09-03 02:15:10,389 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:15:10 asone-console AsOne-Console[45673]: 2022-09-03 02:15:10,930 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:15:11 asone-console AsOne-Console[45673]: 2022-09-03 02:15:11,017 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:15:12 asone-console AsOne-Console[45673]: 2022-09-03 02:15:12,077 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 02:16:11 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:16:11 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 19.
+Sep 03 02:16:11 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:16:11 asone-console systemd[778]: Started As One Console.
+Sep 03 02:16:12 asone-console AsOne-Console[46100]: 2022-09-03 02:16:12,616 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:16:13 asone-console AsOne-Console[46100]: 2022-09-03 02:16:13,180 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:16:13 asone-console AsOne-Console[46100]: 2022-09-03 02:16:13,267 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:16:14 asone-console AsOne-Console[46100]: 2022-09-03 02:16:14,326 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 02:16:32 asone-console AsOne-Console[46100]: 2022-09-03 02:16:32,198 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 87 bpm
+Sep 03 02:20:07 asone-console AsOne-Console[46100]: 2022-09-03 02:20:07,571 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 83 bpm
+Sep 03 02:20:55 asone-console AsOne-Console[46100]: 2022-09-03 02:20:55,142 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 86 bpm
+Sep 03 02:21:13 asone-console AsOne-Console[46100]: 2022-09-03 02:21:13,576 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 85 bpm
+Sep 03 02:21:17 asone-console AsOne-Console[46100]: 2022-09-03 02:21:17,653 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.ArrayIndexOutOfBoundsException
+Sep 03 02:22:38 asone-console AsOne-Console[46100]: 2022-09-03 02:22:38,982 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 83 bpm
+Sep 03 02:26:55 asone-console AsOne-Console[46100]: 2022-09-03 02:26:55,215 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 91 bpm
+Sep 03 02:27:17 asone-console AsOne-Console[46100]: 2022-09-03 02:27:17,193 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 93 bpm
+Sep 03 02:28:27 asone-console AsOne-Console[46100]: 2022-09-03 02:28:27,043 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 98 bpm
+Sep 03 02:28:27 asone-console AsOne-Console[46100]: 2022-09-03 02:28:27,605 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 98 bpm
+Sep 03 02:31:21 asone-console AsOne-Console[46100]: 2022-09-03 02:31:21,303 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 79 bpm
+Sep 03 02:31:44 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:31:44 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 20.
+Sep 03 02:31:44 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:31:44 asone-console systemd[778]: Started As One Console.
+Sep 03 02:31:45 asone-console AsOne-Console[51790]: 2022-09-03 02:31:45,594 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:31:46 asone-console AsOne-Console[51790]: 2022-09-03 02:31:46,121 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:31:46 asone-console AsOne-Console[51790]: 2022-09-03 02:31:46,207 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:31:47 asone-console AsOne-Console[51790]: 2022-09-03 02:31:47,268 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 02:32:01 asone-console AsOne-Console[51790]: 2022-09-03 02:32:01,509 ERROR [RxComputationThreadPool-6] o.p.a.c.s.GameState error getting readings: java.lang.ArrayIndexOutOfBoundsException
+Sep 03 02:32:33 asone-console AsOne-Console[51790]: 2022-09-03 02:32:33,226 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 75 bpm
+Sep 03 02:33:08 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:33:09 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 21.
+Sep 03 02:33:09 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:33:09 asone-console systemd[778]: Started As One Console.
+Sep 03 02:33:10 asone-console AsOne-Console[52351]: 2022-09-03 02:33:10,357 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:33:10 asone-console AsOne-Console[52351]: 2022-09-03 02:33:10,910 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:33:11 asone-console AsOne-Console[52351]: 2022-09-03 02:33:11,005 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:33:12 asone-console AsOne-Console[52351]: 2022-09-03 02:33:12,071 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 02:34:07 asone-console AsOne-Console[52351]: 2022-09-03 02:34:07,550 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 93 bpm
+Sep 03 02:35:23 asone-console AsOne-Console[52351]: 2022-09-03 02:35:23,323 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 76 bpm
+Sep 03 02:35:51 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:35:51 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 22.
+Sep 03 02:35:51 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:35:51 asone-console systemd[778]: Started As One Console.
+Sep 03 02:35:52 asone-console AsOne-Console[53431]: 2022-09-03 02:35:52,879 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:35:53 asone-console AsOne-Console[53431]: 2022-09-03 02:35:53,433 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:35:53 asone-console AsOne-Console[53431]: 2022-09-03 02:35:53,516 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:35:54 asone-console AsOne-Console[53431]: 2022-09-03 02:35:54,581 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 02:36:51 asone-console AsOne-Console[53431]: 2022-09-03 02:36:51,558 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 73 bpm
+Sep 03 02:38:44 asone-console AsOne-Console[53431]: 2022-09-03 02:38:44,091 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 88 bpm
+Sep 03 02:40:41 asone-console AsOne-Console[53431]: 2022-09-03 02:40:41,323 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 85 bpm
+Sep 03 02:41:31 asone-console AsOne-Console[53431]: 2022-09-03 02:41:31,527 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 83 bpm
+Sep 03 02:50:51 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:50:51 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 23.
+Sep 03 02:50:51 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:50:51 asone-console systemd[778]: Started As One Console.
+Sep 03 02:50:52 asone-console AsOne-Console[58902]: 2022-09-03 02:50:52,826 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:50:53 asone-console AsOne-Console[58902]: 2022-09-03 02:50:53,383 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:50:53 asone-console AsOne-Console[58902]: 2022-09-03 02:50:53,469 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:50:54 asone-console AsOne-Console[58902]: 2022-09-03 02:50:54,530 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 02:50:55 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:50:56 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 24.
+Sep 03 02:50:56 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:50:56 asone-console systemd[778]: Started As One Console.
+Sep 03 02:50:57 asone-console AsOne-Console[58977]: 2022-09-03 02:50:57,143 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:50:57 asone-console AsOne-Console[58977]: 2022-09-03 02:50:57,693 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:50:57 asone-console AsOne-Console[58977]: 2022-09-03 02:50:57,782 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:50:58 asone-console AsOne-Console[58977]: 2022-09-03 02:50:58,842 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 02:51:05 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:51:06 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 25.
+Sep 03 02:51:06 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:51:06 asone-console systemd[778]: Started As One Console.
+Sep 03 02:51:07 asone-console AsOne-Console[59091]: 2022-09-03 02:51:07,135 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:51:07 asone-console AsOne-Console[59091]: 2022-09-03 02:51:07,709 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:51:07 asone-console AsOne-Console[59091]: 2022-09-03 02:51:07,798 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:51:08 asone-console AsOne-Console[59091]: 2022-09-03 02:51:08,861 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 02:51:38 asone-console systemd[778]: as-one.service: Succeeded.
+Sep 03 02:51:38 asone-console systemd[778]: as-one.service: Scheduled restart job, restart counter is at 26.
+Sep 03 02:51:38 asone-console systemd[778]: Stopped As One Console.
+Sep 03 02:51:38 asone-console systemd[778]: Started As One Console.
+Sep 03 02:51:39 asone-console AsOne-Console[59337]: 2022-09-03 02:51:39,351 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 02:51:39 asone-console AsOne-Console[59337]: 2022-09-03 02:51:39,898 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 02:51:39 asone-console AsOne-Console[59337]: 2022-09-03 02:51:39,992 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 02:51:41 asone-console AsOne-Console[59337]: 2022-09-03 02:51:41,052 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 02:51:59 asone-console AsOne-Console[59337]: 2022-09-03 02:51:59,161 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 80 bpm
+Sep 03 02:55:31 asone-console AsOne-Console[59337]: 2022-09-03 02:55:31,340 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:55:36 asone-console AsOne-Console[59337]: 2022-09-03 02:55:36,816 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:56:05 asone-console AsOne-Console[59337]: 2022-09-03 02:56:05,611 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:56:25 asone-console AsOne-Console[59337]: 2022-09-03 02:56:25,599 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:56:34 asone-console AsOne-Console[59337]: 2022-09-03 02:56:34,439 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:56:45 asone-console AsOne-Console[59337]: 2022-09-03 02:56:45,042 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:56:56 asone-console AsOne-Console[59337]: 2022-09-03 02:56:56,472 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:57:07 asone-console AsOne-Console[59337]: 2022-09-03 02:57:07,858 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:58:23 asone-console AsOne-Console[59337]: 2022-09-03 02:58:23,766 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:58:51 asone-console AsOne-Console[59337]: 2022-09-03 02:58:51,729 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 72 bpm
+Sep 03 02:58:57 asone-console systemd[778]: Stopping As One Console...
+Sep 03 02:58:57 asone-console systemd[778]: as-one.service: Main process exited, code=exited, status=143/n/a
+Sep 03 02:58:57 asone-console systemd[778]: as-one.service: Failed with result 'exit-code'.
+Sep 03 02:58:57 asone-console systemd[778]: Stopped As One Console.
+-- Reboot --
+Sep 03 23:42:29 asone-console systemd[772]: Started As One Console.
+Sep 03 23:42:31 asone-console AsOne-Console[844]: 2022-09-03 23:42:31,243 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 23:42:31 asone-console AsOne-Console[844]: 2022-09-03 23:42:31,770 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 23:42:31 asone-console AsOne-Console[844]: 2022-09-03 23:42:31,881 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 23:42:31 asone-console AsOne-Console[844]: WARNING: An illegal reflective access operation has occurred
+Sep 03 23:42:31 asone-console AsOne-Console[844]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Sep 03 23:42:31 asone-console AsOne-Console[844]: WARNING: All illegal access operations will be denied in a future release
+Sep 03 23:42:32 asone-console AsOne-Console[844]: 2022-09-03 23:42:32,998 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 03 23:51:51 asone-console AsOne-Console[844]: 2022-09-03 23:51:51,579 INFO [nioEventLoopGroup-4-5] o.p.a.c.s.GameState firing at 87 bpm
+Sep 03 23:55:48 asone-console AsOne-Console[844]: 2022-09-03 23:55:48,769 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 77 bpm
+Sep 03 23:56:06 asone-console AsOne-Console[844]: 2022-09-03 23:56:06,455 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 95 bpm
+Sep 03 23:56:18 asone-console AsOne-Console[844]: 2022-09-03 23:56:18,990 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 84 bpm
+Sep 03 23:57:01 asone-console AsOne-Console[844]: 2022-09-03 23:57:01,440 INFO [nioEventLoopGroup-4-1] o.p.a.c.s.GameState firing at 85 bpm
+Sep 03 23:57:13 asone-console systemd[772]: as-one.service: Succeeded.
+Sep 03 23:57:13 asone-console systemd[772]: as-one.service: Scheduled restart job, restart counter is at 1.
+Sep 03 23:57:13 asone-console systemd[772]: Stopped As One Console.
+Sep 03 23:57:13 asone-console systemd[772]: Started As One Console.
+Sep 03 23:57:14 asone-console AsOne-Console[9460]: 2022-09-03 23:57:14,681 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 23:57:15 asone-console AsOne-Console[9460]: 2022-09-03 23:57:15,222 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 23:57:15 asone-console AsOne-Console[9460]: 2022-09-03 23:57:15,327 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 23:57:16 asone-console AsOne-Console[9460]: 2022-09-03 23:57:16,385 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 23:57:57 asone-console systemd[772]: as-one.service: Succeeded.
+Sep 03 23:57:57 asone-console systemd[772]: as-one.service: Scheduled restart job, restart counter is at 2.
+Sep 03 23:57:57 asone-console systemd[772]: Stopped As One Console.
+Sep 03 23:57:57 asone-console systemd[772]: Started As One Console.
+Sep 03 23:57:58 asone-console AsOne-Console[9803]: 2022-09-03 23:57:58,793 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 23:57:59 asone-console AsOne-Console[9803]: 2022-09-03 23:57:59,338 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 23:57:59 asone-console AsOne-Console[9803]: 2022-09-03 23:57:59,430 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 23:58:00 asone-console AsOne-Console[9803]: 2022-09-03 23:58:00,493 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 03 23:58:06 asone-console systemd[772]: as-one.service: Succeeded.
+Sep 03 23:58:06 asone-console systemd[772]: as-one.service: Scheduled restart job, restart counter is at 3.
+Sep 03 23:58:06 asone-console systemd[772]: Stopped As One Console.
+Sep 03 23:58:06 asone-console systemd[772]: Started As One Console.
+Sep 03 23:58:08 asone-console AsOne-Console[9904]: 2022-09-03 23:58:08,034 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 03 23:58:08 asone-console AsOne-Console[9904]: 2022-09-03 23:58:08,589 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 03 23:58:08 asone-console AsOne-Console[9904]: 2022-09-03 23:58:08,675 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 03 23:58:09 asone-console AsOne-Console[9904]: 2022-09-03 23:58:09,732 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: false
+Sep 04 00:01:00 asone-console AsOne-Console[9904]: 2022-09-04 00:01:00,260 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 73 bpm
+Sep 04 00:01:05 asone-console AsOne-Console[9904]: 2022-09-04 00:01:05,012 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 73 bpm
+Sep 04 00:01:17 asone-console AsOne-Console[9904]: 2022-09-04 00:01:17,712 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 70 bpm
+Sep 04 00:01:29 asone-console AsOne-Console[9904]: 2022-09-04 00:01:29,508 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 72 bpm
+Sep 04 00:02:06 asone-console AsOne-Console[9904]: 2022-09-04 00:02:06,082 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 76 bpm
+Sep 04 00:02:17 asone-console AsOne-Console[9904]: 2022-09-04 00:02:17,008 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 76 bpm
+Sep 04 00:03:13 asone-console AsOne-Console[9904]: 2022-09-04 00:03:13,993 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 74 bpm
+Sep 04 00:03:56 asone-console AsOne-Console[9904]: 2022-09-04 00:03:56,741 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 76 bpm
+Sep 04 00:05:00 asone-console AsOne-Console[9904]: 2022-09-04 00:05:00,971 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 79 bpm
+Sep 04 00:12:07 asone-console systemd[772]: as-one.service: Succeeded.
+Sep 04 00:12:07 asone-console systemd[772]: as-one.service: Scheduled restart job, restart counter is at 4.
+Sep 04 00:12:07 asone-console systemd[772]: Stopped As One Console.
+Sep 04 00:12:07 asone-console systemd[772]: Started As One Console.
+Sep 04 00:12:08 asone-console AsOne-Console[15080]: 2022-09-04 00:12:08,792 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 04 00:12:09 asone-console AsOne-Console[15080]: 2022-09-04 00:12:09,317 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 04 00:12:09 asone-console AsOne-Console[15080]: 2022-09-04 00:12:09,401 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 04 00:12:10 asone-console AsOne-Console[15080]: 2022-09-04 00:12:10,460 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 04 00:13:36 asone-console AsOne-Console[15080]: 2022-09-04 00:13:36,165 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 79 bpm
+Sep 04 00:14:57 asone-console systemd[772]: as-one.service: Succeeded.
+Sep 04 00:14:57 asone-console systemd[772]: as-one.service: Scheduled restart job, restart counter is at 5.
+Sep 04 00:14:57 asone-console systemd[772]: Stopped As One Console.
+Sep 04 00:14:57 asone-console systemd[772]: Started As One Console.
+Sep 04 00:14:59 asone-console AsOne-Console[16165]: 2022-09-04 00:14:59,055 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 04 00:14:59 asone-console AsOne-Console[16165]: 2022-09-04 00:14:59,599 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 04 00:14:59 asone-console AsOne-Console[16165]: 2022-09-04 00:14:59,680 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 04 00:15:00 asone-console AsOne-Console[16165]: 2022-09-04 00:15:00,737 INFO [RxComputationThreadPool-5] o.p.a.c.Console Scoreboard connection status: true
+Sep 04 00:15:58 asone-console AsOne-Console[16165]: 2022-09-04 00:15:58,555 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 96 bpm
+Sep 04 00:16:17 asone-console AsOne-Console[16165]: 2022-09-04 00:16:17,200 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 93 bpm
+Sep 04 00:16:29 asone-console AsOne-Console[16165]: 2022-09-04 00:16:29,735 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 86 bpm
+Sep 04 00:16:50 asone-console AsOne-Console[16165]: 2022-09-04 00:16:50,304 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 88 bpm
+Sep 04 00:17:17 asone-console AsOne-Console[16165]: 2022-09-04 00:17:17,763 INFO [nioEventLoopGroup-4-6] o.p.a.c.s.GameState firing at 91 bpm
+Sep 04 00:18:41 asone-console AsOne-Console[16165]: 2022-09-04 00:18:41,949 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 92 bpm
+Sep 04 00:20:02 asone-console AsOne-Console[16165]: 2022-09-04 00:20:02,799 INFO [nioEventLoopGroup-4-2] o.p.a.c.s.GameState firing at 81 bpm
+Sep 04 00:20:03 asone-console AsOne-Console[16165]: 2022-09-04 00:20:03,241 INFO [nioEventLoopGroup-4-3] o.p.a.c.s.GameState firing at 81 bpm
+Sep 04 00:22:39 asone-console systemd[772]: Stopping As One Console...
+Sep 04 00:22:40 asone-console systemd[772]: as-one.service: Main process exited, code=exited, status=143/n/a
+Sep 04 00:22:40 asone-console systemd[772]: as-one.service: Failed with result 'exit-code'.
+Sep 04 00:22:40 asone-console systemd[772]: Stopped As One Console.
+-- Reboot --
+Sep 12 13:52:36 asone-console systemd[847]: Started As One Console.
+Sep 12 13:52:38 asone-console AsOne-Console[883]: 2022-09-12 13:52:38,177 INFO [main] k.application No ktor.deployment.watch patterns specified, automatic reload is not active
+Sep 12 13:52:38 asone-console AsOne-Console[883]: 2022-09-12 13:52:38,770 INFO [main] k.application Responding at http://192.168.12.1:12345
+Sep 12 13:52:38 asone-console AsOne-Console[883]: 2022-09-12 13:52:38,881 INFO [main] o.p.a.c.i.WebServer as one console web server started
+Sep 12 13:52:38 asone-console AsOne-Console[883]: WARNING: An illegal reflective access operation has occurred
+Sep 12 13:52:38 asone-console AsOne-Console[883]: WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+Sep 12 13:52:38 asone-console AsOne-Console[883]: WARNING: All illegal access operations will be denied in a future release
+Sep 12 13:52:39 asone-console AsOne-Console[883]: 2022-09-12 13:52:39,976 INFO [RxComputationThreadPool-3] o.p.a.c.Console Scoreboard connection status: false
+Sep 12 14:00:40 asone-console systemd[847]: Stopping As One Console...
+Sep 12 14:00:41 asone-console systemd[847]: as-one.service: Main process exited, code=exited, status=143/n/a
+Sep 12 14:00:41 asone-console systemd[847]: as-one.service: Failed with result 'exit-code'.
+Sep 12 14:00:41 asone-console systemd[847]: Stopped As One Console.
