@@ -22,7 +22,7 @@ object ScreenConstants {
     val rightBPMRect = leftBPMRect.copy(location = Location(20, 2))
 
     // Centered timer area
-    val timerStart = Location(12, 0)
+    private val timerStart = Location(12, 0)
     val timerRect = Rect(timerStart, 7, 5)
 
     // Lookup table. Each entry in this array corresponds to a location on the

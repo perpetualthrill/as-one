@@ -45,8 +45,7 @@ constructor(
     // Keep knowledge of which sensor is in which position
     val gameSensors = mutableMapOf<String, SensorPosition>()
 
-    // Record start time and initialize other timing
-    private val startTime = Calendar.getInstance()
+    // Initialize timing
     private var lastSensorReading = Calendar.getInstance()
     private var lastBPMUpdate = Calendar.getInstance()
 

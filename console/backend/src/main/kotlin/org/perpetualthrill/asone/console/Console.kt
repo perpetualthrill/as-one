@@ -46,7 +46,7 @@ class Console : CliktCommand() {
     override fun run() {
         if (!disableSerialArgument) {
             serialMonitor.start()
-            if (!usbArgument.isNullOrBlank()) {
+            if (usbArgument.isNotBlank()) {
                 serialMonitor.addSensorAddress(usbArgument)
             }
         }

@@ -52,7 +52,7 @@ data class Screen(
 
     fun toAsOneScoreboard(): UByteArray {
         val array = UByteArray(SCOREBOARD_ARRAY_SIZE)
-        for (i in 0 until locationLookupTable.size) {
+        for (i in locationLookupTable.indices) {
             val x = locationLookupTable[i]["x"]
             val y = locationLookupTable[i]["y"]
             if (null != x && null != y) {
@@ -67,7 +67,7 @@ data class Screen(
     // This assumes array2d is rectangular and also that the caller is not
     // asking to write off the screen. Break either of those rules and it will crash
     fun andWithBytes(array2d: Array<UByteArray>, startX: Int, startY: Int) {
-        for (x in 0 until array2d.size) {
+        for (x in array2d.indices) {
             for (y in 0 until array2d[0].size) {
                 val oldColor = screenArray[x + startX][y + startY]
                 val newColor = Color(
@@ -95,7 +95,7 @@ data class Screen(
             val spacerCount = if (charCount > 1) charCount - 1 else 0
 
             // First, build out full-size array
-            val array = Array(CHAR_WIDTH * charCount + spacerCount, { UByteArray(CHAR_HEIGHT) })
+            val array = Array(CHAR_WIDTH * charCount + spacerCount) { UByteArray(CHAR_HEIGHT) }
             for (i in 0 until charCount) {
                 val character = value[i]
                 val glyph = bpmTypeface[character] ?: continue // if the lookup returns null, continue to next character
@@ -111,7 +111,7 @@ data class Screen(
             return when {
                 array.size > BPM_AREA_WIDTH -> array.slice(IntRange(array.size - BPM_AREA_WIDTH, array.size - 1)).toTypedArray()
                 array.size < BPM_AREA_WIDTH -> {
-                    val leftpad = Array(BPM_AREA_WIDTH - array.size, { UByteArray(CHAR_HEIGHT) })
+                    val leftpad = Array(BPM_AREA_WIDTH - array.size) { UByteArray(CHAR_HEIGHT) }
                     leftpad + array
                 }
                 else -> array
@@ -122,8 +122,8 @@ data class Screen(
         fun toTestString(array: Array<UByteArray>): String {
             val builder = StringBuilder()
             for (y in 0 until array[0].size) {
-                for (x in 0 until array.size) {
-                    val char = if (array[x][y] > 0.toUByte()) '#' else ' '
+                for (element in array) {
+                    val char = if (element[y] > 0.toUByte()) '#' else ' '
                     builder.append(char)
                 }
                 builder.append('\n')
