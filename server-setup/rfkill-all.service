@@ -1,0 +1,11 @@
+[Unit]
+Description=RFKill-Unblock all
+After=rfkill-block@all.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 5
+ExecStart=/sbin/rfkill unblock all
+
+[Install]
+WantedBy=multi-user.target

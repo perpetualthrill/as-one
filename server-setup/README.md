@@ -11,7 +11,7 @@ Presumes Ubuntu 18.04
 
 This should leave you in the state where the wifi nat is running and will run automatically when rebooted.
 
-If wifi has been turned off somehow, `rfkill unblock all` may fix it.
+If wifi has been turned off somehow, `rfkill unblock all` may fix it. If this happens on each reboot, try installing the included rfkill-all.service in /usr/lib/systemd/system/ and enable it. That is a one-shot call to the same command that gets issued five seconds after boot.
 
 If there are unknown errors, `systemctl status create_ap.service` and `systemctl status hostapd.service` may be of use.
 
