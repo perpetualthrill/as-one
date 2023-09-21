@@ -44,8 +44,8 @@ class HeartrateMonitor:
         #sensor.set_active_leds_amplitude(MAX30105_PULSE_AMP_MEDIUM)
         #sensor.set_active_leds_amplitude(MAX30105_PULSE_AMP_LOW)
         sensor.set_pulse_amplitude_red(MAX30105_PULSE_AMP_LOW)
-        #sensor.set_pulse_amplitude_it(MAX30105_PULSE_AMP_LOW)
-        sensor.set_pulse_amplitude_it(MAX30105_PULSE_AMP_HIGH)
+        sensor.set_pulse_amplitude_it(MAX30105_PULSE_AMP_LOW)
+        #sensor.set_pulse_amplitude_it(MAX30105_PULSE_AMP_HIGH)
         #sensor.set_pulse_width(118)
         #sensor.set_sample_rate(1600)
 
@@ -56,10 +56,11 @@ class HeartrateMonitor:
         #print(f"{numerator} -- {denominator} -- {percent} -- {int(percent*65000)}")
         pwm_led.duty_u16(int(percent*65_535))
 
-    def _enque_reading(self, reading: tuple[int, int]) -> None:
-        self.readings.append(reading)
+    #def _enque_reading(self, reading: tuple[int, int]) -> None:
+    def _enque_reading(self, reading):
+        self.readings.insert(0, reading)
         while len(self.readings) > self.READING_BUFFER_SIZE:
-            self.readings.pop(0)
+            self.readings.pop()
 
     def run(self):
         if (self.check_deadline_ms is 0):
@@ -79,7 +80,10 @@ class HeartrateMonitor:
             if sensor.available():
                 red_sample = sensor.pop_red_from_storage()
                 ir_sample = sensor.pop_ir_from_storage()
-                reading = (red_sample, ir_sample)
+                reading = {
+                    "red": red_sample, 
+                    "ir": ir_sample
+                }
 
             if reading:
                 self._enque_reading(reading)
@@ -87,7 +91,8 @@ class HeartrateMonitor:
             ## Update lamp
             min_ir = 999999
             max_ir = 0
-            for (red, ir) in self.readings:
+            for reading in self.readings:
+                ir = reading["ir"]
                 if ir < min_ir:
                     min_ir = ir
                 if ir > max_ir:
@@ -97,22 +102,24 @@ class HeartrateMonitor:
             else:
                 min_corrected = 999999
                 max_corrected = 0
-                for (red, ir) in self.readings:
+                for reading in self.readings:
+                    ir = reading["ir"]
                     corrected = ir - min_ir
                     if corrected < min_corrected:
                         min_corrected = corrected
                     if corrected > max_corrected:
                         max_corrected = corrected
                 window_sum = 0
-                for (red, ir) in self.readings[-self.ROLLING_AVERAGE_SIZE:]:
+                for reading in self.readings[:self.ROLLING_AVERAGE_SIZE]:
+                    ir = reading["ir"]
                     window_sum += ir - min_ir
+                    #print(f"{reading} -- {ir - min_ir}")
+                    print(f"{ir} -- {ir - min_ir}")
                 rolling_average = window_sum // self.ROLLING_AVERAGE_SIZE
                 new_corrected = (self.prev_corrected + max_corrected) // 2
-                #print(f"{rolling_average} -- {max_corrected} -- {new_corrected}")
+                print(f"{rolling_average} -- {max_corrected} -- {new_corrected}")
                 self.prev_corrected = new_corrected
                 self._set_led_percent(rolling_average, new_corrected)
-
-            
 
 
 monitor = HeartrateMonitor()
