@@ -9,7 +9,7 @@
     "es6-promise": "^4.2.8",
     "http-proxy-middleware": "^2.0.6",
     "konva": "^3.4.1",
-    "mqtt": "^5.0.3",
+    "async-mqtt": "^2.6.3",
     "pepjs": "^0.5.3",
     "pondjs": "^0.8.10",
     "react": "^16.13.1",

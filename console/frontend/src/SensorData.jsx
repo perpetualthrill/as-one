@@ -5,7 +5,7 @@ import logger from './logger'
 import { Charts, ChartContainer, ChartRow, YAxis, LineChart } from 'react-timeseries-charts'
 import { TimeSeries, TimeRange } from 'pondjs'
 import PropTypes from 'prop-types'
-import MQTT from 'mqtt'
+import AsyncClient from 'async-mqtt'
 import Ring from 'ringjs'
 
 SensorData.propTypes = {
@@ -44,9 +44,9 @@ function SensorData (props) {
   // that pushes all of the state updates into the buffer
   useEffect(() => {
     async function subscribe () {
-      const mqtt = MQTT.connect(address)
+      const mqtt = AsyncClient.connect(address)
       try {
-        await mqtt.subscribeAsync('asOne/sensor/reading')
+        await mqtt.subscribe('asOne/sensor/reading')
         logger.log('subscribed sensormonitor')
       } catch (e) {
         logger.error('error connecting to mqtt')

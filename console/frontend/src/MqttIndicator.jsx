@@ -3,7 +3,7 @@ import './MqttIndicator.scss'
 import logger from './logger'
 import PropTypes from 'prop-types'
 import useInterval from '@restart/hooks/useInterval'
-import * as MQTT from 'mqtt'
+import AsyncClient from 'async-mqtt'
 
 function MqttIndicator (props) {
   const address = props.address
@@ -15,9 +15,9 @@ function MqttIndicator (props) {
 
   useEffect(() => {
     async function subscribe () {
-      const mqtt = MQTT.connect(address)
+      const mqtt = AsyncClient.connect(address)
       try {
-        await mqtt.subscribeAsync(topic)
+        await mqtt.subscribe(topic)
         logger.log('subscribed mqttindicator ' + emoji + ' to topic ' + topic)
       } catch (e) {
         logger.error('error connecting to mqtt')
